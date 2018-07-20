@@ -75,48 +75,111 @@ namespace AritySystems.Controllers
             
         }
 
+        public ActionResult OrderLineItems(int? OrderId)
+        {
+            using (var db = new ArityEntities())
+            {
+                ViewBag.OrderName = db.Orders.Where(x => x.Id == OrderId).Select(x => x.Prefix).FirstOrDefault();
+                ViewBag.OrderDate = db.Orders.Where(x => x.Id == OrderId).Select(x => x.CreatedDate).FirstOrDefault() ?? DateTime.MinValue;
+                ViewBag.Status = db.Orders.Where(x => x.Id == OrderId).Select(x => x.Status).FirstOrDefault();
+            }
+            ViewBag.OrderId = OrderId;
+            return View();
+        }
+
+
         /// <summary>
         /// Order Line Item list and supplier order line item list with order details
         /// </summary>
         /// <param name="OrderId"></param>
         /// <returns></returns>
-        public ActionResult OrderLineItems(int OrderId)
+        [HttpGet]
+        public ActionResult OrderLineItemList(int OrderId)
         {
-           OrderDetailModel model = new OrderDetailModel();
-            
             try
             {
                 using (var db = new ArityEntities())
                 {
-                    model.OrderName = db.Orders.Where(x => x.Id == OrderId).Select(x => x.Prefix).FirstOrDefault();
-                    model.OrderDate = db.Orders.Where(x => x.Id == OrderId).Select(x => x.CreatedDate).FirstOrDefault() ?? DateTime.MinValue;
-                    model.Status = db.Orders.Where(x => x.Id == OrderId).Select(x => x.Status).FirstOrDefault();
-                    model.OrderLineItemsList = db.OrderLineItems.Where(x => x.OrderId == OrderId).ToList();
-                    foreach (var item in model.OrderLineItemsList)
-                    {
-                        model.OrderTotal = item.DollarPurchasePrice * item.Quantity ?? 0;
-                    }
-                    model.SupplierOrderLineItemList = (from a in db.Supplier_Assigned_OrderLineItem
-                                                       join b in db.OrderLineItem_Supplier_Mapping on a.OrderSupplierMapId equals b.Id
-                                                       join c in db.OrderLineItems on b.OrderLineItemId equals c.Id
-                                                       join d in db.Orders on c.OrderId equals d.Id
-                                                       where d.Id == OrderId
-                                                       select new SupplierOrderLineItemModel
-                                                       {
-                                                           Id = a.Id,
-                                                           CreatedDate = a.CreatedDate,
-                                                           ModifiedDate = a.ModifiedDate,
-                                                           OrderSupplierMapId = a.OrderSupplierMapId,
-                                                           Order_Prefix = d.Prefix,
-                                                           Quantity = a.Quantity,
-                                                           Status = a.Status,
-                                                           SupplierId = a.SupplierId,
-                                                           SupplierName = b.User.UserName
-                                                       }).ToList();
+                   
+                    var model = (from m in db.OrderLineItems
+                                 join n in db.Orders on m.OrderId equals n.Id
+                                 join o in db.Products on m.ProductId equals o.Id
+                                 where m.OrderId == OrderId
+                                 select new OrderLineItemViewModel {
+                                    // Id = m.Id,
+                                     //OrderId = m.OrderId ?? 0,
+                                     Order_Name = n.Prefix,
+                                     //ProductId = m.ProductId ?? 0,
+                                     Product_Name = o.English_Name + "(" + o.Chinese_Name + ")",
+                                     Purchase_Price_dollar = m.DollarPurchasePrice ?? 0,
+                                     Sales_Price_dollar = m.DollarSalesPrice ?? 0,
+                                     Purchase_Price_rmb = m.RMDPurchasePrice ?? 0,
+                                     Sales_Price_rmb = m.RMBSalesPrice ?? 0,
+                                     quantity = m.Quantity ?? 0,
+                                     CreatedDate = m.CreatedDate.ToString(),
+                                     //ModifiedDate = m.ModifiedDate ?? DateTime.MinValue,
+                                     Suppliers = (from a in db.Users join b in db.UserTypes on a.Id equals b.UserId
+                                                  where b.Id == 1
+                                                  select new SelectListItem{
+                                                     Text = a.Id.ToString(), Value = a.UserName
+                                                  }).ToList()
+                                 }).ToList();
 
+                    //model.SupplierOrderLineItemList = (from a in db.Supplier_Assigned_OrderLineItem
+                    //                                   join b in db.OrderLineItem_Supplier_Mapping on a.OrderSupplierMapId equals b.Id
+                    //                                   join c in db.OrderLineItems on b.OrderLineItemId equals c.Id
+                    //                                   join d in db.Orders on c.OrderId equals d.Id
+                    //                                   where d.Id == OrderId
+                    //                                   select new SupplierOrderLineItemModel
+                    //                                   {
+                    //                                       Id = a.Id,
+                    //                                       CreatedDate = a.CreatedDate,
+                    //                                       ModifiedDate = a.ModifiedDate,
+                    //                                       OrderSupplierMapId = a.OrderSupplierMapId,
+                    //                                       Order_Prefix = d.Prefix,
+                    //                                       Quantity = a.Quantity,
+                    //                                       Status = a.Status,
+                    //                                       SupplierId = a.SupplierId,
+                    //                                       SupplierName = b.User.UserName
+                    //                                   }).ToList();
+
+                    return Json(new { data = model }, JsonRequestBehavior.AllowGet);
                 }
-                return Json(new { data = model }, JsonRequestBehavior.AllowGet);
                 //return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet]
+        public ActionResult SuppliersOrderLineItemList(int OrderId)
+        {
+            try
+            {
+                using (var db = new ArityEntities())
+                {
+                    var model = (from a in db.Supplier_Assigned_OrderLineItem
+                                 join b in db.OrderLineItem_Supplier_Mapping on a.OrderSupplierMapId equals b.Id
+                                 join c in db.OrderLineItems on b.OrderLineItemId equals c.Id
+                                 join d in db.Orders on c.OrderId equals d.Id
+                                 where d.Id == OrderId
+                                 select new SupplierOrderLineItemModel
+                                 {
+                                     Id = a.Id,
+                                     CreatedDate = a.CreatedDate.ToString(),
+                                     ModifiedDate = a.ModifiedDate.ToString(),
+                                     OrderSupplierMapId = a.OrderSupplierMapId,
+                                     Order_Prefix = d.Prefix,
+                                     Quantity = a.Quantity,
+                                     Status = a.Status,
+                                     SupplierId = a.SupplierId,
+                                     SupplierName = b.User.UserName
+                                 }).ToList();
+
+                    return Json(new { data = model }, JsonRequestBehavior.AllowGet);
+                }
             }
             catch (Exception ex)
             {

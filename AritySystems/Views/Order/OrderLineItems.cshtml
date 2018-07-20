@@ -1,5 +1,4 @@
-﻿@model AritySystems.Models.OrderDetailModel
-@{
+﻿@{
     ViewBag.Title = "Order Details";
 }
 <style>
@@ -11,15 +10,16 @@
     <div class="page-header">
         <h1>Order Details</h1>
     </div>
+    <input type="hidden" value="@ViewBag.OrderId" id="OrderId" />
     <div class="text-right">
         <a href="/order/adminorders" class="btn btn-primary">  Back</a>
     </div>
     <div class="row">
-        <table class="table borderless" style="width:25%">
+        <table class="table borderless" style="width:50%">
             <tr>
-                <td><label>Order Name: </label> @Model.OrderName</td>
-                <td><label>Order Date: </label>@Model.OrderDate</td>
-                <td><label class="alert-warning">Status: </label>@Model.Status</td>
+                <td><h4>Order Name: </h4> @ViewBag.OrderName</td>
+                <td><h4>Order Date: </h4>@ViewBag.OrderDate</td>
+                <td><h4 class="alert-warning">Status: </h4>@ViewBag.Status</td>
             </tr>
 
 
@@ -28,51 +28,53 @@
             <h3>Order Items :</h3>
         </div>
         <div class="row">
-            <table class="table">
-                <tr>
-                    <th>#</th>
-                    <th>Order Name</th>
-                    <th>Product Name</th>
-                    <th>Purchase Price($)</th>
-                    <th>Sales Price($)</th>
-                    <th>Purchase Price(Y)</th>
-                    <th>Sales Price(Y)</th>
-                    <th>Qunatity</th>
-                    <th>Suppliers</th>
-                </tr>
+            <table class="display" id="tblOrderItemList">
+                <thead>
+                    <tr>
+                        @*<th>#</th>*@
+                        <th>Order Name</th>
+                        <th>Product Name</th>
+                        <th>Purchase Price($)</th>
+                        <th>Sales Price($)</th>
+                        <th>Purchase Price(Y)</th>
+                        <th>Sales Price(Y)</th>
+                        <th>Qunatity</th>
+                        <th>Suppliers</th>
+                    </tr>
+                </thead>
                 @*@if (Model.OrderLineItemsList != null)
-                {
-                foreach (var item in Model.OrderLineItemsList)
-                {
-                    <tr>
-                        <td>@item.Id</td>
-                        <td>@item.Order.Prefix</td>
-                        <td>
-                            @item.Product.English_Name
-                            (@item.Product.Chinese_Name)
-                        </td>
-                        <td>@item.DollarPurchasePrice</td>
-                        <td>@item.RMDPurchasePrice</td>
-                        <td>@item.DollarSalesPrice</td>
-                        <td>@item.RMBSalesPrice</td>
-                        <td>@item.Quantity</td>
+                    {
+                    foreach (var item in Model.OrderLineItemsList)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.Order.Prefix</td>
+                            <td>
+                                @item.Product.English_Name
+                                (@item.Product.Chinese_Name)
+                            </td>
+                            <td>@item.DollarPurchasePrice</td>
+                            <td>@item.RMDPurchasePrice</td>
+                            <td>@item.DollarSalesPrice</td>
+                            <td>@item.RMBSalesPrice</td>
+                            <td>@item.Quantity</td>
 
-                        <td>@Html.DropDownListFor(Model => Model.SupplierId, Model.SupplierList)</td>
-                    </tr>
-                }
-                }
-                else
-                {
+                            <td>@Html.DropDownListFor(Model => Model.SupplierId, Model.SupplierList)</td>
+                        </tr>
+                    }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td> No Data Available</td>
+                        </tr>
+                    }
                     <tr>
-                        <td> No Data Available</td>
-                    </tr>
-                }
-                <tr>
-                    <td colspan="4" style="text-align:right;font-style: italic;font-weight: 600;">
-                        Order Total:
-                    </td>
-                    <td colspan="2" style="text-align:left">$ @Model.OrderTotal</td>
-                </tr>*@
+                        <td colspan="4" style="text-align:right;font-style: italic;font-weight: 600;">
+                            Order Total:
+                        </td>
+                        <td colspan="2" style="text-align:left">$ @Model.OrderTotal</td>
+                    </tr>*@
             </table>
         </div>
         <div class="row text-center">
@@ -86,45 +88,48 @@
             <h3>Supplier Order Items :</h3>
         </div>
         <div class="row">
-            <table class="table">
-                <tr>
-                    <th>#</th>
-                    <th>Supplier Name</th>
-                    <th>Order Prefix </th>
-                    <th>Quantity</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                </tr>
-                @if (Model.SupplierOrderLineItemList != null)
-                {
-                foreach (var item in Model.SupplierOrderLineItemList)
-                {
+            <table class="display" id="tblSupplierOrderItemList">
+                <thead>
                     <tr>
-                        <td>@item.Id</td>
-                        <td>@item.SupplierName</td>
-                        <td>
-                            @item.Order_Prefix
-                        </td>
-                        <td>@item.Quantity</td>
-                        <td>@item.Status</td>
-                        <td>@item.CreatedDate</td>
+                        @*<th>#</th>*@
+                        <th>Supplier Name</th>
+                        <th>Order Prefix </th>
+                        <th>Quantity</th>
+                        <th>Status</th>
+                        <th>Date</th>
                     </tr>
-                }
-                }
-                else
-                {
-                    <tr>
-                        <td>
-                            No Data Available
-                        </td>
-                    </tr>
-                }
+                </thead>
+                @*@if (Model.SupplierOrderLineItemList != null)
+                    {
+                    foreach (var item in Model.SupplierOrderLineItemList)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.SupplierName</td>
+                            <td>
+                                @item.Order_Prefix
+                            </td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Status</td>
+                            <td>@item.CreatedDate</td>
+                        </tr>
+                    }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td>
+                                No Data Available
+                            </td>
+                        </tr>
+                    }*@
 
             </table>
         </div>
     </div>
 </div>
 @section Scripts {
+    
     <script>
         $("#btnSave").click(function () {
             alert("Order information save successfully");
@@ -132,8 +137,7 @@
         $("#btnSubmit").click(function () {
             var isSupplierSelecter = true;
             $("select").each(function () {
-                if ($(this).val() == "")
-                { alert("Please select all supplier to submit order"); isSupplierSelecter = false; return false; }
+                if ($(this).val() == "") { alert("Please select all supplier to submit order"); isSupplierSelecter = false; return false; }
             });
             if (isSupplierSelecter) {
                 $(this).attr("disabled", "disabled");
@@ -142,8 +146,9 @@
         });
 
         $(document).ready(function () {
-            var table = $('#example').DataTable({
-                "ajax": "/Order/OrderLineItems",
+            var orderid = $('#OrderId').val();
+            var table = $('#tblOrderItemList').DataTable({
+                "ajax": "/Order/OrderLineItemList?OrderId=" + orderid,
                 "columns": [
                     { "data": "Order_Name" },
                     { "data": "Product_Name" },
@@ -151,22 +156,57 @@
                     { "data": "Sales_Price_dollar" },
                     { "data": "Purchase_Price_rmb" },
                     { "data": "Sales_Price_rmb" },
-                    { "data": "quantity" },
-                    
-                    //{ "data": "Description" },
-                    { "data": "ModifiedDate" },
                     {
-                        "className": '',
-                        "orderable": false,
-                        "data": null,
-                        'render': function (data, type, full, meta) {
-                            return '<a href="/product/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a href="javascript:"><i style="color:red;" class="fa fa-times"></i></a>';
+                        "data": "quantity",
+                        "render": function (data, type, full) {
+                            return '<input type="text" value="' + data + '"/>'
+                        }    
+                    },
+
+                    //{ "data": "Description" },
+                    {
+                        "data": "CreatedDate",
+                        //"render": function (data) {
+                        //    debugger;
+                        //    var date = new Date(data);
+                        //    var month = date.getMonth() + 1;
+                        //    return (month.length > 1 ? month : "0" + month) + "/" + date.getDate() + "/" + date.getFullYear();
+                        //}
+                    },
+                    {
+                        "data": "Suppliers",
+                        "render": function (data, type, row) {
+                                ddl = '<select id="jsonSupplierList">';
+                                $.each(data, function (i, item) {
+                                        ddl += '<option id="' + item.Text + '">' + item.Value + '<option>';
+                                });
+                                ddl += '</select>';
+
+                            return ddl;
                         }
                     }],
-                "order": [[1, 'asc']]
+                "orderLineItems": [[1, 'asc']]
+            });
+            var table = $('#tblSupplierOrderItemList').DataTable({
+                "ajax": "/Order/SuppliersOrderLineItemList?OrderId=" + orderid,
+                "columns": [
+                    //{ "data": "Id" },
+                    { "data": "SupplierName" },
+                    { "data": "Order_Prefix" },
+                    { "data": "Quantity" },
+                    { "data": "Status" },
+                    {
+                        "data": "CreatedDate",
+                        //"render": function (data) {
+                        //    var date = new Date(data);
+                        //    var month = date.getMonth() + 1;
+                        //    return (month.length > 1 ? month : "0" + month) + "/" + date.getDate() + "/" + date.getFullYear();
+                        //}
+                    },
+                ],
+                "SupplierOrderLineItems": [[1, 'asc']]
             });
 
-          
         });
     </script>
 }

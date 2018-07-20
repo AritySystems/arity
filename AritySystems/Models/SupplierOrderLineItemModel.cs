@@ -15,7 +15,7 @@ namespace AritySystems.Models
         public Nullable<int> OrderSupplierMapId { get; set; }
         public string Status { get; set; }
         public Nullable<decimal> Quantity { get; set; }
-        public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
+        public string ModifiedDate { get; set; }
+        public string CreatedDate { get; set; }
     }
 }
