@@ -48,7 +48,7 @@ namespace AritySystems.Controllers
                                 CreatedDate = order.CreatedDate.GetValueOrDefault().ToString("MM/dd/yyyy h:m tt"),
                                 Status = order.Status,
                                 TotalItem = order.OrderLineItems.Sum(_ => _.Quantity),
-                                Total = order.OrderLineItems.Sum(_ => (_.DollarPurchasePrice * _.Quantity))
+                                Total = order.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity))
                             }).ToList();
             return Json(new { data = orderLst }, JsonRequestBehavior.AllowGet);
         }
@@ -337,7 +337,7 @@ namespace AritySystems.Controllers
                         foreach (var item in lineItem.Where(_ => _.Value > 0))
                         {
                             var prodcut = objDb.Products.Where(_ => _.Id == item.Key).FirstOrDefault();
-                            objDb.OrderLineItems.Add(new OrderLineItem() { OrderId = order.Id, ProductId = prodcut.Id, DollarPurchasePrice = prodcut.Dollar_Price, RMDPurchasePrice = prodcut.RMB_Price, Quantity = item.Value });
+                            objDb.OrderLineItems.Add(new OrderLineItem() { OrderId = order.Id, ProductId = prodcut.Id, DollarSalesPrice = prodcut.Dollar_Price, RMDPurchasePrice = prodcut.RMB_Price, Quantity = item.Value });
                         }
                         objDb.SaveChanges();
                     }
