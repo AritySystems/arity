@@ -17,10 +17,10 @@ namespace AritySystems.Data
         public int Id { get; set; }
         public Nullable<int> SupplierId { get; set; }
         public Nullable<int> OrderSupplierMapId { get; set; }
-        public string Status { get; set; }
-        public Nullable<decimal> Quantity { get; set; }
+        public int Status { get; set; }
+        public decimal Quantity { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
+        public System.DateTime CreatedDate { get; set; }
     
         public virtual OrderLineItem_Supplier_Mapping OrderLineItem_Supplier_Mapping { get; set; }
         public virtual User User { get; set; }

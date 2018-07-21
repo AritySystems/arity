@@ -21,11 +21,11 @@ namespace AritySystems.Data
             this.Supplier_Assigned_OrderLineItem = new HashSet<Supplier_Assigned_OrderLineItem>();
         }
     
-        public int OrderLineItemId { get; set; }
+        public Nullable<int> OrderLineItemId { get; set; }
         public Nullable<int> SupplierId { get; set; }
-        public Nullable<decimal> Quantity { get; set; }
+        public decimal Quantity { get; set; }
         public int Id { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
+        public System.DateTime CreatedDate { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
