@@ -3,13 +3,23 @@ using System.Web.Mvc;
 using AritySystems.Models;
 using System.Web.Security;
 using System.Security.Principal;
+using currentContext = AritySystems.Data;
 using AritySystems.Data;
+using System;
 
 namespace AritySystems.Controllers
 {
     //[Authorize]
     public class UserController : Controller
     {
+
+        ArityEntities dataContext;
+
+        public UserController()
+        {
+            dataContext = new ArityEntities();
+        }
+
         [HttpGet]
         public ActionResult Login(string ReturnUrl)
         {
@@ -68,13 +78,13 @@ namespace AritySystems.Controllers
             }
         }
 
-        
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel entity)
         {
-           
+
             try
             {
                 using (var db = new ArityEntities())
@@ -84,15 +94,15 @@ namespace AritySystems.Controllers
 
                     //check user credentials
                     var userInfo = db.Users.Where(s => s.EmailId == entity.Email.Trim() && s.Password == entity.Password.Trim()).FirstOrDefault();
-                    
+
                     if (userInfo != null)
                     {
 
                         //Set A Unique name in session  
                         Session["Username"] = entity.Email;
-                        
-                        return RedirectToAction("Index", "Order","Order");  
-                       
+
+                        return RedirectToAction("Index", "Order", "Order");
+
                     }
                     else
                     {
@@ -106,6 +116,97 @@ namespace AritySystems.Controllers
             {
                 throw;
             }
+        }
+
+        public ActionResult Create(int? id)
+        {
+            currentContext.User userModel = new currentContext.User();
+
+            if (id > 0)
+            {
+                userModel = dataContext.Users.Where(x => x.Id == id).FirstOrDefault();
+            }
+            return View(userModel);
+        }
+
+        [HttpPost]
+        public ActionResult Create(currentContext.User user)
+        {
+            if (user != null && user.Id > 0)
+            {
+                var existingProduct = dataContext.Users.Where(_ => _.Id == user.Id).FirstOrDefault();
+                existingProduct.FirstName = user.FirstName;
+                existingProduct.LastName = user.LastName;
+                existingProduct.Prefix = user.Prefix;
+                existingProduct.EmailId = user.EmailId;
+                existingProduct.PhoneNumber = user.PhoneNumber;
+                existingProduct.Address = user.Address;
+                existingProduct.GSTIN = user.GSTIN;
+                existingProduct.IECCode = user.IECCode;
+                existingProduct.UserName = user.UserName;
+                existingProduct.Password = user.Password;
+                existingProduct.CompanyName = user.CompanyName;
+                existingProduct.Logo = user.Logo;
+                existingProduct.ModifiedDate = DateTime.Now;
+            }
+
+            else
+            {
+                user.CreatedDate = DateTime.Now;
+                user.ModifiedDate = DateTime.Now;
+                dataContext.Users.Add(user);
+            }
+            dataContext.SaveChanges();
+            return RedirectToAction("list", "user");
+        }
+
+        public ActionResult List()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult UserList()
+        {
+            try
+            {
+                var userList = (from user in dataContext.Users.ToList()
+                                select new
+                                {
+                                    Id = user.Id,
+                                    Name = user.FirstName + " " + user.LastName,
+                                    Prefix = user.Prefix,
+                                    EmailId = user.EmailId,
+                                    PhoneNumber = user.PhoneNumber,
+                                    Address = user.Address,
+                                    GSTIN = user.GSTIN,
+                                    IECCode = user.IECCode,
+                                    UserName = user.UserName,
+                                    Password = user.Password,
+                                    CompanyName = user.CompanyName
+                                }).ToList();
+
+                return Json(new { data = userList }, JsonRequestBehavior.AllowGet);
+            }
+
+            catch (Exception ex)
+            {
+                var data = ex;
+            }
+            return null;
+        }
+
+        public ActionResult Delete(int? id)
+        {
+            id = id ?? 0;
+            var user = dataContext.Users.Where(x => x.Id == id).FirstOrDefault();
+            if (user != null)
+            {
+                // user.IsActive = false;
+                dataContext.SaveChanges();
+            }
+
+            return RedirectToAction("List");
         }
     }
 }

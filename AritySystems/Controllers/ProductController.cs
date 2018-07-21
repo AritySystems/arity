@@ -49,10 +49,14 @@ namespace AritySystems.Controllers
                 existingProduct.Dollar_Price = product.Dollar_Price;
                 existingProduct.RMB_Price = product.RMB_Price;
                 existingProduct.Parent_Id = product.Parent_Id == null ? existingProduct.Parent_Id : product.Parent_Id;
+                existingProduct.Description = product.Description;
+                existingProduct.ModifiedDate = DateTime.Now;
             }
             else
             {
                 if (product.Parent_Id == null) product.Parent_Id = 0;
+                product.CreatedDate = DateTime.Now;
+                product.ModifiedDate = DateTime.Now;
                 dataContext.Products.Add(product);
             }
             dataContext.SaveChanges();
@@ -69,7 +73,7 @@ namespace AritySystems.Controllers
         {
             ArityEntities dataContext = new ArityEntities();
 
-            var productList = (from product in dataContext.Products.ToList().Where(_ => _.Parent_Id == 0)
+            var productList = (from product in dataContext.Products.ToList().Where(_ => _.Parent_Id == 0 && _.IsActive != null && Convert.ToBoolean(_.IsActive))
                                select new
                                {
                                    Id = product.Id,
@@ -81,7 +85,7 @@ namespace AritySystems.Controllers
                                    Unit = product.Unit,
                                    Description = product.Description,
                                    ModifiedDate = product.ModifiedDate.GetValueOrDefault().ToString("MM/dd/yyyy h:m tt"),
-                                   ChildProducts = (from subProcduct in dataContext.Products.ToList().Where(_ => _.Parent_Id == product.Id)
+                                   ChildProducts = (from subProcduct in dataContext.Products.ToList().Where(_ => _.Parent_Id == product.Id && _.IsActive != null && Convert.ToBoolean(_.IsActive))
                                                     select new
                                                     {
                                                         Id = subProcduct.Id,
@@ -107,9 +111,11 @@ namespace AritySystems.Controllers
             var product = dataContext.Products.Where(x => x.Id == id).FirstOrDefault();
             if(product != null)
             {
+                product.IsActive = false;
+                dataContext.SaveChanges();
             }
 
-            return View();
+            return RedirectToAction("List");
         }
     }
 }

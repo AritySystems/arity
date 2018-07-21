@@ -48,7 +48,7 @@
                     '<td>' + data.Quantity + '</td>' +
                     '<td>' + data.Dollar_Price + '</td>' +
                     '<td>' + data.RMB_Price + '</td>' +
-                    '<td><a href="/product/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a href="javascript:"><i style="color:red;" class="fa fa-times"></i></a></td>' +
+                    '<td><a href="/product/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a href="/product/Delete/' + data.Id + ' id = deleteProduct"><i style="color:red;" class="fa fa-times"></i></a></td>' +
                     '</tr>';
             });
             html += '</table>';
@@ -84,7 +84,7 @@
                         "orderable": false,
                         "data": null,
                         'render': function (data, type, full, meta) {
-                            return '<a href="/product/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a href="javascript:"><i style="color:red;" class="fa fa-times"></i></a>';
+                            return '<a href="/product/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a href="/product/Delete/' + data.Id + '"><i style="color:red;" class="fa fa-times"></i></a>';
                         }
                     }],
                 "order": [[1, 'asc']]
@@ -113,6 +113,7 @@
                 }
             });
         });
+
     </script>
 }
 

@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Users Listing";
+}
+<style>
+    .child-heading {
+        padding: 2% 0 2% 6%;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-style: italic;
+    }
+</style>
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fa fa-product-hunt"></i> Users Listing</h1>
+    </div>
+    <div class="row">
+        <div class="text-right" style="margin-bottom:10px;">
+            <a href="/user/create"><button class="btn btn-primary"><i class="fa fa-plus"></i> Add User</button></a>
+        </div>
+        <table id="example" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="width:15%">Name</th>
+                    <th style="width:10%">Prefix</th>
+                    <th style="width:10%">EmailId</th>
+                    <th style="width:10%">Phone Number</th>
+                    <th style="width:10%">Address</th>
+                    <th style="width:10%">GSTIN</th>
+                    <th style="width:10%">IECCode</th>
+                    <th style="width:10%">UserName</th>
+                    <th style="width:10%">Password</th>
+                    <th style="width:13%">CompanyName</th>
+                    <th style="width:10%"></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function format(d) {
+            if (d.ChildProducts.length <= 0)
+                return '<div class="child-heading">No Sub products found</div>';
+            var html = '<div class="child-heading">Sub Prodcuts of ' + d.English_Name + '</div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;border: 1px solid #eee;margin-bottom: 2%;"><tr><th>Chinese Name</th><th>English Name</th><th>Total Quantity</th><th>Dollar Price</th><th>RMB Price</th><th></th></tr>';
+            $.each(d.ChildProducts, function (index, data) {
+                html += '<tr><td>' + data.Chinese_Name + '</td>' +
+                    '<td>' + data.English_Name + '</td>' +
+                    '<td>' + data.Quantity + '</td>' +
+                    '<td>' + data.Dollar_Price + '</td>' +
+                    '<td>' + data.RMB_Price + '</td>' +
+                    '<td><a href="/product/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a href="/product/Delete/' + data.Id + ' id = deleteProduct"><i style="color:red;" class="fa fa-times"></i></a></td>' +
+                    '</tr>';
+            });
+            html += '</table>';
+            return html;
+        }
+
+        $(document).ready(function () {
+            var table = $('#example').DataTable({
+                "ajax": "/user/UserList",
+                "columns": [
+                    
+
+                    { "data": "Name" },
+                    { "data": "Prefix" },
+                    { "data": "EmailId" },
+                    { "data": "PhoneNumber" },
+                    { "data": "Address" },
+                    { "data": "GSTIN" },
+                    { "data": "IECCode" },
+                    { "data": "UserName" },
+                    { "data": "Password" },
+                    { "data": "CompanyName" },
+                    {
+                        "className": '',
+                        "orderable": false,
+                        "data": null,
+                        'render': function (data, type, full, meta) {
+                            return '<a href="/user/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a href="/user/Delete/' + data.Id + '"><i style="color:red;" class="fa fa-times"></i></a>';
+                        }
+                    }
+                    ],
+                "order": [[1, 'asc']]
+            });
+
+        });
+
+    </script>
+}
+
