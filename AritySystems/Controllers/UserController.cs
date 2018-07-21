@@ -6,6 +6,8 @@ using System.Security.Principal;
 using currentContext = AritySystems.Data;
 using AritySystems.Data;
 using System;
+using System.Web;
+using System.IO;
 
 namespace AritySystems.Controllers
 {
@@ -74,7 +76,7 @@ namespace AritySystems.Controllers
             }
         }
 
-        
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -93,8 +95,10 @@ namespace AritySystems.Controllers
                     {
                         FormsAuthentication.SetAuthCookie(entity.Email, true);
                         //Set A Unique name in session  
-                        Session["Username"] = entity.Email;
-                        return RedirectToAction("OrderList", "Order","Order");  
+                        Session["Username"] = userInfo.EmailId;
+                        Session["UserType"] = userInfo.UserTypes.Select(_ => _.Type).FirstOrDefault();
+                       
+                            return RedirectToAction("OrderList", "Order", "Order");
                     }
                     else
                     {
@@ -122,7 +126,7 @@ namespace AritySystems.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(currentContext.User user)
+        public ActionResult Create(currentContext.User user, HttpPostedFileBase logo)
         {
             if (user != null && user.Id > 0)
             {
@@ -140,13 +144,35 @@ namespace AritySystems.Controllers
                 existingProduct.CompanyName = user.CompanyName;
                 existingProduct.Logo = user.Logo;
                 existingProduct.ModifiedDate = DateTime.Now;
+                if (logo != null && logo.ContentLength > 0)
+                {
+                    if (!Directory.Exists(Server.MapPath("~/Content/img/user")))
+                        Directory.CreateDirectory(Server.MapPath("~/Content/img/user"));
+                    if (existingProduct.Logo != null && !string.IsNullOrEmpty(existingProduct.Logo) && System.IO.File.Exists(Server.MapPath("~"+ existingProduct.Logo)))
+                        System.IO.File.Delete(Server.MapPath("~"+ existingProduct.Logo));
+                    string filePath = Path.Combine(Server.MapPath("~/Content/img/user"), user.Id.ToString() + Path.GetExtension(logo.FileName));
+                    logo.SaveAs(filePath);
+                    existingProduct.Logo= "/Content/img/user/"+ user.Id.ToString() + Path.GetExtension(logo.FileName);
+                }
+               
             }
-
             else
             {
                 user.CreatedDate = DateTime.Now;
                 user.ModifiedDate = DateTime.Now;
                 dataContext.Users.Add(user);
+                dataContext.SaveChanges();
+                var userData = dataContext.Users.Where(_ => _.Id == user.Id).FirstOrDefault();
+                if (logo != null && logo.ContentLength > 0)
+                {
+                    if (!Directory.Exists(Server.MapPath("~/Content/img/user")))
+                        Directory.CreateDirectory(Server.MapPath("~/Content/img/user"));
+                    if (userData.Logo != null && !string.IsNullOrEmpty(userData.Logo) && System.IO.File.Exists(Server.MapPath("~" + userData.Logo)))
+                        System.IO.File.Delete(Server.MapPath("~" + userData.Logo));
+                    string filePath = Path.Combine(Server.MapPath("~/Content/img/user"), user.Id.ToString() + Path.GetExtension(logo.FileName));
+                    logo.SaveAs(filePath);
+                    userData.Logo = "/Content/img/user/" + user.Id.ToString() + Path.GetExtension(logo.FileName);
+                }
             }
             dataContext.SaveChanges();
             return RedirectToAction("list", "user");

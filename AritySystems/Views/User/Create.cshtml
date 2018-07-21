@@ -1,18 +1,26 @@
 ﻿@model AritySystems.Data.User
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = (Model != null && Model.Id > 0 ? "Update" : "Add") +" User";
+    var userTypes = Model != null ? new SelectList(Enum.GetValues(typeof(AritySystems.Common.EnumHelpers.UserType)).Cast<AritySystems.Common.EnumHelpers.UserType>().Select(v => new SelectListItem
+    {
+        Text = v.ToString(),
+        Value = ((int)v).ToString()
+    }).ToList(), "Value", "Text") : new SelectList(Enum.GetValues(typeof(AritySystems.Common.EnumHelpers.UserType)).Cast<AritySystems.Common.EnumHelpers.UserType>().Select(v => new SelectListItem
+    {
+        Text = v.ToString(),
+        Value = ((int)v).ToString()
+    }).ToList(), "Value", "Text");
 }
+<div class="page-header">
+    <h1>@(Model != null && Model.Id > 0 ? "Update" : "Add") User</h1>
+</div>
 
-<h2>Create</h2>
-
-@using (Html.BeginForm()) 
+@using (Html.BeginForm("create","user",FormMethod.Post, new { enctype = "multipart/form-data" })) 
 {
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>User</h4>
-        <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
             @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -89,7 +97,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.PasswordFor(model => model.Password, new {  @class = "form-control" } )
                 @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -103,37 +111,27 @@
         </div>
 
         <div class="form-group">
+            @Html.LabelFor(model => model.CompanyName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.CompanyName, userTypes as SelectList,new { @class = "form-control"  })
+                @Html.ValidationMessageFor(model => model.CompanyName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
             @Html.LabelFor(model => model.Logo, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Logo, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Logo, "", new { @class = "text-danger" })
+                <img src="@Model.Logo" class="imagen" style="width:200px;height:150px;margin-bottom:5px;" />
+                <input type="file" name="logo" />
             </div>
         </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.CreatedDate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.CreatedDate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.CreatedDate, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ModifiedDate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ModifiedDate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
+        
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="@(Model != null && Model.Id>0?"Update":"Add")" class="btn btn-success" />
+                <input type="button" value="Cancel" class="btn btn-primary" onclick="location.href='@Url.Action("list","product")'" />
             </div>
         </div>
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "List")
-</div>
