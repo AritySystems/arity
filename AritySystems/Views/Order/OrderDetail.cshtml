@@ -16,7 +16,7 @@
                 @Model.Prefix
             </div>
             <div class="col-md-12">
-               Status <span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)int.Parse(Model.Status)).ToString())</span> 
+               Status <span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)Model.Status).ToString())</span> 
             </div>
             <div class="col-md-12">
                 Order Total <i class="fa fa-usd"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarPurchasePrice)) </ div >
