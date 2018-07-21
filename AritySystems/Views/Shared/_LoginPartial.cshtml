@@ -7,10 +7,11 @@
         @Html.AntiForgeryToken()
 
         <ul class="nav navbar-nav navbar-right">
+            <li><a href="javascript:"><i class="fa fa-bell"></i> Notification</a></li>
             <li>
                 <a>Hello @User.Identity.GetUserName().ToString() </a>
             </li>
-            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()">Logout</a></li>
         </ul>
     }
 }

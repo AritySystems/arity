@@ -16,12 +16,12 @@ namespace AritySystems.Data
     {
         public Nullable<int> UserId { get; set; }
         public Nullable<int> OrderId { get; set; }
-        public Nullable<decimal> PaymentDate { get; set; }
-        public string Status { get; set; }
-        public Nullable<decimal> DollarAmount { get; set; }
-        public Nullable<decimal> RMBAmount { get; set; }
+        public System.DateTime PaymentDate { get; set; }
+        public int Status { get; set; }
+        public decimal DollarAmount { get; set; }
+        public decimal RMBAmount { get; set; }
         public int Id { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
+        public System.DateTime CreatedDate { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
     
         public virtual Order Order { get; set; }

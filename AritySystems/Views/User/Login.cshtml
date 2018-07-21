@@ -1,49 +1,120 @@
 ﻿@model AritySystems.Models.LoginModel
 @{
+    Layout = null;  
     ViewBag.Title = "Log in";
 }
-
-<h2>@ViewBag.Title.</h2>
-<div class="row">
-    <div class="col-md-8">
-        <section id="loginForm">
-            @using (Html.BeginForm("Login", "User", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
-                @Html.AntiForgeryToken()
-                
-                <h4>Use a local account to log in.</h4>
-                <hr />
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-               
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Log in" class="btn btn-default" />
-                    </div>
-                </div>
-                <p>
-                    @Html.ActionLink("Register as a new user", "Register")
-                </p>
-               
-            }
-        </section>
-    </div>
-    
-</div>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<title>Lucious Inc Login</title>
+<style>
+    .wrap-login100 {
+width: 390px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;margin-top:10%;
+    padding: 40px 55px 33px 55px;
+    box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+    -o-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+    -ms-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);    
+    }
+    .wrap-input100 {
+    width: 100%;
+    position: relative;
+   
+    margin-bottom: 37px;
 }
+    .input100 {
+    font-size: 15px;
+    color: #555555;
+    line-height: 1.2;
+    display: block;
+    width: 100%;
+    height: 45px;
+    background: transparent;
+    padding: 0 5px;
+        border: none;
+         border-bottom: 2px solid #adadad;
+}
+    .focus-input100 {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+    .container-login100-form-btn {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 13px;
+}
+    .wrap-login100-form-btn {
+    width: 100%;
+    height:8%;
+    display: block;
+    position: relative;
+    z-index: 1;
+    border-radius: 25px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+    .login100-form-bgbtn {
+        z-index: -1;
+    width: 100%;
+    height: 100%;
+   border: none;
+    background: #21d4fd;
+    /* top: 0; */
+    /* left: -100%; */
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
+    color:#fff;
+}
+    
+</style>
+<body style="background-color:#f2f2f2;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 col-md-offset-4 wrap-login100">
+                <section id="loginForm">
+                    @using (Html.BeginForm("Login", "User", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                        @Html.AntiForgeryToken()
+                        <div class="col-md-8 col-md-offset-2" style="margin-bottom:20px;">
+                            <h3> Lucious Inc</h3>
+                        </div>
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="wrap-input100">
+                                @Html.TextBoxFor(m => m.Email, new { @class = "input100",@placeholder="Username" })
+                            <span class="focus-input100" data-placeholder="Email"></span>
+                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="wrap-input100">
+                                @Html.PasswordFor(m => m.Password, new { @class = "input100", @placeholder = "Password" })
+                                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="container-login100-form-btn">
+                            <div class="wrap-login100-form-btn">
+                                <input type="submit" value="Login" class="login100-form-bgbtn" />
+                            </div>
+                        </div>
+                    }
+                </section>
+            </div>
+
+        </div>
+    </div>
+</body>

@@ -22,15 +22,14 @@ namespace AritySystems.Data
         }
     
         public int Id { get; set; }
-        public int CustomerId { get; set; }
+        public Nullable<int> CustomerId { get; set; }
         public string Prefix { get; set; }
-        public string Status { get; set; }
+        public int Status { get; set; }
         public Nullable<int> ExporterId { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
+        public System.DateTime CreatedDate { get; set; }
+        public int Internal_status { get; set; }
     
-        public virtual User User { get; set; }
-        public virtual User User1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderLineItem> OrderLineItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

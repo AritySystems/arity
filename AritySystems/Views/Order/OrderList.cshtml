@@ -17,12 +17,15 @@
 </style>
 <div class="container">
     <div class="page-header">
-        <h1><i class="fa fa-shopping-cart"></i> Your Orders</h1>
+        <h1><i class="fa fa-shopping-cart"></i> @((Session["UserType"] != null && Session["UserType"].ToString() == ((int)AritySystems.Common.EnumHelpers.UserType.Admin).ToString()) ? "All Orders": "Your Orders")</h1>
     </div>
     <div class="row">
-        <div class="text-right" style="margin-bottom:10px;">
-            <a href="/order/makeorder"><button class="btn btn-primary"><i class="fa fa-plus"></i> Make Order</button></a>
-        </div>
+        @if (Session["UserType"] != null && Session["UserType"].ToString() == AritySystems.Common.EnumHelpers.UserType.Customer.ToString())
+        {
+            <div class="text-right" style="margin-bottom:10px;">
+                <a href="/order/makeorder"><button class="btn btn-primary"><i class="fa fa-plus"></i> Make Order</button></a>
+            </div>
+        }
         <table id="example" class="display" style="width:100%">
             <thead>
                 <tr>
@@ -39,109 +42,109 @@
     </div>
 </div>
 @section Scripts {
-<script>
-    function format(d) {
-        var html = '<div class="child-heading">All payments information of ' + d.CreatedDate + '</div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;    border: 1px solid #eee;margin-bottom: 2%;"><tr><th>Name</th><th>Amount</th><th>Payment date</th><th>Status</th></tr>';
-        if (d.id == 1) {
-            html += '<tr>' +
-        '<td>Merchant 2</td>' +
-        '<td>$5000.00</td>' +
-        '<td>05/13/2018</td>' +
-        '<td><label class="alert-warning">Pending</label></td>' +
-    '</tr>' +
-        '<tr>' +
-            '<td>Customer 1</td>' +
-            '<td>$1000.00</td>' +
-            '<td>05/12/2018</td>' +
+    <script>
+        function format(d) {
+            var html = '<div class="child-heading">All payments information of ' + d.CreatedDate + '</div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;    border: 1px solid #eee;margin-bottom: 2%;"><tr><th>Name</th><th>Amount</th><th>Payment date</th><th>Status</th></tr>';
+            if (d.id == 1) {
+                html += '<tr>' +
+            '<td>Merchant 2</td>' +
+            '<td>$5000.00</td>' +
+            '<td>05/13/2018</td>' +
             '<td><label class="alert-warning">Pending</label></td>' +
         '</tr>' +
-        '<tr>' +
-            '<td>Customer 1</td>' +
-            '<td>$15,000.00</td>' +
-            '<td>05/07/2018</td>' +
-            '<td><label class="alert-success">Complete</label></td>' +
-        '</tr>';
-        }
-        else {
-            html += '<tr>' +
-        '<td>Merchant 5</td>' +
-        '<td>$200.00</td>' +
-        '<td>05/05/2018</td>' +
-        '<td><label class="alert-warning">Pending</label></td>' +
-    '</tr>' +
-
-        '<tr>' +
-            '<td>Customer 2</td>' +
+            '<tr>' +
+                '<td>Customer 1</td>' +
+                '<td>$1000.00</td>' +
+                '<td>05/12/2018</td>' +
+                '<td><label class="alert-warning">Pending</label></td>' +
+            '</tr>' +
+            '<tr>' +
+                '<td>Customer 1</td>' +
+                '<td>$15,000.00</td>' +
+                '<td>05/07/2018</td>' +
+                '<td><label class="alert-success">Complete</label></td>' +
+            '</tr>';
+            }
+            else {
+                html += '<tr>' +
+            '<td>Merchant 5</td>' +
             '<td>$200.00</td>' +
-            '<td>05/04/2018</td>' +
-            '<td><label class="alert-success">Complete</label></td>' +
-        '</tr>';
-        }
-        html += '</table>';
-        return html;
-    }
+            '<td>05/05/2018</td>' +
+            '<td><label class="alert-warning">Pending</label></td>' +
+        '</tr>' +
 
-    $(document).ready(function () {
-        var table = $('#example').DataTable({
-            "ajax": "@Url.Action("GetOrderList","Order")",
-            "columns": [
-        {
-                    "className": '',
-        "orderable": false,
-        "data": null,
-        'render': function (data, type, full, meta) {
-            return '<a href="/Order/OrderDetail/' + data.Id + '"><button class="btn btn-primary"><i class="fa fa-edit"></i> Details</button></a>';
+            '<tr>' +
+                '<td>Customer 2</td>' +
+                '<td>$200.00</td>' +
+                '<td>05/04/2018</td>' +
+                '<td><label class="alert-success">Complete</label></td>' +
+            '</tr>';
+            }
+            html += '</table>';
+            return html;
         }
-    },
-                {
-                    "className": 'details-control',
-                    "orderable": false,
-                    "data": null,
-                    'render': function (data, type, full, meta) {
-                        return '<button class="btn btn-success"><i class="fa fa-plus-circle"></i> Payment</button>';
-                    }
-                },
-                { "data": "Prefix" },
-                { "data": "CreatedDate" },
-                { "data": "TotalItem" },
-                { "data": "Total" },
-                {
-                    "className": 'order-status',
-                    "orderable": false,
-                    "data": null,
-                    'render': function (data, type, full, meta) {
-                        if (data.Status == '1')
-                            return '<label class="alert-warning">Draft</label></td>';
-                        else if (data.Status == '2')
-                            return '<label class="alert-success">Complete</label></td>';
-                        else
-                            return '';
-                    }
-                },
-    ],
-            "order": [[1, 'asc']]
-    });
 
-    // Add event listener for opening and closing details
-    $('#example tbody').on('click', 'td.details-control', function () {
-        var tr = $(this).closest('tr');
-        var row = table.row(tr);
+        $(document).ready(function () {
+            var table = $('#example').DataTable({
+                "ajax": "@Url.Action("GetOrderList","Order")",
+                "columns": [
+            {
+                "className": '',
+                "orderable": false,
+                "data": null,
+                'render': function (data, type, full, meta) {
+                    return '<a href="/Order/OrderDetail/' + data.Id + '"><button class="btn btn-primary"><i class="fa fa-edit"></i> Details</button></a>';
+                }
+            },
+                    {
+                        "className": 'details-control',
+                        "orderable": false,
+                        "data": null,
+                        'render': function (data, type, full, meta) {
+                            return '<button class="btn btn-success"><i class="fa fa-plus-circle"></i> Payment</button>';
+                        }
+                    },
+                    { "data": "Prefix" },
+                    { "data": "CreatedDate" },
+                    { "data": "TotalItem" },
+                    { "data": "Total" },
+                    {
+                        "className": 'order-status',
+                        "orderable": false,
+                        "data": null,
+                        'render': function (data, type, full, meta) {
+                            if (data.Status == '1')
+                                return '<label class="alert-warning">Draft</label></td>';
+                            else if (data.Status == '2')
+                                return '<label class="alert-success">Complete</label></td>';
+                            else
+                                return '';
+                        }
+                    },
+                ],
+                "order": [[1, 'asc']]
+            });
 
-        if (row.child.isShown()) {
-            // This row is already open - close it
-            tr.removeClass('shown');
-            row.child.hide();
-            tr.find(".details-control").find(".btn").html("<i class='fa fa-plus-circle'></i> Payment");
-        }
-        else {
-            // Open this row
-            row.child(format(row.data())).show();
-            tr.find(".details-control").find(".btn").html("<i class='fa fa-minus-circle'></i> Payment");
-            tr.addClass('shown');
-        }
-    });
-    });
-</script>
+            // Add event listener for opening and closing details
+            $('#example tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    tr.removeClass('shown');
+                    row.child.hide();
+                    tr.find(".details-control").find(".btn").html("<i class='fa fa-plus-circle'></i> Payment");
+                }
+                else {
+                    // Open this row
+                    row.child(format(row.data())).show();
+                    tr.find(".details-control").find(".btn").html("<i class='fa fa-minus-circle'></i> Payment");
+                    tr.addClass('shown');
+                }
+            });
+        });
+    </script>
 }
 
 

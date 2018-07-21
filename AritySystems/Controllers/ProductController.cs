@@ -24,7 +24,7 @@ namespace AritySystems.Controllers
                 Product product = new Product();
                 ArityEntities dataContext = new ArityEntities();
                 product = dataContext.Products.Where(x => x.Id == Id).FirstOrDefault();
-                ViewBag.productList = product == null ? new SelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name") : new SelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name", product.Parent_Id ?? 0);
+                ViewBag.productList = product == null ? new SelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name") : new SelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name", product.Parent_Id);
                 return View(product);
             }
 
