@@ -28,10 +28,10 @@
             <h3>Order Items :</h3>
         </div>
         <div class="row">
-            <table class="display" id="tblOrderItemList">
+            <table class="table" id="tblOrderItemList">
                 <thead>
                     <tr>
-                        @*<th>#</th>*@
+                        <th></th>
                         <th>Order Name</th>
                         <th>Product Name</th>
                         <th>Purchase Price($)</th>
@@ -39,42 +39,10 @@
                         <th>Purchase Price(Y)</th>
                         <th>Sales Price(Y)</th>
                         <th>Qunatity</th>
+                        <th>Created Date</th>
                         <th>Suppliers</th>
                     </tr>
                 </thead>
-                @*@if (Model.OrderLineItemsList != null)
-                    {
-                    foreach (var item in Model.OrderLineItemsList)
-                    {
-                        <tr>
-                            <td>@item.Id</td>
-                            <td>@item.Order.Prefix</td>
-                            <td>
-                                @item.Product.English_Name
-                                (@item.Product.Chinese_Name)
-                            </td>
-                            <td>@item.DollarPurchasePrice</td>
-                            <td>@item.RMDPurchasePrice</td>
-                            <td>@item.DollarSalesPrice</td>
-                            <td>@item.RMBSalesPrice</td>
-                            <td>@item.Quantity</td>
-
-                            <td>@Html.DropDownListFor(Model => Model.SupplierId, Model.SupplierList)</td>
-                        </tr>
-                    }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td> No Data Available</td>
-                        </tr>
-                    }
-                    <tr>
-                        <td colspan="4" style="text-align:right;font-style: italic;font-weight: 600;">
-                            Order Total:
-                        </td>
-                        <td colspan="2" style="text-align:left">$ @Model.OrderTotal</td>
-                    </tr>*@
             </table>
         </div>
         <div class="row text-center">
@@ -91,7 +59,7 @@
             <table class="display" id="tblSupplierOrderItemList">
                 <thead>
                     <tr>
-                        @*<th>#</th>*@
+                        <th></th>
                         <th>Supplier Name</th>
                         <th>Order Prefix </th>
                         <th>Quantity</th>
@@ -99,31 +67,6 @@
                         <th>Date</th>
                     </tr>
                 </thead>
-                @*@if (Model.SupplierOrderLineItemList != null)
-                    {
-                    foreach (var item in Model.SupplierOrderLineItemList)
-                    {
-                        <tr>
-                            <td>@item.Id</td>
-                            <td>@item.SupplierName</td>
-                            <td>
-                                @item.Order_Prefix
-                            </td>
-                            <td>@item.Quantity</td>
-                            <td>@item.Status</td>
-                            <td>@item.CreatedDate</td>
-                        </tr>
-                    }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td>
-                                No Data Available
-                            </td>
-                        </tr>
-                    }*@
-
             </table>
         </div>
     </div>
@@ -132,17 +75,35 @@
     
     <script>
         $("#btnSave").click(function () {
-            alert("Order information save successfully");
+            alert("Order Line Item information saved successfully");
         });
         $("#btnSubmit").click(function () {
-            var isSupplierSelecter = true;
-            $("select").each(function () {
-                if ($(this).val() == "") { alert("Please select all supplier to submit order"); isSupplierSelecter = false; return false; }
-            });
-            if (isSupplierSelecter) {
-                $(this).attr("disabled", "disabled");
-                alert("Your Order is submited");
+            var UpdatedQuantity = $('#txtQuantity').val();
+            var SupplierId = $('#jsonSupplierList').val();
+            $.ajax({
+                url: "@Url.Action("AddSupplierOrderLineItems", "Order")",
+                method: "POST",
+            data: { id: $("#ProductId").val(), qty: $("#ProductQty").val() },
+            dataType: "json"
+        }).done(function (response) {
+            if (response.data != null) {
+                $.each(response.data, function (e, data) {
+                    if($(".tr_"+data.Id).length <= 0)
+                    {
+                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_"+data.Id+"'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + (data.Parent_Id > 0 ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' type='number' value='" + data.Quantity + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal'>$" + (data.Dollar_Price * data.Quantity) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
+                        window.productCounter = window.productCounter + 1;}
+                });
+                var OrderTotal = 0;
+                $(".itemTotal").each(function () {
+                    OrderTotal = OrderTotal + parseInt($(this).text().replace('$', ''));
+                });
+                $(".order-total").html('$' + OrderTotal);
+                $("#lineItem").show();
             }
+        }).fail(function (jqXHR, textStatus) {
+            console.log("Request failed: " + textStatus);
+        });
+
         });
 
         $(document).ready(function () {
@@ -150,6 +111,13 @@
             var table = $('#tblOrderItemList').DataTable({
                 "ajax": "/Order/OrderLineItemList?OrderId=" + orderid,
                 "columns": [
+                    {
+                        "data": "Id",
+                        "orderable": false,
+                        "render": function (data, type, full) {
+                            return '<input type="hidden" id="txtId" value="' + data + '"/>'
+                        }
+                    },
                     { "data": "Order_Name" },
                     { "data": "Product_Name" },
                     { "data": "Purchase_Price_dollar" },
@@ -159,19 +127,11 @@
                     {
                         "data": "quantity",
                         "render": function (data, type, full) {
-                            return '<input type="text" value="' + data + '"/>'
+                            return '<input type="text" id="txtQuantity" value="' + data + '"/>'
                         }    
                     },
-
-                    //{ "data": "Description" },
                     {
                         "data": "CreatedDate",
-                        //"render": function (data) {
-                        //    debugger;
-                        //    var date = new Date(data);
-                        //    var month = date.getMonth() + 1;
-                        //    return (month.length > 1 ? month : "0" + month) + "/" + date.getDate() + "/" + date.getFullYear();
-                        //}
                     },
                     {
                         "data": "Suppliers",
@@ -190,18 +150,19 @@
             var table = $('#tblSupplierOrderItemList').DataTable({
                 "ajax": "/Order/SuppliersOrderLineItemList?OrderId=" + orderid,
                 "columns": [
-                    //{ "data": "Id" },
+                    {
+                        "data": "Id",
+                        "ordering": false,
+                        "render": function (data, type, full) {
+                            return '<input type="hidden" id="txtId" value="' + data + '"/>'
+                        }
+                    },
                     { "data": "SupplierName" },
                     { "data": "Order_Prefix" },
                     { "data": "Quantity" },
                     { "data": "Status" },
                     {
                         "data": "CreatedDate",
-                        //"render": function (data) {
-                        //    var date = new Date(data);
-                        //    var month = date.getMonth() + 1;
-                        //    return (month.length > 1 ? month : "0" + month) + "/" + date.getDate() + "/" + date.getFullYear();
-                        //}
                     },
                 ],
                 "SupplierOrderLineItems": [[1, 'asc']]

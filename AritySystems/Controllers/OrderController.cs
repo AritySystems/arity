@@ -106,7 +106,7 @@ namespace AritySystems.Controllers
                                  join o in db.Products on m.ProductId equals o.Id
                                  where m.OrderId == OrderId
                                  select new OrderLineItemViewModel {
-                                    // Id = m.Id,
+                                     Id = m.Id,
                                      //OrderId = m.OrderId ?? 0,
                                      Order_Name = n.Prefix,
                                      //ProductId = m.ProductId ?? 0,
@@ -121,31 +121,12 @@ namespace AritySystems.Controllers
                                      Suppliers = (from a in db.Users join b in db.UserTypes on a.Id equals b.UserId
                                                   where b.Id == 1
                                                   select new SelectListItem{
-                                                     Text = a.Id.ToString(), Value = a.UserName
+                                                     Text = a.Id.ToString(), Value = a.FirstName+" "+a.LastName
                                                   }).ToList()
                                  }).ToList();
-
-                    //model.SupplierOrderLineItemList = (from a in db.Supplier_Assigned_OrderLineItem
-                    //                                   join b in db.OrderLineItem_Supplier_Mapping on a.OrderSupplierMapId equals b.Id
-                    //                                   join c in db.OrderLineItems on b.OrderLineItemId equals c.Id
-                    //                                   join d in db.Orders on c.OrderId equals d.Id
-                    //                                   where d.Id == OrderId
-                    //                                   select new SupplierOrderLineItemModel
-                    //                                   {
-                    //                                       Id = a.Id,
-                    //                                       CreatedDate = a.CreatedDate,
-                    //                                       ModifiedDate = a.ModifiedDate,
-                    //                                       OrderSupplierMapId = a.OrderSupplierMapId,
-                    //                                       Order_Prefix = d.Prefix,
-                    //                                       Quantity = a.Quantity,
-                    //                                       Status = a.Status,
-                    //                                       SupplierId = a.SupplierId,
-                    //                                       SupplierName = b.User.UserName
-                    //                                   }).ToList();
-
+                    
                     return Json(new { data = model }, JsonRequestBehavior.AllowGet);
                 }
-                //return View(model);
             }
             catch (Exception ex)
             {
@@ -367,6 +348,57 @@ namespace AritySystems.Controllers
                                Dollar_Price = pro.Dollar_Price
                            }).FirstOrDefault();
             return Json(product, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult AddSupplierCartonDetail(int supplierId)
+        {
+            ArityEntities dbContext = new ArityEntities();
+            var ordersLineItems = (from a in dbContext.OrderLineItems
+                                   join b in dbContext.Products on a.ProductId equals b.Id
+                                   join c in dbContext.OrderLineItem_Supplier_Mapping on a.Id equals c.OrderLineItemId
+                                   join d in dbContext.Supplier_Assigned_OrderLineItem on c.Id equals d.OrderSupplierMapId
+                                   where d.SupplierId == supplierId
+                                   select new { a.Id,b.English_Name}).ToList();
+            ViewBag.OrderLineItems = new SelectList(ordersLineItems, "Id", "English_Name");
+            return View();
+        }
+
+
+        [HttpPost]
+        public ActionResult AddSupplierCartonDetail(FormCollection fc)
+        {
+            ArityEntities objDb = new ArityEntities();
+            List<KeyValuePair<int, int>> lineItem = new List<KeyValuePair<int, int>>();
+            
+            if (fc != null)
+            {
+                try
+                {
+                    if (Convert.ToInt32(fc["SupplierOrderMapId"]) != 0)
+                    {
+
+                    }
+                     
+                    //if (lineItem.Any())
+                    //{
+                    //    var order = objDb.Orders.Add(new Order() { CustomerId = 1, CreatedDate = DateTime.Now, Prefix = "user1", Status = "1" });
+                    //    objDb.SaveChanges();
+                    //    foreach (var item in lineItem.Where(_ => _.Value > 0))
+                    //    {
+                    //        var prodcut = objDb.Products.Where(_ => _.Id == item.Key).FirstOrDefault();
+                    //        objDb.OrderLineItems.Add(new OrderLineItem() { OrderId = order.Id, ProductId = prodcut.Id, DollarPurchasePrice = prodcut.Dollar_Price, RMDPurchasePrice = prodcut.RMB_Price, Quantity = item.Value });
+                    //    }
+                    //    objDb.SaveChanges();
+                    //}
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = "Error occured while place your order. Please try again.";
+                    return View();
+                }
+            }
+            TempData["Success"] = "Supplier Carton Details added successfully. Thank you";
+            return View();
         }
     }
 }

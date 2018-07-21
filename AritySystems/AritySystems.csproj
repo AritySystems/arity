@@ -303,6 +303,7 @@
     <Content Include="Views\Product\List.cshtml" />
     <Content Include="Views\User\Create.cshtml" />
     <Content Include="Views\User\List.cshtml" />
+    <Content Include="Views\Order\AddSupplierCartonDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
