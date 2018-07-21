@@ -45,7 +45,7 @@ namespace AritySystems.Controllers
                             {
                                 Id = order.Id,
                                 Prefix = order.Prefix,
-                                CreatedDate = order.CreatedDate.GetValueOrDefault().ToString("MM/dd/yyyy h:m tt"),
+                                CreatedDate = order.CreatedDate.ToString("MM/dd/yyyy h:m tt"),
                                 Status = order.Status,
                                 TotalItem = order.OrderLineItems.Sum(_ => _.Quantity),
                                 Total = order.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity))
@@ -80,7 +80,7 @@ namespace AritySystems.Controllers
             using (var db = new ArityEntities())
             {
                 ViewBag.OrderName = db.Orders.Where(x => x.Id == OrderId).Select(x => x.Prefix).FirstOrDefault();
-                ViewBag.OrderDate = db.Orders.Where(x => x.Id == OrderId).Select(x => x.CreatedDate).FirstOrDefault() ?? DateTime.MinValue;
+                ViewBag.OrderDate = db.Orders.Where(x => x.Id == OrderId).Select(x => x.CreatedDate).FirstOrDefault();
                 ViewBag.Status = db.Orders.Where(x => x.Id == OrderId).Select(x => x.Status).FirstOrDefault();
             }
             ViewBag.OrderId = OrderId;
@@ -111,11 +111,11 @@ namespace AritySystems.Controllers
                                      Order_Name = n.Prefix,
                                      //ProductId = m.ProductId ?? 0,
                                      Product_Name = o.English_Name + "(" + o.Chinese_Name + ")",
-                                     Purchase_Price_dollar = m.DollarPurchasePrice ?? 0,
-                                     Sales_Price_dollar = m.DollarSalesPrice ?? 0,
-                                     Purchase_Price_rmb = m.RMDPurchasePrice ?? 0,
-                                     Sales_Price_rmb = m.RMBSalesPrice ?? 0,
-                                     quantity = m.Quantity ?? 0,
+                                     Purchase_Price_dollar = m.DollarPurchasePrice,
+                                     Sales_Price_dollar = m.DollarSalesPrice,
+                                     Purchase_Price_rmb = m.RMDPurchasePrice,
+                                     Sales_Price_rmb = m.RMBSalesPrice,
+                                     quantity = m.Quantity,
                                      CreatedDate = m.CreatedDate.ToString(),
                                      //ModifiedDate = m.ModifiedDate ?? DateTime.MinValue,
                                      Suppliers = (from a in db.Users join b in db.UserTypes on a.Id equals b.UserId
@@ -203,7 +203,7 @@ namespace AritySystems.Controllers
                     {
                         data.OrderSupplierMapId = model.OrderSupplierMapId;
                         data.Quantity = model.Quantity;
-                        data.Status = "Draft";
+                        data.Status = 1;
                         data.SupplierId = model.SupplierId;
                         data.CreatedDate = DateTime.UtcNow;
                         data.ModifiedDate = DateTime.UtcNow;
@@ -332,7 +332,7 @@ namespace AritySystems.Controllers
                     }
                     if (lineItem.Any())
                     {
-                        var order = objDb.Orders.Add(new Order() { CustomerId = 1, CreatedDate = DateTime.Now, Prefix = "user1", Status = "1" });
+                        var order = objDb.Orders.Add(new Order() { CustomerId = 1, CreatedDate = DateTime.Now, Prefix = "user1", Status = 1});
                         objDb.SaveChanges();
                         foreach (var item in lineItem.Where(_ => _.Value > 0))
                         {

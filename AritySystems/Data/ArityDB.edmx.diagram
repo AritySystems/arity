@@ -4,27 +4,25 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="57f6f49aa7564f788c2004f5662dade0" Name="Diagram1">
-        <EntityTypeShape EntityType="ArityEntityModel.Order" Width="1.5" PointX="3" PointY="4.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="ArityEntityModel.OrderLineItem" Width="1.5" PointX="5.25" PointY="4.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="ArityEntityModel.OrderLineItem_Supplier_Mapping" Width="1.5" PointX="3" PointY="8.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="ArityEntityModel.Payment" Width="1.5" PointX="5.25" PointY="8.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="ArityEntityModel.Product" Width="1.5" PointX="3" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="ArityEntityModel.Supplier_Assigned_OrderLineItem" Width="1.5" PointX="8.25" PointY="8.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="ArityEntityModel.SupplierCartoon" Width="1.5" PointX="7.75" PointY="2" IsExpanded="true" />
-        <EntityTypeShape EntityType="ArityEntityModel.User" Width="1.5" PointX="0.75" PointY="7" IsExpanded="true" />
-        <EntityTypeShape EntityType="ArityEntityModel.UserType" Width="1.5" PointX="3" PointY="12.375" IsExpanded="true" />
-        <AssociationConnector Association="ArityEntityModel.FK_Order_User" ManuallyRouted="false" />
-        <AssociationConnector Association="ArityEntityModel.FK_Order_User1" ManuallyRouted="false" />
-        <AssociationConnector Association="ArityEntityModel.FK_OrderLineItem_Order" ManuallyRouted="false" />
-        <AssociationConnector Association="ArityEntityModel.FK_Payment_Order" ManuallyRouted="false" />
-        <AssociationConnector Association="ArityEntityModel.FK_OrderLineItem_Product" ManuallyRouted="false" />
-        <AssociationConnector Association="ArityEntityModel.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" ManuallyRouted="false" />
-        <AssociationConnector Association="ArityEntityModel.FK_OrderLineItem_Supplier_Mapping_User" ManuallyRouted="false" />
-        <AssociationConnector Association="ArityEntityModel.FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping" ManuallyRouted="false" />
-        <AssociationConnector Association="ArityEntityModel.FK_Payment_User" ManuallyRouted="false" />
-        <AssociationConnector Association="ArityEntityModel.FK_Supplier_Assigned_OrderLineItem_User" ManuallyRouted="false" />
-        <AssociationConnector Association="ArityEntityModel.FK_UserType_User" ManuallyRouted="false" />
+      <Diagram DiagramId="9610efe5fd2743498d7be19c5f7ac9fe" Name="Diagram1">
+        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.Order" Width="1.5" PointX="3.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.OrderLineItem" Width="1.5" PointX="6" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.OrderLineItem_Supplier_Mapping" Width="1.5" PointX="3" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.Payment" Width="1.5" PointX="6" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.Product" Width="1.5" PointX="3.75" PointY="20.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.Supplier_Assigned_OrderLineItem" Width="1.5" PointX="5.25" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.SupplierCartoon" Width="1.5" PointX="7.75" PointY="10" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.User" Width="1.5" PointX="0.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.UserType" Width="1.5" PointX="3" PointY="16.125" IsExpanded="true" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order" ManuallyRouted="false" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Payment_Order" ManuallyRouted="false" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Product" ManuallyRouted="false" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" ManuallyRouted="false" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Supplier_Mapping_User" ManuallyRouted="false" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping" ManuallyRouted="false" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Payment_User" ManuallyRouted="false" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_OrderLineItem_User" ManuallyRouted="false" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_UserType_User" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

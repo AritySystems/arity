@@ -15,18 +15,18 @@ namespace AritySystems.Data
     public partial class SupplierCartoon
     {
         public int Id { get; set; }
-        public Nullable<int> SupplierAssignedMapId { get; set; }
-        public Nullable<decimal> PcsPerCartoon { get; set; }
-        public Nullable<int> TotalCartoons { get; set; }
-        public Nullable<decimal> NetWeight { get; set; }
-        public Nullable<decimal> TotalNetWeight { get; set; }
-        public Nullable<decimal> GrossWeight { get; set; }
-        public Nullable<decimal> TotalGrossWeight { get; set; }
-        public Nullable<decimal> CartoonSize { get; set; }
-        public Nullable<decimal> CartoonBM { get; set; }
+        public int SupplierAssignedMapId { get; set; }
+        public decimal PcsPerCartoon { get; set; }
+        public int TotalCartoons { get; set; }
+        public decimal NetWeight { get; set; }
+        public decimal TotalNetWeight { get; set; }
+        public decimal GrossWeight { get; set; }
+        public decimal TotalGrossWeight { get; set; }
+        public decimal CartoonSize { get; set; }
+        public decimal CartoonBM { get; set; }
         public string CartoonNumber { get; set; }
-        public string Status { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
+        public int Status { get; set; }
+        public System.DateTime CreatedDate { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
     }
 }

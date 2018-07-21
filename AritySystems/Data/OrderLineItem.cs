@@ -17,12 +17,12 @@ namespace AritySystems.Data
         public int Id { get; set; }
         public Nullable<int> OrderId { get; set; }
         public Nullable<int> ProductId { get; set; }
-        public Nullable<decimal> DollarPurchasePrice { get; set; }
-        public Nullable<decimal> RMDPurchasePrice { get; set; }
-        public Nullable<decimal> DollarSalesPrice { get; set; }
-        public Nullable<decimal> RMBSalesPrice { get; set; }
-        public Nullable<decimal> Quantity { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
+        public decimal DollarPurchasePrice { get; set; }
+        public decimal RMDPurchasePrice { get; set; }
+        public decimal DollarSalesPrice { get; set; }
+        public decimal RMBSalesPrice { get; set; }
+        public decimal Quantity { get; set; }
+        public System.DateTime CreatedDate { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
     
         public virtual Order Order { get; set; }

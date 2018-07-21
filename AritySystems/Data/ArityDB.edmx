@@ -4,18 +4,19 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="ArityEntityModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="DB_A3E8AF_luceousModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Order">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="CustomerId" Type="int" />
           <Property Name="Prefix" Type="nvarchar" MaxLength="50" />
-          <Property Name="Status" Type="nvarchar" MaxLength="50" />
+          <Property Name="Status" Type="int" Nullable="false" />
           <Property Name="ExporterId" Type="int" />
           <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="Internal_status" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="OrderLineItem">
           <Key>
@@ -24,23 +25,23 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="OrderId" Type="int" />
           <Property Name="ProductId" Type="int" />
-          <Property Name="DollarPurchasePrice" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="RMDPurchasePrice" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="DollarSalesPrice" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="RMBSalesPrice" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="DollarPurchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="RMDPurchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="DollarSalesPrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="RMBSalesPrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="OrderLineItem_Supplier_Mapping">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="OrderLineItemId" Type="int" Nullable="false" />
+          <Property Name="OrderLineItemId" Type="int" />
           <Property Name="SupplierId" Type="int" />
-          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Payment">
@@ -49,12 +50,12 @@
           </Key>
           <Property Name="UserId" Type="int" />
           <Property Name="OrderId" Type="int" />
-          <Property Name="PaymentDate" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="Status" Type="nvarchar" MaxLength="50" />
-          <Property Name="DollarAmount" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="RMBAmount" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="PaymentDate" Type="datetime" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="DollarAmount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="RMBAmount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Product">
@@ -62,17 +63,17 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Chinese_Name" Type="nvarchar" MaxLength="150" />
-          <Property Name="English_Name" Type="nvarchar" MaxLength="150" />
-          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="Dollar_Price" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="RMB_Price" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="Unit" Type="nvarchar" MaxLength="100" />
-          <Property Name="Parent_Id" Type="int" />
+          <Property Name="Chinese_Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="English_Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Dollar_Price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="RMB_Price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Parent_Id" Type="int" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="500" />
-          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="IsActive" Type="bit" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Supplier_Assigned_OrderLineItem">
           <Key>
@@ -81,28 +82,28 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="SupplierId" Type="int" />
           <Property Name="OrderSupplierMapId" Type="int" />
-          <Property Name="Status" Type="nvarchar" MaxLength="50" />
-          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="SupplierCartoon">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SupplierAssignedMapId" Type="int" />
-          <Property Name="PcsPerCartoon" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="TotalCartoons" Type="int" />
-          <Property Name="NetWeight" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="TotalNetWeight" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="GrossWeight" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="TotalGrossWeight" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="CartoonSize" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="CartoonBM" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="CartoonNumber" Type="nvarchar" MaxLength="50" />
-          <Property Name="Status" Type="nvarchar" MaxLength="50" />
-          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="SupplierAssignedMapId" Type="int" Nullable="false" />
+          <Property Name="PcsPerCartoon" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="TotalCartoons" Type="int" Nullable="false" />
+          <Property Name="NetWeight" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="TotalNetWeight" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="GrossWeight" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="TotalGrossWeight" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="CartoonSize" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="CartoonBM" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="CartoonNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="User">
@@ -124,6 +125,8 @@
           <Property Name="Logo" Type="nvarchar" MaxLength="500" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="UserType" Type="int" />
         </EntityType>
         <EntityType Name="UserType">
           <Key>
@@ -133,30 +136,6 @@
           <Property Name="UserId" Type="int" />
           <Property Name="Type" Type="nvarchar" MaxLength="50" />
         </EntityType>
-        <Association Name="FK_Order_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Order" Type="Self.Order" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Order">
-              <PropertyRef Name="CustomerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Order_User1">
-          <End Role="User" Type="Self.User" Multiplicity="0..1" />
-          <End Role="Order" Type="Self.Order" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Order">
-              <PropertyRef Name="ExporterId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_OrderLineItem_Order">
           <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
           <End Role="OrderLineItem" Type="Self.OrderLineItem" Multiplicity="*" />
@@ -182,7 +161,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem">
-          <End Role="OrderLineItem_Supplier_Mapping" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="1" />
+          <End Role="OrderLineItem_Supplier_Mapping" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="0..1" />
           <End Role="OrderLineItem_Supplier_Mapping1" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="OrderLineItem_Supplier_Mapping">
@@ -265,7 +244,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="ArityEntityModelStoreContainer">
+        <EntityContainer Name="DB_A3E8AF_luceousModelStoreContainer">
           <EntitySet Name="Order" EntityType="Self.Order" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderLineItem" EntityType="Self.OrderLineItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderLineItem_Supplier_Mapping" EntityType="Self.OrderLineItem_Supplier_Mapping" Schema="dbo" store:Type="Tables" />
@@ -275,14 +254,6 @@
           <EntitySet Name="SupplierCartoon" EntityType="Self.SupplierCartoon" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserType" EntityType="Self.UserType" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK_Order_User" Association="Self.FK_Order_User">
-            <End Role="User" EntitySet="User" />
-            <End Role="Order" EntitySet="Order" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Order_User1" Association="Self.FK_Order_User1">
-            <End Role="User" EntitySet="User" />
-            <End Role="Order" EntitySet="Order" />
-          </AssociationSet>
           <AssociationSet Name="FK_OrderLineItem_Order" Association="Self.FK_OrderLineItem_Order">
             <End Role="Order" EntitySet="Order" />
             <End Role="OrderLineItem" EntitySet="OrderLineItem" />
@@ -320,23 +291,23 @@
             <End Role="UserType" EntitySet="UserType" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="ArityEntityModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="DB_A3E8AF_luceousModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="Order">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="CustomerId" Type="Int32" />
           <Property Name="Prefix" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
           <Property Name="ExporterId" Type="Int32" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="User" Relationship="Self.FK_Order_User" FromRole="Order" ToRole="User" />
-          <NavigationProperty Name="User1" Relationship="Self.FK_Order_User1" FromRole="Order" ToRole="User" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Internal_status" Type="Int32" Nullable="false" />
           <NavigationProperty Name="OrderLineItems" Relationship="Self.FK_OrderLineItem_Order" FromRole="Order" ToRole="OrderLineItem" />
           <NavigationProperty Name="Payments" Relationship="Self.FK_Payment_Order" FromRole="Order" ToRole="Payment" />
         </EntityType>
@@ -347,12 +318,12 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="OrderId" Type="Int32" />
           <Property Name="ProductId" Type="Int32" />
-          <Property Name="DollarPurchasePrice" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="RMDPurchasePrice" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="DollarSalesPrice" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="RMBSalesPrice" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="DollarPurchasePrice" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="RMDPurchasePrice" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="DollarSalesPrice" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="RMBSalesPrice" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Order" Relationship="Self.FK_OrderLineItem_Order" FromRole="OrderLineItem" ToRole="Order" />
           <NavigationProperty Name="Product" Relationship="Self.FK_OrderLineItem_Product" FromRole="OrderLineItem" ToRole="Product" />
@@ -361,11 +332,11 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="OrderLineItemId" Type="Int32" Nullable="false" />
+          <Property Name="OrderLineItemId" Type="Int32" />
           <Property Name="SupplierId" Type="Int32" />
-          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="OrderLineItem_Supplier_Mapping1" Relationship="Self.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" FromRole="OrderLineItem_Supplier_Mapping" ToRole="OrderLineItem_Supplier_Mapping1" />
           <NavigationProperty Name="OrderLineItem_Supplier_Mapping2" Relationship="Self.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" FromRole="OrderLineItem_Supplier_Mapping1" ToRole="OrderLineItem_Supplier_Mapping" />
@@ -378,12 +349,12 @@
           </Key>
           <Property Name="UserId" Type="Int32" />
           <Property Name="OrderId" Type="Int32" />
-          <Property Name="PaymentDate" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="DollarAmount" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="RMBAmount" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="PaymentDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="DollarAmount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="RMBAmount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Order" Relationship="Self.FK_Payment_Order" FromRole="Payment" ToRole="Order" />
           <NavigationProperty Name="User" Relationship="Self.FK_Payment_User" FromRole="Payment" ToRole="User" />
@@ -393,18 +364,18 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Chinese_Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="English_Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="Dollar_Price" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="RMB_Price" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="Unit" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Parent_Id" Type="Int32" />
+          <Property Name="Chinese_Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="English_Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Dollar_Price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="RMB_Price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Unit" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Parent_Id" Type="Int32" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="OrderLineItems" Relationship="Self.FK_OrderLineItem_Product" FromRole="Product" ToRole="OrderLineItem" />
-          <Property Name="IsActive" Type="Boolean" />
         </EntityType>
         <EntityType Name="Supplier_Assigned_OrderLineItem">
           <Key>
@@ -413,10 +384,10 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="SupplierId" Type="Int32" />
           <Property Name="OrderSupplierMapId" Type="Int32" />
-          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="OrderLineItem_Supplier_Mapping" Relationship="Self.FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping" FromRole="Supplier_Assigned_OrderLineItem" ToRole="OrderLineItem_Supplier_Mapping" />
           <NavigationProperty Name="User" Relationship="Self.FK_Supplier_Assigned_OrderLineItem_User" FromRole="Supplier_Assigned_OrderLineItem" ToRole="User" />
         </EntityType>
@@ -425,18 +396,18 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="SupplierAssignedMapId" Type="Int32" />
-          <Property Name="PcsPerCartoon" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="TotalCartoons" Type="Int32" />
-          <Property Name="NetWeight" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="TotalNetWeight" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="GrossWeight" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="TotalGrossWeight" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="CartoonSize" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="CartoonBM" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="CartoonNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="SupplierAssignedMapId" Type="Int32" Nullable="false" />
+          <Property Name="PcsPerCartoon" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="TotalCartoons" Type="Int32" Nullable="false" />
+          <Property Name="NetWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="TotalNetWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="GrossWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="TotalGrossWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="CartoonSize" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="CartoonBM" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="CartoonNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="User">
@@ -458,8 +429,8 @@
           <Property Name="Logo" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Orders" Relationship="Self.FK_Order_User" FromRole="User" ToRole="Order" />
-          <NavigationProperty Name="Orders1" Relationship="Self.FK_Order_User1" FromRole="User" ToRole="Order" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="UserType" Type="Int32" />
           <NavigationProperty Name="OrderLineItem_Supplier_Mapping" Relationship="Self.FK_OrderLineItem_Supplier_Mapping_User" FromRole="User" ToRole="OrderLineItem_Supplier_Mapping" />
           <NavigationProperty Name="Payments" Relationship="Self.FK_Payment_User" FromRole="User" ToRole="Payment" />
           <NavigationProperty Name="Supplier_Assigned_OrderLineItem" Relationship="Self.FK_Supplier_Assigned_OrderLineItem_User" FromRole="User" ToRole="Supplier_Assigned_OrderLineItem" />
@@ -474,30 +445,6 @@
           <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="User" Relationship="Self.FK_UserType_User" FromRole="UserType" ToRole="User" />
         </EntityType>
-        <Association Name="FK_Order_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Order" Type="Self.Order" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Order">
-              <PropertyRef Name="CustomerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Order_User1">
-          <End Role="User" Type="Self.User" Multiplicity="0..1" />
-          <End Role="Order" Type="Self.Order" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Order">
-              <PropertyRef Name="ExporterId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_OrderLineItem_Order">
           <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
           <End Role="OrderLineItem" Type="Self.OrderLineItem" Multiplicity="*" />
@@ -535,7 +482,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem">
-          <End Role="OrderLineItem_Supplier_Mapping" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="1" />
+          <End Role="OrderLineItem_Supplier_Mapping" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="0..1" />
           <End Role="OrderLineItem_Supplier_Mapping1" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="OrderLineItem_Supplier_Mapping">
@@ -606,7 +553,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="ArityEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="DB_A3E8AF_luceousEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Orders" EntityType="Self.Order" />
           <EntitySet Name="OrderLineItems" EntityType="Self.OrderLineItem" />
           <EntitySet Name="OrderLineItem_Supplier_Mapping" EntityType="Self.OrderLineItem_Supplier_Mapping" />
@@ -616,14 +563,6 @@
           <EntitySet Name="SupplierCartoons" EntityType="Self.SupplierCartoon" />
           <EntitySet Name="Users" EntityType="Self.User" />
           <EntitySet Name="UserTypes" EntityType="Self.UserType" />
-          <AssociationSet Name="FK_Order_User" Association="Self.FK_Order_User">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Order" EntitySet="Orders" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Order_User1" Association="Self.FK_Order_User1">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Order" EntitySet="Orders" />
-          </AssociationSet>
           <AssociationSet Name="FK_OrderLineItem_Order" Association="Self.FK_OrderLineItem_Order">
             <End Role="Order" EntitySet="Orders" />
             <End Role="OrderLineItem" EntitySet="OrderLineItems" />
@@ -666,9 +605,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="ArityEntityModelStoreContainer" CdmEntityContainer="ArityEntities">
+        <EntityContainerMapping StorageEntityContainer="DB_A3E8AF_luceousModelStoreContainer" CdmEntityContainer="DB_A3E8AF_luceousEntities">
           <EntitySetMapping Name="Orders">
-            <EntityTypeMapping TypeName="ArityEntityModel.Order">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.Order">
               <MappingFragment StoreEntitySet="Order">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
@@ -677,11 +616,12 @@
                 <ScalarProperty Name="ExporterId" ColumnName="ExporterId" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Internal_status" ColumnName="Internal_status" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="OrderLineItems">
-            <EntityTypeMapping TypeName="ArityEntityModel.OrderLineItem">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.OrderLineItem">
               <MappingFragment StoreEntitySet="OrderLineItem">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="OrderId" ColumnName="OrderId" />
@@ -697,7 +637,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="OrderLineItem_Supplier_Mapping">
-            <EntityTypeMapping TypeName="ArityEntityModel.OrderLineItem_Supplier_Mapping">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.OrderLineItem_Supplier_Mapping">
               <MappingFragment StoreEntitySet="OrderLineItem_Supplier_Mapping">
                 <ScalarProperty Name="OrderLineItemId" ColumnName="OrderLineItemId" />
                 <ScalarProperty Name="SupplierId" ColumnName="SupplierId" />
@@ -709,7 +649,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Payments">
-            <EntityTypeMapping TypeName="ArityEntityModel.Payment">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.Payment">
               <MappingFragment StoreEntitySet="Payment">
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="OrderId" ColumnName="OrderId" />
@@ -724,9 +664,8 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Products">
-            <EntityTypeMapping TypeName="ArityEntityModel.Product">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.Product">
               <MappingFragment StoreEntitySet="Product">
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Chinese_Name" ColumnName="Chinese_Name" />
                 <ScalarProperty Name="English_Name" ColumnName="English_Name" />
@@ -738,11 +677,12 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Supplier_Assigned_OrderLineItem">
-            <EntityTypeMapping TypeName="ArityEntityModel.Supplier_Assigned_OrderLineItem">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.Supplier_Assigned_OrderLineItem">
               <MappingFragment StoreEntitySet="Supplier_Assigned_OrderLineItem">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="SupplierId" ColumnName="SupplierId" />
@@ -755,7 +695,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SupplierCartoons">
-            <EntityTypeMapping TypeName="ArityEntityModel.SupplierCartoon">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.SupplierCartoon">
               <MappingFragment StoreEntitySet="SupplierCartoon">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="SupplierAssignedMapId" ColumnName="SupplierAssignedMapId" />
@@ -775,7 +715,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Users">
-            <EntityTypeMapping TypeName="ArityEntityModel.User">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.User">
               <MappingFragment StoreEntitySet="User">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
@@ -792,11 +732,13 @@
                 <ScalarProperty Name="Logo" ColumnName="Logo" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="UserType" ColumnName="UserType" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="UserTypes">
-            <EntityTypeMapping TypeName="ArityEntityModel.UserType">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.UserType">
               <MappingFragment StoreEntitySet="UserType">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
