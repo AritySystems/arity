@@ -17,10 +17,10 @@
 </style>
 <div class="container">
     <div class="page-header">
-        <h1><i class="fa fa-shopping-cart"></i> @((Session["UserType"] != null && Session["UserType"].ToString() == ((int)AritySystems.Common.EnumHelpers.UserType.Admin).ToString()) ? "All Orders": "Your Orders")</h1>
+        <h1><i class="fa fa-shopping-cart"></i> @((Session["UserType"] != null && ((int)Session["UserType"]) == ((int)AritySystems.Common.EnumHelpers.UserType.Admin)) ? "All Orders": "Your Orders")</h1>
     </div>
     <div class="row">
-        @if (Session["UserType"] != null && Session["UserType"].ToString() == AritySystems.Common.EnumHelpers.UserType.Customer.ToString())
+        @if (Session["UserType"] != null && ((int)Session["UserType"]) == (int)AritySystems.Common.EnumHelpers.UserType.Customer)
         {
             <div class="text-right" style="margin-bottom:10px;">
                 <a href="/order/makeorder"><button class="btn btn-primary"><i class="fa fa-plus"></i> Make Order</button></a>
