@@ -1,0 +1,66 @@
+﻿@using AritySystems.Data;
+@{
+    ViewBag.Title = "Add Supplier Carton Detail";
+}
+<style>
+    span.child-product {
+        padding-left: 30px;
+    }
+</style>
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fa fa-shopping-cart"></i> Add Supplier Carton Detail</h1>
+    </div>
+    <div class="row">
+        <div class="row">
+            @using (Html.BeginForm("AddSupplierCartonDetail", "Order", FormMethod.Post))
+            {
+            <div class="col-md-8" style="margin-bottom:20px;">
+                <div class="form-group">
+                    <label class="">Order Line Items</label>
+                  @Html.DropDownList("SupplierOrderMapId", ViewBag.OrderLineItems as SelectList, "-- Select OrderLineItems--", new { @class = "form-control" })
+                </div>
+
+                <div class="form-group">
+                    <label class="">Pieces Per Carton</label>
+                    @Html.TextBox("PcsPerCartoon", 0, new { @type = "number", @class = "form-control" })
+                    
+                </div>
+                <div class="form-group">
+                    <label class="">Total Cartons</label>
+                    @Html.TextBox("TotalCartoons", 0, new { @type = "number", @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="">Net Weight</label>
+                    @Html.TextBox("NetWeight", 0, new { @type = "number", @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="">Total Net Weight</label>
+                    @Html.TextBox("TotalNetWeight", 0, new { @type = "number", @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="">Carton Size</label>
+                    @Html.TextBox("CartoonSize", 0, new { @type = "number", @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="">Carton BM</label>
+                    @Html.TextBox("CartoonBM", 0, new { @type = "number", @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="">Carton Number</label>
+                    @Html.TextBox("CartoonNumber", 0, new { @type = "text", @class = "form-control" })
+                </div>
+
+                <div class="col-md-2 col-md-offset-5">
+                    <button type="submit" class="btn btn-success"><i class="fa fa-shopping-bag"></i> Submit</button>
+                </div>
+            </div>
+            }
+            <div class="col-md-1 col-md-offset-3"><button class="btn btn-primary" onclick="location.href='@Url.Action("OrderLineItems","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+        </div>
+       
+    </div>
+</div>
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+

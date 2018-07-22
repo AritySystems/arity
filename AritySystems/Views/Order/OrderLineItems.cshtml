@@ -313,16 +313,34 @@
                         console.log("Request failed: " + textStatus);
                     });}
             });
-            $("#btnSubmit").click(function () {
-                var isSupplierSelecter = true;
-                $("select").each(function () {
-                    if ($(this).val() == "") { alert("Please select all supplier to submit order"); isSupplierSelecter = false; return false; }
+           $("#btnSubmit").click(function () {
+            var UpdatedQuantity = $('#txtQuantity').val();
+            var SupplierId = $('#jsonSupplierList').val();
+            $.ajax({
+                url: "@Url.Action("AddSupplierOrderLineItems", "Order")",
+                method: "POST",
+            data: { id: $("#ProductId").val(), qty: $("#ProductQty").val() },
+            dataType: "json"
+        }).done(function (response) {
+            if (response.data != null) {
+                $.each(response.data, function (e, data) {
+                    if($(".tr_"+data.Id).length <= 0)
+                    {
+                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_"+data.Id+"'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + (data.Parent_Id > 0 ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' type='number' value='" + data.Quantity + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal'>$" + (data.Dollar_Price * data.Quantity) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
+                        window.productCounter = window.productCounter + 1;}
                 });
-                if (isSupplierSelecter) {
-                    $(this).attr("disabled", "disabled");
-                    alert("Your Order is submited");
-                }
-            });
+                var OrderTotal = 0;
+                $(".itemTotal").each(function () {
+                    OrderTotal = OrderTotal + parseInt($(this).text().replace('$', ''));
+                });
+                $(".order-total").html('$' + OrderTotal);
+                $("#lineItem").show();
+            }
+        }).fail(function (jqXHR, textStatus) {
+            console.log("Request failed: " + textStatus);
+        });
+
+        });
         });
     </script>
 }
