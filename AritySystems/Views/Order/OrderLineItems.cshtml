@@ -142,7 +142,7 @@
                     {
                         "data": "quantity",
                         "render": function (data, type, full) {
-                            return '<input type="text" value="' + data + '"/>'
+                            return '<input type="text" id="txtQuantity" value="' + data + '"/>'
                         }
                     },
                     {
@@ -217,9 +217,15 @@
             }
 
             var table = $('#tblSupplierOrderItemList').DataTable({
-                "ajax": "/Order/SuppliersOrderLineItemList?OrderId=" + @Model.Id,
+                "ajax": "/Order/SuppliersOrderLineItemList?OrderId=" + orderid,
                 "columns": [
-                    //{ "data": "Id" },
+                    {
+                        "data": "Id",
+                        "ordering": false,
+                        "render": function (data, type, full) {
+                            return '<input type="hidden" id="txtId" value="' + data + '"/>'
+                        }
+                    },
                     { "data": "SupplierName" },
                     { "data": "Order_Prefix" },
                     { "data": "Quantity" },

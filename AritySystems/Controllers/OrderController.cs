@@ -113,7 +113,8 @@ namespace AritySystems.Controllers
                                  join n in db.Orders on m.OrderId equals n.Id
                                  join o in db.Products on m.ProductId equals o.Id
                                  where m.OrderId == OrderId
-                                 select new OrderLineItemViewModel {
+                                 select new OrderLineItemViewModel
+                                 {
                                      Id = m.Id,
                                      //OrderId = m.OrderId ?? 0,
                                      Order_Name = n.Prefix,
@@ -129,11 +130,13 @@ namespace AritySystems.Controllers
                                      Suppliers = (from a in db.Users
                                                   join b in db.UserTypes on a.Id equals b.UserId
                                                   where b.Id == 1
-                                                  select new SelectListItem{
-                                                     Text = a.Id.ToString(), Value = a.FirstName+" "+a.LastName
+                                                  select new SelectListItem
+                                                  {
+                                                      Text = a.Id.ToString(),
+                                                      Value = a.FirstName + " " + a.LastName
                                                   }).ToList()
                                  }).ToList();
-                    
+
                     return Json(new { data = model }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -464,7 +467,6 @@ namespace AritySystems.Controllers
                           }).ToList();
             return Json(new { data = orders }, JsonRequestBehavior.AllowGet);
         }
-        }
 
         public ActionResult AddSupplierCartonDetail(int supplierId)
         {
@@ -474,7 +476,7 @@ namespace AritySystems.Controllers
                                    join c in dbContext.OrderLineItem_Supplier_Mapping on a.Id equals c.OrderLineItemId
                                    join d in dbContext.Supplier_Assigned_OrderLineItem on c.Id equals d.OrderSupplierMapId
                                    where d.SupplierId == supplierId
-                                   select new { a.Id,b.English_Name}).ToList();
+                                   select new { a.Id, b.English_Name }).ToList();
             ViewBag.OrderLineItems = new SelectList(ordersLineItems, "Id", "English_Name");
             return View();
         }
@@ -485,7 +487,7 @@ namespace AritySystems.Controllers
         {
             ArityEntities objDb = new ArityEntities();
             List<KeyValuePair<int, int>> lineItem = new List<KeyValuePair<int, int>>();
-            
+
             if (fc != null)
             {
                 try
@@ -494,7 +496,7 @@ namespace AritySystems.Controllers
                     {
 
                     }
-                     
+
                     //if (lineItem.Any())
                     //{
                     //    var order = objDb.Orders.Add(new Order() { CustomerId = 1, CreatedDate = DateTime.Now, Prefix = "user1", Status = "1" });

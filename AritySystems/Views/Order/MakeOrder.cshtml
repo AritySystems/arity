@@ -6,6 +6,10 @@
     span.child-product {
         padding-left: 30px;
     }
+    .lable-style {
+    font-size: 18px;
+    padding: 19px;
+    }
 </style>
 <div class="container">
     <div class="page-header">
@@ -13,14 +17,14 @@
     </div>
     <div class="row">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-5 col-md-offset-5">
                 @if (TempData["Success"] != null)
                 {
-                    <span class="label-success label">@TempData["Success"]</span>
+                    <span class="label-success label lable-style"> <i class="fa fa-check-square-o"></i> @TempData["Success"]</span>
                 }
                 else if (TempData["Error"] != null)
                 {
-                    <span class="label-danger label">@TempData["Error"]</span>
+                    <span class="label-danger label lable-style"> <i class="fa fa-question-circle-o"></i> @TempData["Error"]</span>
                 }
             </div>
             <div class="col-md-8" style="margin-bottom:20px;">
