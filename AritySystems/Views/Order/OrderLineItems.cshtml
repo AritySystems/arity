@@ -15,15 +15,13 @@
         <a href="/order/adminorders" class="btn btn-primary">  Back</a>
     </div>
     <div class="row">
-        <table class="table borderless" style="width:50%">
-            <tr>
-                <td><h4>Order Name: </h4> @ViewBag.OrderName</td>
-                <td><h4>Order Date: </h4>@ViewBag.OrderDate</td>
-                <td><h4 class="alert-warning">Status: </h4>@ViewBag.Status</td>
-            </tr>
-
-
-        </table>
+        <div class="col-md-12">@ViewBag.OrderDate </div>
+        <div class="col-md-12">
+            @ViewBag.OrderName
+        </div>
+        <div class="col-md-12">
+            Status <span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)ViewBag.Status).ToString())</span>
+        </div>
         <div class="row">
             <h3>Order Items :</h3>
         </div>
@@ -39,7 +37,7 @@
                         <th>Purchase Price(Y)</th>
                         <th>Sales Price(Y)</th>
                         <th>Qunatity</th>
-                        <th>Created Date</th>
+                        @*<th>Created Date</th>*@
                         <th>Suppliers</th>
                     </tr>
                 </thead>
@@ -64,7 +62,7 @@
                         <th>Order Prefix </th>
                         <th>Quantity</th>
                         <th>Status</th>
-                        <th>Date</th>
+                        
                     </tr>
                 </thead>
             </table>
@@ -78,27 +76,25 @@
             alert("Order Line Item information saved successfully");
         });
         $("#btnSubmit").click(function () {
-            var UpdatedQuantity = $('#txtQuantity').val();
-            var SupplierId = $('#jsonSupplierList').val();
+            var data = [];
+            $('#tblOrderItemList tbody tr').each((index, item) => {
+                data.push({
+                    "OrderLineItemId": $(item).find('#txtId').val(),
+                    "Quantity" : $(item).find('#txtQuantity').val(),
+                    "SupplierId" : $(item).find('#jsonSupplierList :selected').val()
+                })
+
+            })
+            var supplierCarton = JSON.stringify({"data":data})
             $.ajax({
                 url: "@Url.Action("AddSupplierOrderLineItems", "Order")",
-                method: "POST",
-            data: { id: $("#ProductId").val(), qty: $("#ProductQty").val() },
-            dataType: "json"
+                method: "POST", 
+                data: supplierCarton,
+                dataType: "json",
+                contentType:"application/json; charset=utf-8",
         }).done(function (response) {
             if (response.data != null) {
-                $.each(response.data, function (e, data) {
-                    if($(".tr_"+data.Id).length <= 0)
-                    {
-                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_"+data.Id+"'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + (data.Parent_Id > 0 ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' type='number' value='" + data.Quantity + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal'>$" + (data.Dollar_Price * data.Quantity) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
-                        window.productCounter = window.productCounter + 1;}
-                });
-                var OrderTotal = 0;
-                $(".itemTotal").each(function () {
-                    OrderTotal = OrderTotal + parseInt($(this).text().replace('$', ''));
-                });
-                $(".order-total").html('$' + OrderTotal);
-                $("#lineItem").show();
+                
             }
         }).fail(function (jqXHR, textStatus) {
             console.log("Request failed: " + textStatus);
@@ -130,15 +126,15 @@
                             return '<input type="text" id="txtQuantity" value="' + data + '"/>'
                         }    
                     },
-                    {
-                        "data": "CreatedDate",
-                    },
+                    //{
+                    //    "data": "CreatedDate",
+                    //},
                     {
                         "data": "Suppliers",
                         "render": function (data, type, row) {
                                 ddl = '<select id="jsonSupplierList">';
                                 $.each(data, function (i, item) {
-                                        ddl += '<option id="' + item.Text + '">' + item.Value + '<option>';
+                                        ddl += '<option value="' + item.Text + '">' + item.Value + '<option>';
                                 });
                                 ddl += '</select>';
 
@@ -161,9 +157,9 @@
                     { "data": "Order_Prefix" },
                     { "data": "Quantity" },
                     { "data": "Status" },
-                    {
-                        "data": "CreatedDate",
-                    },
+                    //{
+                    //    "data": "CreatedDate",
+                    //},
                 ],
                 "SupplierOrderLineItems": [[1, 'asc']]
             });

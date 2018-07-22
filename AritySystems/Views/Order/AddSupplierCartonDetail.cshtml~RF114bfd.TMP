@@ -24,29 +24,10 @@
                             <h4>  @ViewBag.OrderName</h4>
                         </div>
                         <div class="col-md-12">
-                            <h4> Status<span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @ViewBag.Status</span></h4>
+                            <h4> Status<span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @ViewBag.Status</span></h4> 
                         </div>
                     </div>
-                   </div>
-                <div class="col-md-12">
-                    <table class="table borderless" id="tblSupplierCartonDetail">
-                        <thead>
-                            <tr>
-                                <th>Product Name</th>
-                                @*<th>Order Line Item</th>*@
-                                <th>Pcs Per Carton</th>
-                                <th>Total Cartons</th>
-                                <th>Net Weight</th>
-                                <th>Total Net Weight</th>
-                                <th>Carton Size</th>
-                                <th>Carton BM</th>
-                                <th>Carton Number</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-                   <div class="col-md-8" style="margin-bottom:20px;">
-                    @Html.TextBox("OrderId", 0, new { @type = "hidden", @class = "form-control" })
+                    @Html.TextBox("OrderId",0,new { @type = "hidden", @class = "form-control" })
                     <div class="form-group">
                         <label class="">Order Line Items</label>
                         @Html.DropDownList("SupplierOrderMapId", ViewBag.OrderLineItems as SelectList, "-- Select OrderLineItems--", new { @class = "form-control" })
@@ -89,20 +70,36 @@
             }
             <div class="col-md-1 col-md-offset-3"><button class="btn btn-primary" onclick="location.href='@Url.Action("OrderLineItems","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
         </div>
-       
+        <div class="row">
+            <table class="table borderless" id="tblSupplierCartonDetail">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Order Line Item</th>
+                        <th>Pcs Per Carton</th>
+                        <th>Total Cartons</th>
+                        <th>Net Weight</th>
+                        <th>Total Net Weight</th>
+                        <th>Carton Size</th>
+                        <th>Carton BM</th>
+                        <th>Carton Number</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
 </div>
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
 @section Scripts {
-    <script>
-
+<script>
+       
         $("#btnSubmit").click(function () {
-
+          
         });
 
         $(document).ready(function () {
             var orderid = $('#OrderId').val();
-            var table = $('#tblSupplierCartonDetail').DataTable({
+            var table = $('#tblOrderItemList').DataTable({
                 "ajax": "/Order/SupplierCartonList?OrderId=" + orderid,
                 "columns": [
                     {
@@ -112,20 +109,58 @@
                             return '<input type="hidden" id="txtId" value="' + data + '"/>'
                         }
                     },
-                   {"data":"Product_English_Name"},
-                      {"data":"PcsPerCartoon"},
-                      {"data":"TotalCartoons"},
-                      {"data":"NetWeight"},
-                      {"data":"TotalNetWeight"},
-                      {"data":"CartoonSize"},
-                         {"data":"CartoonBM"},
-                            {"data":"CartoonNumber"},
+                    { "data": "Order_Name" },
+                    { "data": "Product_Name" },
+                    { "data": "Purchase_Price_dollar" },
+                    { "data": "Sales_Price_dollar" },
+                    { "data": "Purchase_Price_rmb" },
+                    { "data": "Sales_Price_rmb" },
+                    {
+                        "data": "quantity",
+                        "render": function (data, type, full) {
+                            return '<input type="text" id="txtQuantity" value="' + data + '"/>'
+                        }
+                    },
+                    //{
+                    //    "data": "CreatedDate",
+                    //},
+                    {
+                        "data": "Suppliers",
+                        "render": function (data, type, row) {
+                                ddl = '<select id="jsonSupplierList">';
+                                $.each(data, function (i, item) {
+                                        ddl += '<option value="' + item.Text + '">' + item.Value + '<option>';
+                                });
+                                ddl += '</select>';
+
+                            return ddl;
+                        }
+                    }],
+                "orderLineItems": [[1, 'asc']]
+            });
+            var table = $('#tblSupplierOrderItemList').DataTable({
+                "ajax": "/Order/SuppliersOrderLineItemList?OrderId=" + orderid,
+                "columns": [
+                    {
+                        "data": "Id",
+                        "ordering": false,
+                        "render": function (data, type, full) {
+                            return '<input type="hidden" id="txtId" value="' + data + '"/>'
+                        }
+                    },
+                    { "data": "SupplierName" },
+                    { "data": "Order_Prefix" },
+                    { "data": "Quantity" },
+                    { "data": "Status" },
+                    //{
+                    //    "data": "CreatedDate",
+                    //},
                 ],
-                "supplierCartonDetail": [[1, 'asc']]
+                "SupplierOrderLineItems": [[1, 'asc']]
             });
 
         });
-    </script>
+</script>
 
 }
 

@@ -226,6 +226,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\OrderDetailModel.cs" />
     <Compile Include="Models\OrderLineItemViewModel.cs" />
+    <Compile Include="Models\SupplierCartonDetailModel.cs" />
     <Compile Include="Models\SupplierOrderLineItemModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
