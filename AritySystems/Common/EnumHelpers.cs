@@ -32,6 +32,14 @@ namespace AritySystems.Common
             Supplier = 5,
             Exporter = 6
         }
+        public enum InternalOrderStatus
+        {
+            Draft = 1,
+            RedyForSales = 2,
+            WaitForAdminAproved =3,
+            Approved = 4,
+            Rejected = 5
+        }
     }
 
 }

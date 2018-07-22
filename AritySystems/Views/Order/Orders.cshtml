@@ -1,7 +1,8 @@
-﻿@{
-    ViewBag.Title = "OrderList";
-    var userType = (Session["UserType"] != null) ? (int)Session["UserType"] : 0;
+﻿
+@{
+    ViewBag.Title = "Order list";
 }
+
 
 <style>
     .child-heading {
@@ -18,24 +19,21 @@
 </style>
 <div class="container">
     <div class="page-header">
-        <h1><i class="fa fa-shopping-cart"></i> @((Session["UserType"] != null && ((int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Admin || (int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Purchase)) ? "All Orders" : "Your Orders")</h1>
+        <h1><i class="fa fa-shopping-cart"></i> All Orders</h1>
     </div>
     <div class="row">
-        @if (Session["UserType"] != null && (int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Customer)
-        {
-            <div class="text-right" style="margin-bottom:10px;">
-                <a href="/order/makeorder"><button class="btn btn-primary"><i class="fa fa-plus"></i> Make Order</button></a>
-            </div>
-        }
         <table id="example" class="display" style="width:100%">
             <thead>
                 <tr>
                     <th style="width:10%"></th>
                     <th style="width:10%"></th>
-                    <th style="width:35%">Order Name</th>
+                    <th style="width:10%">Order Name</th>
                     <th style="width:15%">Date</th>
                     <th style="width:12%">Total items</th>
-                    <th style="width:13%">Total</th>
+                    <th style="width:13%">Sales($)</th>
+                    <th style="width:13%">Purchase($)</th>
+                    <th style="width:13%">Sales(RNB)</th>
+                    <th style="width:13%">Purchase(RNB)</th>
                     <th style="width:13%">Internal Status</th>
                     <th style="width:10%">Order Status</th>
                 </tr>
@@ -45,7 +43,7 @@
 </div>
 @section Scripts {
     <script>
-       
+
         function format(d) {
             var html = '<div class="child-heading">All payments information of ' + d.CreatedDate + '</div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;    border: 1px solid #eee;margin-bottom: 2%;"><tr><th>Name</th><th>Amount</th><th>Payment date</th><th>Status</th></tr>';
             html += '<tr>' +
@@ -79,12 +77,7 @@
                         "orderable": false,
                         "data": null,
                         'render': function (data, type, full, meta) {
-                            if(@userType == 3)
-                                return '<a href="/Order/OrderLineItems/' + data.Id + '"><button class="btn btn-primary"><i class="fa fa-edit"></i> Details</button></a>';
-                            else if(@userType == 4)
-                                return '<a href="/Order/OrderLineItems/' + data.Id + '"><button class="btn btn-primary"><i class="fa fa-edit"></i> Details</button></a>';
-                            else
-                                return '<a href="/Order/OrderDetail/' + data.Id + '"><button class="btn btn-primary"><i class="fa fa-edit"></i> Details</button></a>';
+                            return '<a href="/Order/OrderDetail/' + data.Id + '"><button class="btn btn-primary"><i class="fa fa-edit"></i> Details</button></a>';
                         }
                     },
                     {
@@ -98,38 +91,29 @@
                     { "data": "Prefix" },
                     { "data": "CreatedDate" },
                     { "data": "TotalItem" },
-                    {
-                        "className": '',
-                        "orderable": false,
-                        "data": null,
-                        'render': function (data, type, full, meta) {
-                            if(@userType == 3)
-                                return data.DollerSalesTotal;
-                            else if(@userType == 4)
-                                return '$' +data.DollerPurchaseTotal;
-                            else
-                                return '$'+data.DollerPurchaseTotal;
-                        }
-                    },
-                    {
-                        "className": 'order-status',
-                        "orderable": false,
-                        "data": null,
-                        'render': function (data, type, full, meta) {
-                            if (data.InternalStatus == 1)
-                                return '<label class="label label-primary"><i class="fa fa-plane"></i> Draft</label>';
-                            if (data.InternalStatus == 2)
-                                return '<label class="label label-info"><i class="fa fa-money"></i> Redy for Sales team</label>';
-                            if (data.InternalStatus == 3)
-                                return '<label class="label label-warning"><i class="fa fa-question-circle-o"></i> Waiting for Admin approval</label>';
-                            else if (data.InternalStatus == 4)
-                                return '<label class="label label-success"><i class="fa fa-check-square-o"></i> Approved</label>';
-                            else if (data.InternalStatus == 5)
-                                return '<label class="label label-danger"><i class="fa fa-times-circle"></i> Rejected</label>';
-                            else
-                                return '';
-                        }
-                    },
+                    { "data": "DollerSalesTotal" },
+                    { "data": "DollerPurchaseTotal" },
+                    { "data": "RmbSalesTotal" },
+                    { "data": "RmbPurchaseTotal" },
+                     {
+                         "className": 'order-status',
+                         "orderable": false,
+                         "data": null,
+                         'render': function (data, type, full, meta) {
+                             if (data.InternalStatus == 1)
+                                 return '<label class="label label-primary"><i class="fa fa-plane"></i> Draft</label>';
+                             if (data.InternalStatus == 2)
+                                 return '<label class="label label-info"><i class="fa fa-money"></i> Redy for Sales team</label>';
+                             if (data.InternalStatus == 3)
+                                 return '<label class="label label-warning"><i class="fa fa-question-circle-o"></i> Waiting for Admin approval</label>';
+                             else if (data.InternalStatus == 4)
+                                 return '<label class="label label-success"><i class="fa fa-check-square-o"></i> Approved</label>';
+                             else if (data.InternalStatus == 5)
+                                 return '<label class="label label-danger"><i class="fa fa-times-circle"></i> Rejected</label>';
+                             else
+                                 return '';
+                         }
+                     },
                     {
                         "className": 'order-status',
                         "orderable": false,
@@ -147,6 +131,7 @@
                                 return '';
                         }
                     }
+
                 ],
                 "order": [[1, 'asc']]
             });
@@ -169,14 +154,7 @@
                     tr.addClass('shown');
                 }
             });
-            if(@userType == 1)
-            {
-                table.column(6).visible(false);
-            }
         });
     </script>
 }
-
-
-
 

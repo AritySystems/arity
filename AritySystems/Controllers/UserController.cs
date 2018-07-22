@@ -11,7 +11,7 @@ using System.IO;
 
 namespace AritySystems.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class UserController : Controller
     {
 
@@ -21,7 +21,7 @@ namespace AritySystems.Controllers
         {
             dataContext = new ArityEntities();
         }
-
+        [AllowAnonymous]
         [HttpGet]
         public ActionResult Login(string ReturnUrl)
         {
@@ -77,7 +77,7 @@ namespace AritySystems.Controllers
         }
 
 
-
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel entity)
@@ -96,9 +96,13 @@ namespace AritySystems.Controllers
                         FormsAuthentication.SetAuthCookie(entity.Email, true);
                         //Set A Unique name in session  
                         Session["Username"] = userInfo.EmailId;
-                        Session["UserType"] = userInfo.UserTypes.Select(_ => _.Type).FirstOrDefault();
-                       
-                            return RedirectToAction("OrderList", "Order", "Order");
+                        Session["UserType"] = userInfo.UserType;
+                        Session["UserId"] = userInfo.Id;
+                        if (userInfo.UserType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
+                            return RedirectToAction("orders", "order");
+                        else if (userInfo.UserType == (int)AritySystems.Common.EnumHelpers.UserType.Supplier)
+                            return RedirectToAction("suppliersorder", "order");
+                        return RedirectToAction("orderlist", "order");
                     }
                     else
                     {
@@ -148,13 +152,13 @@ namespace AritySystems.Controllers
                 {
                     if (!Directory.Exists(Server.MapPath("~/Content/img/user")))
                         Directory.CreateDirectory(Server.MapPath("~/Content/img/user"));
-                    if (existingProduct.Logo != null && !string.IsNullOrEmpty(existingProduct.Logo) && System.IO.File.Exists(Server.MapPath("~"+ existingProduct.Logo)))
-                        System.IO.File.Delete(Server.MapPath("~"+ existingProduct.Logo));
+                    if (existingProduct.Logo != null && !string.IsNullOrEmpty(existingProduct.Logo) && System.IO.File.Exists(Server.MapPath("~" + existingProduct.Logo)))
+                        System.IO.File.Delete(Server.MapPath("~" + existingProduct.Logo));
                     string filePath = Path.Combine(Server.MapPath("~/Content/img/user"), user.Id.ToString() + Path.GetExtension(logo.FileName));
                     logo.SaveAs(filePath);
-                    existingProduct.Logo= "/Content/img/user/"+ user.Id.ToString() + Path.GetExtension(logo.FileName);
+                    existingProduct.Logo = "/Content/img/user/" + user.Id.ToString() + Path.GetExtension(logo.FileName);
                 }
-               
+
             }
             else
             {

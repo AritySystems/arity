@@ -6,6 +6,10 @@
     span.child-product {
         padding-left: 30px;
     }
+    .lable-style {
+    font-size: 18px;
+    padding: 19px;
+    }
 </style>
 <div class="container">
     <div class="page-header">
@@ -13,6 +17,16 @@
     </div>
     <div class="row">
         <div class="row">
+            <div class="col-md-5 col-md-offset-5">
+                @if (TempData["Success"] != null)
+                {
+                    <span class="label-success label lable-style"> <i class="fa fa-check-square-o"></i> @TempData["Success"]</span>
+                }
+                else if (TempData["Error"] != null)
+                {
+                    <span class="label-danger label lable-style"> <i class="fa fa-question-circle-o"></i> @TempData["Error"]</span>
+                }
+            </div>
             <div class="col-md-8" style="margin-bottom:20px;">
                 <div class="form-group">
                     <label class="">Select Product</label>
@@ -30,10 +44,10 @@
                 </div>
             </div>
             <div class="col-md-1 col-md-offset-3"><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
-        </div>  
+        </div>
         <div class="col-md-12" id="lineItem" style="display:none;">
-                @using (Html.BeginForm("MakeOrder", "Order", FormMethod.Post))
-                {
+            @using (Html.BeginForm("MakeOrder", "Order", FormMethod.Post))
+            {
                 <table class="table table-striped">
                     <tr>
                         <th>Product Name</th>
@@ -50,7 +64,7 @@
                 <div class="col-md-2 col-md-offset-5">
                     <button type="submit" class="btn btn-success"><i class="fa fa-shopping-bag"></i> Place Order</button>
                 </div>
-                }
+            }
         </div>
     </div>
 </div>
@@ -58,7 +72,7 @@
 <script>
     window.productCounter = 1;
     $("#btnAddToCart").attr("disabled", "disabled");
-    $("#ProductQty").on('change',function(){
+    $("#ProductQty").on('change', function () {
         EnableButton();
     });
     $("#ProductId").on("change", function () {
@@ -67,42 +81,42 @@
             $.ajax({
                 url: "@Url.Action("GetProductDetail","Order")",
                 method: "GET",
-            data: { id: $("#ProductId").val() },
-            dataType: "json"
-        }).done(function (response) {
-            if (response != null) {
-                $("#ProductDollar_Price").text("$" + response.Dollar_Price);
-            }
-        }).fail(function (jqXHR, textStatus) {
-            console.log("Request failed: " + textStatus);
-        });
-    }
+                data: { id: $("#ProductId").val() },
+                dataType: "json"
+            }).done(function (response) {
+                if (response != null) {
+                    $("#ProductDollar_Price").text("$" + response.Dollar_Price);
+                }
+            }).fail(function (jqXHR, textStatus) {
+                console.log("Request failed: " + textStatus);
+            });
+        }
     });
 
     $("#btnAddToCart").on("click", function () {
         $.ajax({
             url: "@Url.Action("AddProductToCart","Order")",
             method: "POST",
-        data: { id: $("#ProductId").val(), qty: $("#ProductQty").val() },
-        dataType: "json"
-    }).done(function (response) {
-        if (response.data != null) {
-            $.each(response.data, function (e, data) {
-                if($(".tr_"+data.Id).length <= 0)
-                {
-                    $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_"+data.Id+"'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + (data.Parent_Id > 0 ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' type='number' value='" + data.Quantity + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal'>$" + (data.Dollar_Price * data.Quantity) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
-                    window.productCounter = window.productCounter + 1;}
-            });
-            var OrderTotal = 0;
-            $(".itemTotal").each(function () {
-                OrderTotal = OrderTotal + parseInt($(this).text().replace('$', ''));
-            });
-            $(".order-total").html('$' + OrderTotal);
-            $("#lineItem").show();
-        }
-    }).fail(function (jqXHR, textStatus) {
-        console.log("Request failed: " + textStatus);
-    });
+            data: { id: $("#ProductId").val(), qty: $("#ProductQty").val() },
+            dataType: "json"
+        }).done(function (response) {
+            if (response.data != null) {
+                $.each(response.data, function (e, data) {
+                    if ($(".tr_" + data.Id).length <= 0) {
+                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_" + data.Id + "'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + (data.Parent_Id > 0 ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' type='number' value='" + data.Quantity + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal'>$" + (data.Dollar_Price * data.Quantity) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
+                        window.productCounter = window.productCounter + 1;
+                    }
+                });
+                var OrderTotal = 0;
+                $(".itemTotal").each(function () {
+                    OrderTotal = OrderTotal + parseInt($(this).text().replace('$', ''));
+                });
+                $(".order-total").html('$' + OrderTotal);
+                $("#lineItem").show();
+            }
+        }).fail(function (jqXHR, textStatus) {
+            console.log("Request failed: " + textStatus);
+        });
 
     });
 
@@ -124,25 +138,21 @@
     function removeItem(id) {
         if (confirm("Are you sure you want to remove this item from your cart?")) {
             $("#tr_" + id).fadeOut(300, function () {
-                $(this).remove(); if($("#lstProducts tr").length <= 0)
-                {
+                $(this).remove(); if ($("#lstProducts tr").length <= 0) {
                     $("#lineItem").hide();
-                } });
+                }
+            });
 
         }
         return true;
     }
 
-    function EnableButton(){
-        if($("#ProductId").val() != null && ($("#ProductQty").val() != null && $("#ProductQty").val() != "" && $("#ProductQty").val() > 0))
-        {
+    function EnableButton() {
+        if ($("#ProductId").val() != null && ($("#ProductQty").val() != null && $("#ProductQty").val() != "" && $("#ProductQty").val() > 0)) {
             $("#btnAddToCart").removeAttr("disabled");
         }
-        else{
+        else {
             $("#btnAddToCart").attr("disabled", "disabled");
         }
     }
-
-
-
 </script>
