@@ -1,5 +1,8 @@
-﻿@{
+﻿@using AritySystems.Data
+@model Order
+@{
     ViewBag.Title = "Order Details";
+    var userType = (Session["UserType"] != null) ? (int)Session["UserType"] : 0;
 }
 <style>
     .borderless td, .borderless th {
@@ -10,185 +13,211 @@
     <div class="page-header">
         <h1>Order Details</h1>
     </div>
-    <input type="hidden" value="@ViewBag.OrderId" id="OrderId" />
-    <div class="text-right">
-        <a href="/order/adminorders" class="btn btn-primary">  Back</a>
-    </div>
     <div class="row">
-        <table class="table borderless" style="width:50%">
-            <tr>
-                <td><h4>Order Name: </h4> @ViewBag.OrderName</td>
-                <td><h4>Order Date: </h4>@ViewBag.OrderDate</td>
-                <td><h4 class="alert-warning">Status: </h4>@ViewBag.Status</td>
-            </tr>
-
-
-        </table>
-        <div class="row">
-            <h3>Order Items :</h3>
+        <div class="col-md-4">
+            <div class="col-md-12">@Model.CreatedDate </div>
+            <div class="col-md-12">
+                @Model.Prefix
+            </div>
+            <div class="col-md-12">
+                Order Status <span class="label label-primary" style="padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)Model.Status).ToString())</span>
+            </div>
+            <div class="col-md-12">
+                Internal Order Status <span class="label label-success" style="padding:4px;color:#fff;"> <i class="fa fa-check-square-o"></i> @(((AritySystems.Common.EnumHelpers.InternalOrderStatus)Model.Internal_status).ToString())</span>
+            </div>
+            <div class="col-md-12">
+                Order Total <i class="fa fa-usd"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarPurchasePrice)) </ div >
+            </div>
+            <div class="col-md-12" style="margin:25px 0px 10px 0;">
+                <h4>Order Line Items</h4>
+            </div>
         </div>
-        <div class="row">
+        @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
+        {
+            <div class="col-md-2 col-md-offset-5" style="text-align:right;"><button class="btn btn-success" onclick="location.href='@Url.Action("orderlist", "order")';"><i class="fa fa-print"></i> Genrate PI</button></div>}
+        <div class="col-md-1 @(userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved ? "":"col-md-offset-7") "><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+        <hr class="col-md-12" style="margin-bottom:25px;" />
+        <div class="col-md-12" style="margin-bottom:50px;">
             <table class="display" id="tblOrderItemList">
                 <thead>
                     <tr>
-                        @*<th>#</th>*@
-                        <th>Order Name</th>
                         <th>Product Name</th>
                         <th>Purchase Price($)</th>
-                        <th>Sales Price($)</th>
                         <th>Purchase Price(Y)</th>
+                        <th>Purchase Price($)</th>
+                        <th>Purchase Price(Y)</th>
+                        <th>Sales Price($)</th>
                         <th>Sales Price(Y)</th>
+                        <th>Sales Price($)</th>
+                        <th>Sales Price(Y)</th>
+                        <th>Qunatity</th>
                         <th>Qunatity</th>
                         <th>Suppliers</th>
                     </tr>
                 </thead>
-                @*@if (Model.OrderLineItemsList != null)
-                    {
-                    foreach (var item in Model.OrderLineItemsList)
-                    {
-                        <tr>
-                            <td>@item.Id</td>
-                            <td>@item.Order.Prefix</td>
-                            <td>
-                                @item.Product.English_Name
-                                (@item.Product.Chinese_Name)
-                            </td>
-                            <td>@item.DollarPurchasePrice</td>
-                            <td>@item.RMDPurchasePrice</td>
-                            <td>@item.DollarSalesPrice</td>
-                            <td>@item.RMBSalesPrice</td>
-                            <td>@item.Quantity</td>
-
-                            <td>@Html.DropDownListFor(Model => Model.SupplierId, Model.SupplierList)</td>
-                        </tr>
-                    }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td> No Data Available</td>
-                        </tr>
-                    }
-                    <tr>
-                        <td colspan="4" style="text-align:right;font-style: italic;font-weight: 600;">
-                            Order Total:
-                        </td>
-                        <td colspan="2" style="text-align:left">$ @Model.OrderTotal</td>
-                    </tr>*@
             </table>
         </div>
         <div class="row text-center">
             <div>
-                <button class="btn btn-primary" id="btnSave">Save</button>
-                <button class="btn btn-success" id="btnSubmit">Submit</button>
+                @if (Model != null && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Draft && userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase)
+                {
+                    <button class="btn btn-primary" id="btnPurchasePriceSave">Save & Update Price</button>
+                    <button class="btn btn-success" id="btnPurchasePriceUpdated">Notify Sales team to update Sales Price</button>
+                }
+                else if (Model != null && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.RedyForSales && userType == (int)AritySystems.Common.EnumHelpers.UserType.Sales)
+                {
+                    <button class="btn btn-primary" id="btnSalesPriceSave">Save & Update Price</button>
+                    <button class="btn btn-success" id="btnSalesPriceUpdated">Notify Admin to approve Order</button>
+                }
+                else if (Model != null && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved && userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase)
+                {
+                    <button class="btn btn-success" id="btnSubmit">Submit</button>
+                }
             </div>
         </div>
-
-        <div class="row">
-            <h3>Supplier Order Items :</h3>
-        </div>
-        <div class="row">
-            <table class="display" id="tblSupplierOrderItemList">
-                <thead>
-                    <tr>
-                        @*<th>#</th>*@
-                        <th>Supplier Name</th>
-                        <th>Order Prefix </th>
-                        <th>Quantity</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                @*@if (Model.SupplierOrderLineItemList != null)
-                    {
-                    foreach (var item in Model.SupplierOrderLineItemList)
-                    {
+        @if (Model != null && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved && userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase)
+        {
+            <div class="row">
+                <h3>Supplier Order Items :</h3>
+            </div>
+            <div class="row">
+                <table class="display" id="tblSupplierOrderItemList">
+                    <thead>
                         <tr>
-                            <td>@item.Id</td>
-                            <td>@item.SupplierName</td>
-                            <td>
-                                @item.Order_Prefix
-                            </td>
-                            <td>@item.Quantity</td>
-                            <td>@item.Status</td>
-                            <td>@item.CreatedDate</td>
+                            @*<th>#</th>*@
+                            <th>Supplier Name</th>
+                            <th>Order Prefix </th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                            <th>Date</th>
                         </tr>
-                    }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td>
-                                No Data Available
-                            </td>
-                        </tr>
-                    }*@
+                    </thead>
+                </table>
+            </div>
 
-            </table>
-        </div>
+        }
     </div>
 </div>
 @section Scripts {
-    
+
     <script>
-        $("#btnSave").click(function () {
-            alert("Order information save successfully");
-        });
-        $("#btnSubmit").click(function () {
-            var isSupplierSelecter = true;
-            $("select").each(function () {
-                if ($(this).val() == "") { alert("Please select all supplier to submit order"); isSupplierSelecter = false; return false; }
-            });
-            if (isSupplierSelecter) {
-                $(this).attr("disabled", "disabled");
-                alert("Your Order is submited");
-            }
-        });
+
 
         $(document).ready(function () {
-            var orderid = $('#OrderId').val();
-            var table = $('#tblOrderItemList').DataTable({
-                "ajax": "/Order/OrderLineItemList?OrderId=" + orderid,
+            var userType = @userType;
+            var orderInternalStatus = @Model.Internal_status;
+            var tableItmes = $('#tblOrderItemList').DataTable({
+                "ajax": "/Order/OrderLineItemList?OrderId=" + @Model.Id,
                 "columns": [
-                    { "data": "Order_Name" },
                     { "data": "Product_Name" },
+                    {
+                        "data": null,
+                        "render": function (data, type, full) {
+                            return '<input type="number" style="width:40%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="purchase-doller-price form-control" value="' + data.Purchase_Price_dollar + '"/> <span style="display:inline-block;padding-left:5px">per item</span>'
+                        }
+                    },
+                    {
+                        "data": null,
+                        "render": function (data, type, full) {
+                            return '<input type="number" style="width:40%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="purchase-rmb-price form-control" value="' + data.Purchase_Price_rmb + '"/> <span style="display:inline-block;padding-left:5px">per item</span>'
+                        }
+                    },
                     { "data": "Purchase_Price_dollar" },
-                    { "data": "Sales_Price_dollar" },
                     { "data": "Purchase_Price_rmb" },
+                    {
+                        "data": null,
+                        "render": function (data, type, full) {
+                            return '<input type="number" style="width:40%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="sales-doller-price form-control" value="' + data.Sales_Price_dollar + '"/> <span style="display:inline-block;padding-left:5px">per item</span>'
+                        }
+                    },
+                    {
+                        "data": null,
+                        "render": function (data, type, full) {
+                            return '<input type="number" style="width:40%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="sales-rmb-price form-control" value="' + data.Sales_Price_rmb + '"/> <span style="display:inline-block;padding-left:5px">per item</span>'
+                        }
+                    },
+                    { "data": "Sales_Price_dollar" },
                     { "data": "Sales_Price_rmb" },
+                    { "data": "quantity" },
                     {
                         "data": "quantity",
                         "render": function (data, type, full) {
                             return '<input type="text" value="' + data + '"/>'
-                        }    
-                    },
-
-                    //{ "data": "Description" },
-                    {
-                        "data": "CreatedDate",
-                        //"render": function (data) {
-                        //    debugger;
-                        //    var date = new Date(data);
-                        //    var month = date.getMonth() + 1;
-                        //    return (month.length > 1 ? month : "0" + month) + "/" + date.getDate() + "/" + date.getFullYear();
-                        //}
+                        }
                     },
                     {
                         "data": "Suppliers",
                         "render": function (data, type, row) {
-                                ddl = '<select id="jsonSupplierList">';
-                                $.each(data, function (i, item) {
-                                        ddl += '<option id="' + item.Text + '">' + item.Value + '<option>';
-                                });
-                                ddl += '</select>';
+                            ddl = '<select id="jsonSupplierList">';
+                            $.each(data, function (i, item) {
+                                ddl += '<option id="' + item.Text + '">' + item.Value + '<option>';
+                            });
+                            ddl += '</select>';
 
                             return ddl;
                         }
                     }],
                 "orderLineItems": [[1, 'asc']]
             });
+            if(userType == 4)
+            {
+                tableItmes.column(5).visible(false);
+                tableItmes.column(6).visible(false);
+                tableItmes.column(7).visible(false);
+                tableItmes.column(8).visible(false);
+                if(orderInternalStatus ==1)
+                {
+                    tableItmes.column(3).visible(false);
+                    tableItmes.column(4).visible(false);
+                    tableItmes.column(10).visible(false);
+                    tableItmes.column(11).visible(false);
+                }
+                else if(orderInternalStatus ==4)
+                {
+                    tableItmes.column(1).visible(false);
+                    tableItmes.column(2).visible(false);
+                }
+                else
+                {
+                    tableItmes.column(1).visible(false);
+                    tableItmes.column(2).visible(false);
+                    tableItmes.column(10).visible(false);
+                    tableItmes.column(11).visible(false);
+                }
+            }
+            else if(userType ==3){
+                tableItmes.column(1).visible(false);
+                tableItmes.column(2).visible(false);
+                tableItmes.column(3).visible(false);
+                tableItmes.column(4).visible(false);
+                tableItmes.column(10).visible(false);
+                tableItmes.column(11).visible(false);
+                if(orderInternalStatus ==2)
+                {
+                    tableItmes.column(7).visible(false);
+                    tableItmes.column(8).visible(false);
+                }
+                else{
+                    tableItmes.column(5).visible(false);
+                    tableItmes.column(6).visible(false);
+                }
+            }
+            else
+            {
+                tableItmes.column(1).visible(false);
+                tableItmes.column(2).visible(false);
+                tableItmes.column(3).visible(false);
+                tableItmes.column(4).visible(false);
+                tableItmes.column(5).visible(false);
+                tableItmes.column(6).visible(false);
+                tableItmes.column(7).visible(false);
+                tableItmes.column(8).visible(false);
+                tableItmes.column(9).visible(false);
+                tableItmes.column(11).visible(false);
+            }
+
             var table = $('#tblSupplierOrderItemList').DataTable({
-                "ajax": "/Order/SuppliersOrderLineItemList?OrderId=" + orderid,
+                "ajax": "/Order/SuppliersOrderLineItemList?OrderId=" + @Model.Id,
                 "columns": [
                     //{ "data": "Id" },
                     { "data": "SupplierName" },
@@ -207,6 +236,93 @@
                 "SupplierOrderLineItems": [[1, 'asc']]
             });
 
+
+            $("#btnPurchasePriceSave").click(function () {
+                var purchaseData =[];
+                $("#tblOrderItemList tbody tr").each(function(i){
+                    purchaseData.push({
+                        "ItemId":$(this).find("input.purchase-doller-price").attr("data-item-id"),
+                        "DollerPrice":$(this).find("input.purchase-doller-price").val(),
+                        "RMBPrice":$(this).find("input.purchase-rmb-price").val()
+                    });
+                })
+                var purchaseMdel = JSON.stringify({"purchaseMdel":purchaseData,"type":"purchase"});
+
+                $.ajax({
+                    url: "@Url.Action("PurchasePriceUpdate","Order")",
+                    method: "POST",
+                    data: purchaseMdel,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                }).done(function (response) {
+                    location.reload();
+                }).fail(function (jqXHR, textStatus) {
+                    console.log("Request failed: " + textStatus);
+                });
+            });
+
+            $("#btnSalesPriceSave").click(function () {
+                var purchaseData =[];
+                $("#tblOrderItemList tbody tr").each(function(i){
+                    purchaseData.push({
+                        "ItemId":$(this).find("input.sales-doller-price").attr("data-item-id"),
+                        "DollerPrice":$(this).find("input.sales-doller-price").val(),
+                        "RMBPrice":$(this).find("input.sales-rmb-price").val()
+                    });
+                })
+                var purchaseMdel = JSON.stringify({"purchaseMdel":purchaseData,"type":"sales"});
+
+                $.ajax({
+                    url: "@Url.Action("PurchasePriceUpdate","Order")",
+                    method: "POST",
+                    data: purchaseMdel,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                }).done(function (response) {
+                    location.reload();
+                }).fail(function (jqXHR, textStatus) {
+                    console.log("Request failed: " + textStatus);
+                });
+            });
+            $("#btnSalesPriceUpdated").on("click",function(){
+                if(confirm("Make sure Sales price is updated as you won't change it later on. Are you sure you want notify Admin to approve this Order?"))
+                {
+                    $.ajax({
+                        url: "@Url.Action("OrderInternamStatuseChange", "Order")",
+                        method: "POST",
+                        data: {id:@Model.Id,status:@((int)AritySystems.Common.EnumHelpers.InternalOrderStatus.WaitForAdminAproved)},
+                        dataType: "json"
+                    }).done(function (response) {
+                        location.reload();
+                    }).fail(function (jqXHR, textStatus) {
+                        console.log("Request failed: " + textStatus);
+                    });}
+            });
+
+            $("#btnPurchasePriceUpdated").on("click",function(){
+                if(confirm("Make sure purchase price is updated as you won't change it later on. Are you sure you want notify sales team to update sales price for this order?"))
+                {
+                    $.ajax({
+                        url: "@Url.Action("OrderInternamStatuseChange", "Order")",
+                        method: "POST",
+                        data: {id:@Model.Id,status:@((int)AritySystems.Common.EnumHelpers.InternalOrderStatus.RedyForSales)},
+                        dataType: "json"
+                    }).done(function (response) {
+                        location.reload();
+                    }).fail(function (jqXHR, textStatus) {
+                        console.log("Request failed: " + textStatus);
+                    });}
+            });
+            $("#btnSubmit").click(function () {
+                var isSupplierSelecter = true;
+                $("select").each(function () {
+                    if ($(this).val() == "") { alert("Please select all supplier to submit order"); isSupplierSelecter = false; return false; }
+                });
+                if (isSupplierSelecter) {
+                    $(this).attr("disabled", "disabled");
+                    alert("Your Order is submited");
+                }
+            });
         });
     </script>
 }

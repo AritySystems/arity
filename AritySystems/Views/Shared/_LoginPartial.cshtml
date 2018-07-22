@@ -1,13 +1,19 @@
 ﻿@using Microsoft.AspNet.Identity
 @if (Request.IsAuthenticated)
 {
-    
+
     using (Html.BeginForm("Logout", "User", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
         @Html.AntiForgeryToken()
 
         <ul class="nav navbar-nav navbar-right">
             <li><a href="javascript:"><i class="fa fa-bell"></i> Notification</a></li>
+            @if (Session["UserType"] != null && (int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
+            {
+                <li><a href="@Url.Action("orders","order")">Order</a></li>
+                <li><a href="@Url.Action("list","product")">Product</a></li>
+                <li><a href="@Url.Action("list","user")">User</a></li>
+            }
             <li>
                 <a>Hello @User.Identity.GetUserName().ToString() </a>
             </li>

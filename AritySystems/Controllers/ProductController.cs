@@ -14,7 +14,7 @@ using AritySystems.Common;
 
 namespace AritySystems.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     public class ProductController : Controller
     {
         public ActionResult Create(int? Id)

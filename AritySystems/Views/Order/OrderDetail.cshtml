@@ -2,12 +2,13 @@
 @model Order
 @{
     ViewBag.Title = "Order Detail";
-    var itemCounter = 1;
+    var itemCounter = 0;
+    var userType = (Session["UserType"] != null) ? (int)Session["UserType"] : 0;
 }
 
 <div class="container">
     <div class="page-header">
-        <h1><i class="fa fa-shopping-cart"></i> Your Order Details</h1>
+        <h1><i class="fa fa-shopping-cart"></i> @(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin ? "Order Details" : "Your Order Details")</h1>
     </div>
     <div class="row">
         <div class="col-md-4">
@@ -16,7 +17,10 @@
                 @Model.Prefix
             </div>
             <div class="col-md-12">
-               Status <span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)int.Parse(Model.Status)).ToString())</span> 
+               Order Status <span class="label label-primary" style="padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)Model.Status).ToString())</span> 
+            </div>
+            <div class="col-md-12">
+               Internal Order Status <span class="label label-success" style="padding:4px;color:#fff;"> <i class="fa fa-check-square-o"></i> @(((AritySystems.Common.EnumHelpers.InternalOrderStatus)Model.Internal_status).ToString())</span>
             </div>
             <div class="col-md-12">
                 Order Total <i class="fa fa-usd"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarPurchasePrice)) </ div >
@@ -25,29 +29,91 @@
                 <h4>Order Line Items</h4>
             </div>
         </div>
-        <div class="col-md-1 col-md-offset-7"><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+        <div class="col-md-1 col-md-offset-7"><button class="btn btn-primary" onclick="location.href='@(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin? Url.Action("orders","order") :Url.Action("orderlist","order"))';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
         <hr class="col-md-12" style="margin-bottom:25px;" />
         <div class="col-md-12" style="margin-bottom:50px;">
             <table class="tab-content table-striped" style="width:100%">
                 <tr>
-                    <th class="col">#</th>
-                    <th class="col">Name</th>
-                    <th class="col" style="text-align:center">Price</th>
+                    <th class="col" style="width:3%">#</th>
+                    <th class="col" style="width:10%">Name</th>
                     <th class="col" style="text-align:center">Quntity/Unit</th>
+                    @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
+                    {
+                        <th class="col" style="text-align:center">Purchase Price($)</th>
+                        <th class="col" style="text-align:center">Sales Price($)</th>
+                        <th class="col" style="text-align:center">Purchase Price(RMB)</th>
+                        <th class="col" style="text-align:center">Sales Price(RMB)</th>
+                        <th class="col" style="text-align:center">Total Purchase($)</th>
+                        <th class="col" style="text-align:center">Total Sales($)</th>
+                        <th class="col" style="text-align:center">Total Purchase(RMB)</th>
+                        <th class="col" style="text-align:center">Total Sales(RMB)</th>
+                    }
+                    else
+                    {
+                    <th class="col" style="text-align:center">Price</th>
                     <th class="col" style="text-align:center">Total</th>
+                    }
+                   
+                    
                 </tr>
                 @foreach (var item in Model.OrderLineItems)
             {
                     <tr>
-                        <td>@itemCounter</td>
+                       
+                        <td>@( itemCounter = itemCounter + 1)</td>
                         <td>@item.Product.English_Name</td>
-                        <td align="center"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
                         <td align="center">@item.Quantity</td>
+@if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
+{
+                        <td align="center"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
+                        <td align="center"><i class="fa fa-usd"></i>@item.DollarSalesPrice</td>
+                        <td align="center">@item.RMDPurchasePrice</td>
+                        <td align="center">@item.RMBSalesPrice</td>
                         <td align="center"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarPurchasePrice)</td>
+                        <td align="center"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarSalesPrice)</td>
+                        <td align="center">@(item.Quantity * item.RMDPurchasePrice)</td>
+                        <td align="center">@(item.Quantity * item.RMBSalesPrice)</td>}
+else
+{
+    <td align="center"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
+    <td align="center"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarPurchasePrice)</td>
+}
+                        
+                        
                     </tr>
                 }
             </table>
+            @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.WaitForAdminAproved)
+            {
+                <div class="col-md-7 col-md-offset-5" style="margin-top:50px;">
+                    <button class="btn btn-success" id="btnApproved">Approve</button>
+                    <button class="btn btn-danger" id="btnreject">Reject</button>
+                </div>
+            }
         </div>
 
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $("#btnApproved").on("click", function () {
+            updateStatus(@((int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved));
+        });
+        $("#btnreject").on("click", function () {
+            updateStatus(@((int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Rejected));
+        });
+        function updateStatus(status) {
+            $.ajax({
+                url: "@Url.Action("OrderInternamStatuseChange", "Order")",
+                method: "POST",
+                data: { id: @Model.Id, status:status  },
+            dataType: "json"
+        }).done(function (response) {
+            location.reload();
+        }).fail(function (jqXHR, textStatus) {
+            console.log("Request failed: " + textStatus);
+        });
+        }
+</script>
+    }
