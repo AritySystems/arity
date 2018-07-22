@@ -12,6 +12,8 @@ using AritySystems.Models;
 using AritySystems.Data;
 using System.Collections.Generic;
 using AritySystems.Common;
+using Syncfusion.XlsIO;
+
 
 namespace AritySystems.Controllers
 {
@@ -516,6 +518,169 @@ namespace AritySystems.Controllers
                 }
             }
             TempData["Success"] = "Supplier Carton Details added successfully. Thank you";
+            return View();
+        }
+
+        public ActionResult GeneratePerfomaInvoice(int? id)
+        {
+            ArityEntities dbContext = new ArityEntities();
+            List<PerfomaProductList> productList = new List<PerfomaProductList>();
+            id = 8;
+
+            var perfoma = (from order in dbContext.Orders
+                                 join user in dbContext.Users on order.CustomerId equals user.Id
+                                 join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
+                                 join product in dbContext.Products on lineItem.ProductId equals product.Id
+                                 where order.Id == id
+                                 select new PerformaInvoice()
+                                 {
+                                     ExporterName = "Exporter Co. Name",
+                                     ExporterAddress = "Exporter add	",
+                                     ExporterPhone = "Exporter phone Number",
+                                     CustomerCompanyName = user.CompanyName,
+                                     CustomerAddress = user.Address,
+                                     CustomerGST = user.GSTIN,
+                                     PINo = "17100601",
+                                     OrderDate = order.CreatedDate,
+                                     IECCode = user.IECCode,
+                                     CustomerName = user.FirstName + " " + user.LastName,
+                                     CustomerPhone = user.PhoneNumber
+                                 }).FirstOrDefault();
+
+            productList = (from order in dbContext.Orders
+                           join user in dbContext.Users on order.CustomerId equals user.Id
+                           join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
+                           join product in dbContext.Products on lineItem.ProductId equals product.Id
+                           select new PerfomaProductList()
+                           {
+                               Partiular = product.English_Name,
+                               Quantity = lineItem.Quantity,
+                               Unit = "NOs",
+                               UnitPrice = lineItem.DollarSalesPrice,
+                               TotalUSD = lineItem.Quantity * lineItem.DollarSalesPrice
+                           }).ToList();
+
+            perfoma.ProductList = productList;
+
+            //PerformaInvoice perfoma = new PerformaInvoice()
+            //{
+            //    ExporterName = "Exporter Co. Name",
+            //    ExporterAddress = "Exporter add	",
+            //    ExporterPhone = "Exporter phone Number",
+            //    CustomerCompanyName = "Customer Company Name",
+            //    CustomerAddress = "Cusomer Address",
+            //    CustomerGST = "GST123",
+            //    PINo = "17100601",
+            //    OrderDate = DateTime.Now,
+            //    IECCode = "Customer IEC Number",
+            //    CustomerName = "Customer contact name",
+            //    CustomerPhone = "Customer contact No.",
+            //    ProductList = productList
+            //};
+
+            //productList.Add(new PerfomaProductList()
+            //{
+            //    SRNO = 1,
+            //    Partiular = "Product Description",
+            //    UnitPrice = 12,
+            //    Unit = "NOs",
+            //    Quantity = 10,
+            //    TotalUSD = 120,
+            //});
+
+            //Create an instance of ExcelEngine.
+            using (ExcelEngine excelEngine = new ExcelEngine())
+            {
+                //Set the default application version as Excel 2016.
+                excelEngine.Excel.DefaultVersion = ExcelVersion.Excel2016;
+
+                //Create a workbook with a worksheet.
+                IWorkbook workbook = excelEngine.Excel.Workbooks.Create(1);
+
+                //Access first worksheet from the workbook instance.
+                IWorksheet worksheet = workbook.Worksheets[0];
+
+                //Insert sample text into cell “A1”.
+                worksheet.Range["A1"].Text = perfoma.ExporterName;
+                worksheet.Range["$A$1:$F$1"].Merge();
+
+                worksheet.Range["A2"].Text = perfoma.ExporterAddress;
+                worksheet.Range["$A$2:$F$2"].Merge();
+
+                worksheet.Range["A3"].Text = perfoma.ExporterPhone;
+                worksheet.Range["$A$3:$F$3"].Merge();
+
+                worksheet.Range["A4"].Text = string.Empty;
+                worksheet.Range["$A$4:$F$4"].Merge();
+
+                worksheet.Range["A5"].Text = "PERFORMA INVOICE";
+                worksheet.Range["$A$5:$F$5"].Merge();
+
+                worksheet.Range["A6"].Text = "Customer Co. name";
+                worksheet.Range["$A$6:$B$6"].Merge();
+
+                worksheet.Range["C6"].Text = "Pi No.";
+
+                worksheet.Range["D6"].Text = perfoma.PINo;
+                worksheet.Range["$D$6:$F$6"].Merge();
+
+                worksheet.Range["A7"].Text = "Customer Add";
+                worksheet.Range["$A$7:$B$7"].Merge();
+
+                worksheet.Range["C7"].Text = "Date";
+
+                worksheet.Range["D7"].Text = perfoma.OrderDate.ToString();
+                worksheet.Range["$D$7:$F$7"].Merge();
+
+                worksheet.Range["A8"].Text = "GST Number";
+                worksheet.Range["$A$8:$B$8"].Merge();
+
+                worksheet.Range["C8"].Text = "IEC code";
+
+                worksheet.Range["D8"].Text = perfoma.IECCode;
+                worksheet.Range["$D$8:$F$8"].Merge();
+
+                worksheet.Range["A9"].Text = string.Empty;
+                worksheet.Range["$A$9:$B$9"].Merge();
+
+                worksheet.Range["C9"].Text = "Name";
+
+                worksheet.Range["D9"].Text = perfoma.CustomerName;
+                worksheet.Range["$D$9:$F$9"].Merge();
+
+                worksheet.Range["A9"].Text = string.Empty;
+                worksheet.Range["$A$9:$B$9"].Merge();
+
+                worksheet.Range["C9"].Text = "Contact No.";
+
+                worksheet.Range["D9"].Text = perfoma.CustomerCompanyName;
+                worksheet.Range["$D$9:$F$9"].Merge();
+
+                worksheet.Range["A11"].Text = "Sr.No.";
+                worksheet.Range["B11"].Text = "Perticulates";
+                worksheet.Range["C11"].Text = "UP USD";
+                worksheet.Range["D11"].Text = "Unit";
+                worksheet.Range["E11"].Text = "Qty";
+                worksheet.Range["F11"].Text = "Total USD";
+
+                int i = 1;
+                int rownum = 12;
+                foreach (var item in perfoma.ProductList)
+                {
+                    worksheet.Range["A" + rownum + ""].Text = i.ToString();
+                    worksheet.Range["B" + rownum + ""].Text = item.Partiular;
+                    worksheet.Range["C" + rownum + ""].Text = item.UnitPrice.ToString();
+                    worksheet.Range["D" + rownum + ""].Text = item.Unit.ToString();
+                    worksheet.Range["E" + rownum + ""].Text = item.Quantity.ToString();
+                    worksheet.Range["F" + rownum + ""].Text = (item.UnitPrice * item.Quantity).ToString();
+                    i++;
+                    rownum++;
+                }
+
+                //Save the workbook to disk in xlsx format.
+                workbook.SaveAs(@"C:\excel\Sampldfsddsddse.xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
+            }
+
             return View();
         }
     }
