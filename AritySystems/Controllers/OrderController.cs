@@ -12,10 +12,12 @@ using AritySystems.Models;
 using AritySystems.Data;
 using System.Collections.Generic;
 using AritySystems.Common;
+using Syncfusion.XlsIO;
+
 
 namespace AritySystems.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class OrderController : Controller
     {
 
@@ -33,6 +35,11 @@ namespace AritySystems.Controllers
             return View();
         }
 
+        public ActionResult Orders()
+        {
+            return View();
+        }
+
         /// <summary>
         /// Get order details for customer
         /// </summary>
@@ -40,15 +47,23 @@ namespace AritySystems.Controllers
         public JsonResult GetOrderList()
         {
             ArityEntities objDb = new ArityEntities();
-            var orderLst = (from order in objDb.Orders.OrderByDescending(_=>_.CreatedDate).ToList()
+            int loggedInId = (int)Session["UserId"];
+            var orderItems = objDb.Orders.OrderByDescending(_ => _.CreatedDate).AsQueryable();
+            if (Session["UserType"] != null && ((int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Customer || (int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Supplier))
+                orderItems = orderItems.Where(_ => _.CustomerId == loggedInId).AsQueryable();
+            var orderLst = (from order in orderItems.ToList()
                             select new
                             {
                                 Id = order.Id,
                                 Prefix = order.Prefix,
+                                InternalStatus = order.Internal_status,
                                 CreatedDate = order.CreatedDate.ToString("MM/dd/yyyy h:m tt"),
                                 Status = order.Status,
                                 TotalItem = order.OrderLineItems.Sum(_ => _.Quantity),
-                                Total = order.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity))
+                                DollerSalesTotal = order.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity)),
+                                DollerPurchaseTotal = order.OrderLineItems.Sum(_ => (_.DollarPurchasePrice * _.Quantity)),
+                                RmbSalesTotal = order.OrderLineItems.Sum(_ => (_.RMBSalesPrice * _.Quantity)),
+                                RmbPurchaseTotal = order.OrderLineItems.Sum(_ => (_.RMDPurchasePrice * _.Quantity)),
                             }).ToList();
             return Json(new { data = orderLst }, JsonRequestBehavior.AllowGet);
         }
@@ -72,19 +87,14 @@ namespace AritySystems.Controllers
             ArityEntities objDb = new ArityEntities();
             ViewBag.Products = new SelectList(objDb.Products.Where(_ => _.Parent_Id == 0).ToList(), "Id", "English_Name");
             return View();
-            
+
         }
 
-        public ActionResult OrderLineItems(int? OrderId)
+        public ActionResult OrderLineItems(int? id)
         {
-            using (var db = new ArityEntities())
-            {
-                ViewBag.OrderName = db.Orders.Where(x => x.Id == OrderId).Select(x => x.Prefix).FirstOrDefault();
-                ViewBag.OrderDate = db.Orders.Where(x => x.Id == OrderId).Select(x => x.CreatedDate).FirstOrDefault();
-                ViewBag.Status = db.Orders.Where(x => x.Id == OrderId).Select(x => x.Status).FirstOrDefault();
-            }
-            ViewBag.OrderId = OrderId;
-            return View();
+            var db = new ArityEntities();
+            var order = db.Orders.Where(_ => _.Id == (id ?? 0)).FirstOrDefault();
+            return View(order);
         }
 
 
@@ -100,7 +110,7 @@ namespace AritySystems.Controllers
             {
                 using (var db = new ArityEntities())
                 {
-                   
+
                     var model = (from m in db.OrderLineItems
                                  join n in db.Orders on m.OrderId equals n.Id
                                  join o in db.Products on m.ProductId equals o.Id
@@ -118,13 +128,16 @@ namespace AritySystems.Controllers
                                      quantity = m.Quantity,
                                      //CreatedDate = m.CreatedDate.ToString(),
                                      //ModifiedDate = m.ModifiedDate ?? DateTime.MinValue,
-                                     Suppliers = (from a in db.Users join b in db.UserTypes on a.Id equals b.UserId
+                                     Suppliers = (from a in db.Users
+                                                  join b in db.UserTypes on a.Id equals b.UserId
                                                   where b.Id == 1
-                                                  select new SelectListItem{
-                                                     Text = a.Id.ToString(), Value = a.FirstName+" "+a.LastName
+                                                  select new SelectListItem
+                                                  {
+                                                      Text = a.Id.ToString(),
+                                                      Value = a.FirstName + " " + a.LastName
                                                   }).ToList()
                                  }).ToList();
-                    
+
                     return Json(new { data = model }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -215,7 +228,7 @@ namespace AritySystems.Controllers
             catch (Exception ex)
             {
                 throw;
-            }            
+            }
         }
         
 
@@ -231,7 +244,7 @@ namespace AritySystems.Controllers
             {
                 using (var db = new ArityEntities())
                 {
-                   
+
                     data.CartoonBM = supplierCartoon.CartoonBM;
                     data.CartoonNumber = supplierCartoon.CartoonNumber;
                     data.CartoonSize = supplierCartoon.CartoonSize;
@@ -320,6 +333,8 @@ namespace AritySystems.Controllers
             ArityEntities objDb = new ArityEntities();
             List<KeyValuePair<int, int>> lineItem = new List<KeyValuePair<int, int>>();
             ViewBag.Products = new SelectList(objDb.Products.Where(_ => _.Parent_Id == 0).ToList(), "Id", "English_Name");
+            int loggedInId = (int)Session["UserId"];
+            var userDetails = objDb.Users.Where(_ => _.Id == loggedInId).FirstOrDefault();
             if (fc != null)
             {
                 try
@@ -332,19 +347,28 @@ namespace AritySystems.Controllers
                     }
                     if (lineItem.Any())
                     {
-                        var order = objDb.Orders.Add(new Order() { CustomerId = 1, CreatedDate = DateTime.Now, Prefix = "user1", Status = 1});
-                        objDb.SaveChanges();
+                        var order = objDb.Orders.Add(new Order() { CustomerId = userDetails.Id, CreatedDate = DateTime.Now, Prefix = userDetails.Prefix, Status = (int)AritySystems.Common.EnumHelpers.OrderStatus.Draft, Internal_status = (int)AritySystems.Common.EnumHelpers.OrderStatus.Draft });
                         foreach (var item in lineItem.Where(_ => _.Value > 0))
                         {
                             var prodcut = objDb.Products.Where(_ => _.Id == item.Key).FirstOrDefault();
-                            objDb.OrderLineItems.Add(new OrderLineItem() { OrderId = order.Id, ProductId = prodcut.Id, DollarSalesPrice = prodcut.Dollar_Price, RMDPurchasePrice = prodcut.RMB_Price, Quantity = item.Value });
+                            objDb.OrderLineItems.Add(new OrderLineItem()
+                            {
+                                OrderId = order.Id,
+                                ProductId = prodcut.Id,
+                                DollarSalesPrice = prodcut.Dollar_Price,
+                                DollarPurchasePrice = prodcut.Dollar_Price,
+                                RMBSalesPrice = prodcut.RMB_Price,
+                                RMDPurchasePrice = prodcut.RMB_Price,
+                                Quantity = item.Value,
+                                CreatedDate = DateTime.Now
+                            });
                         }
                         objDb.SaveChanges();
                     }
                 }
                 catch (Exception ex)
                 {
-                    TempData["Error"] = "Error occured while place your order. Please try again.";
+                    TempData["Error"] = "Error occured while placing your order. Please try again.";
                     return View();
                 }
             }
@@ -369,7 +393,101 @@ namespace AritySystems.Controllers
             return Json(product, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet]
+        /// <summary>
+        /// Update Purchase price
+        /// </summary>
+        /// <param name="purchaseMdel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult PurchasePriceUpdate(List<PriceUpdateModel> purchaseMdel, string type)
+        {
+            try
+            {
+                var objDb = new ArityEntities();
+                if (purchaseMdel != null && purchaseMdel.Any())
+                {
+                    foreach (var item in purchaseMdel)
+                    {
+                        var orderLineItem = objDb.OrderLineItems.Where(_ => _.Id == item.ItemId).FirstOrDefault();
+                        if (type != null && !string.IsNullOrEmpty(type) && type.ToLower().Equals("purchase"))
+                        {
+                            orderLineItem.DollarPurchasePrice = item.DollerPrice;
+                            orderLineItem.RMDPurchasePrice = item.RMBPrice;
+                        }
+                        else
+                        {
+                            orderLineItem.DollarSalesPrice = item.DollerPrice;
+                            orderLineItem.RMBSalesPrice = item.RMBPrice;
+                        }
+                    }
+                    objDb.SaveChanges();
+                }
+                return Json("", JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(null, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Common method for updateing internal status
+        /// </summary>
+        /// <param name="id">order id</param>
+        /// <param name="status">internal status id</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult OrderInternamStatuseChange(int id, int status)
+        {
+            try
+            {
+                ArityEntities objDb = new ArityEntities();
+                var order = objDb.Orders.Where(_ => _.Id == id).FirstOrDefault();
+                order.Internal_status = status;
+                objDb.SaveChanges();
+                return Json("", JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return Json(null, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// Landing page for supplier order
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SuppliersOrder()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Get supplier order listing
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetSupplierOrderList()
+        {
+            var loggedInId = (int)Session["UserId"];
+            var objDb = new ArityEntities();
+            var orders = (from order in objDb.Orders.ToList()
+                          join orderlineitem in objDb.OrderLineItems.ToList() on order.Id equals orderlineitem.OrderId
+                          join supplierorder in objDb.OrderLineItem_Supplier_Mapping.ToList() on orderlineitem.Id equals supplierorder.OrderLineItemId
+                          join supplieritem in objDb.Supplier_Assigned_OrderLineItem.ToList() on supplierorder.Id equals supplieritem.OrderSupplierMapId
+                          select new
+                          {
+                              SupplierOrderId = supplierorder.Id,
+                              Prefix = "",
+                              OrderId = order.Id,
+                              CreatedOn = supplierorder.CreatedDate.ToString("MM/dd/yyyy h:m tt"),
+                              Quantity = supplierorder.Quantity,
+                              DollerSalesTotal = 0,
+                              RmbSalesTotal = 0,
+                              Status = 1
+                          }).ToList();
+            return Json(new { data = orders }, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult AddSupplierCartonDetail(int orderId)
         {
             ArityEntities dbContext = new ArityEntities();
@@ -423,6 +541,171 @@ namespace AritySystems.Controllers
                 }
             }
             TempData["Success"] = "Supplier Carton Details added successfully. Thank you";
+            return View();
+        }
+
+        public ActionResult GeneratePerfomaInvoice(int? id)
+        {
+            ArityEntities dbContext = new ArityEntities();
+            List<PerfomaProductList> productList = new List<PerfomaProductList>();
+            id = 8;
+
+            var perfoma = (from order in dbContext.Orders
+                                 join user in dbContext.Users on order.CustomerId equals user.Id
+                                 join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
+                                 join product in dbContext.Products on lineItem.ProductId equals product.Id
+                                 where order.Id == id
+                                 select new PerformaInvoice()
+                                 {
+                                     ExporterName = "Exporter Co. Name",
+                                     ExporterAddress = "Exporter add	",
+                                     ExporterPhone = "Exporter phone Number",
+                                     CustomerCompanyName = user.CompanyName,
+                                     CustomerAddress = user.Address,
+                                     CustomerGST = user.GSTIN,
+                                     PINo = "17100601",
+                                     OrderDate = order.CreatedDate,
+                                     IECCode = user.IECCode,
+                                     CustomerName = user.FirstName + " " + user.LastName,
+                                     CustomerPhone = user.PhoneNumber
+                                 }).FirstOrDefault();
+
+            productList = (from order in dbContext.Orders
+                           join user in dbContext.Users on order.CustomerId equals user.Id
+                           join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
+                           join product in dbContext.Products on lineItem.ProductId equals product.Id
+                           select new PerfomaProductList()
+                           {
+                               Partiular = product.English_Name,
+                               Quantity = lineItem.Quantity,
+                               Unit = "NOs",
+                               UnitPrice = lineItem.DollarSalesPrice,
+                               TotalUSD = lineItem.Quantity * lineItem.DollarSalesPrice
+                           }).ToList();
+
+            perfoma.ProductList = productList;
+
+            //PerformaInvoice perfoma = new PerformaInvoice()
+            //{
+            //    ExporterName = "Exporter Co. Name",
+            //    ExporterAddress = "Exporter add	",
+            //    ExporterPhone = "Exporter phone Number",
+            //    CustomerCompanyName = "Customer Company Name",
+            //    CustomerAddress = "Cusomer Address",
+            //    CustomerGST = "GST123",
+            //    PINo = "17100601",
+            //    OrderDate = DateTime.Now,
+            //    IECCode = "Customer IEC Number",
+            //    CustomerName = "Customer contact name",
+            //    CustomerPhone = "Customer contact No.",
+            //    ProductList = productList
+            //};
+
+            //productList.Add(new PerfomaProductList()
+            //{
+            //    SRNO = 1,
+            //    Partiular = "Product Description",
+            //    UnitPrice = 12,
+            //    Unit = "NOs",
+            //    Quantity = 10,
+            //    TotalUSD = 120,
+            //});
+
+            //Create an instance of ExcelEngine.
+            using (ExcelEngine excelEngine = new ExcelEngine())
+            {
+                //Set the default application version as Excel 2016.
+                excelEngine.Excel.DefaultVersion = ExcelVersion.Excel2016;
+
+                //Create a workbook with a worksheet.
+                IWorkbook workbook = excelEngine.Excel.Workbooks.Create(1);
+
+                //Access first worksheet from the workbook instance.
+                IWorksheet worksheet = workbook.Worksheets[0];
+
+                //Insert sample text into cell “A1”.
+                worksheet.Range["A1"].Text = perfoma.ExporterName;
+                worksheet.Range["$A$1:$F$1"].Merge();
+
+                worksheet.Range["A2"].Text = perfoma.ExporterAddress;
+                worksheet.Range["$A$2:$F$2"].Merge();
+
+                worksheet.Range["A3"].Text = perfoma.ExporterPhone;
+                worksheet.Range["$A$3:$F$3"].Merge();
+
+                worksheet.Range["A4"].Text = string.Empty;
+                worksheet.Range["$A$4:$F$4"].Merge();
+
+                worksheet.Range["A5"].Text = "PERFORMA INVOICE";
+                worksheet.Range["$A$5:$F$5"].Merge();
+
+                worksheet.Range["A6"].Text = "Customer Co. name";
+                worksheet.Range["$A$6:$B$6"].Merge();
+
+                worksheet.Range["C6"].Text = "Pi No.";
+
+                worksheet.Range["D6"].Text = perfoma.PINo;
+                worksheet.Range["$D$6:$F$6"].Merge();
+
+                worksheet.Range["A7"].Text = "Customer Add";
+                worksheet.Range["$A$7:$B$7"].Merge();
+
+                worksheet.Range["C7"].Text = "Date";
+
+                worksheet.Range["D7"].Text = perfoma.OrderDate.ToString();
+                worksheet.Range["$D$7:$F$7"].Merge();
+
+                worksheet.Range["A8"].Text = "GST Number";
+                worksheet.Range["$A$8:$B$8"].Merge();
+
+                worksheet.Range["C8"].Text = "IEC code";
+
+                worksheet.Range["D8"].Text = perfoma.IECCode;
+                worksheet.Range["$D$8:$F$8"].Merge();
+
+                worksheet.Range["A9"].Text = string.Empty;
+                worksheet.Range["$A$9:$B$9"].Merge();
+
+                worksheet.Range["C9"].Text = "Name";
+
+                worksheet.Range["D9"].Text = perfoma.CustomerName;
+                worksheet.Range["$D$9:$F$9"].Merge();
+
+                worksheet.Range["A9"].Text = string.Empty;
+                worksheet.Range["$A$9:$B$9"].Merge();
+
+                worksheet.Range["C9"].Text = "Contact No.";
+
+                worksheet.Range["D9"].Text = perfoma.CustomerCompanyName;
+                worksheet.Range["$D$9:$F$9"].Merge();
+
+                worksheet.Range["A11"].Text = "Sr.No.";
+                worksheet.Range["B11"].Text = "Perticulates";
+                worksheet.Range["C11"].Text = "UP USD";
+                worksheet.Range["D11"].Text = "Unit";
+                worksheet.Range["E11"].Text = "Qty";
+                worksheet.Range["F11"].Text = "Total USD";
+
+                int i = 1;
+                int rownum = 12;
+                foreach (var item in perfoma.ProductList)
+                {
+                    worksheet.Range["A" + rownum + ""].Text = i.ToString();
+                    worksheet.Range["B" + rownum + ""].Text = item.Partiular;
+                    worksheet.Range["C" + rownum + ""].Text = item.UnitPrice.ToString();
+                    worksheet.Range["D" + rownum + ""].Text = item.Unit.ToString();
+                    worksheet.Range["E" + rownum + ""].Text = item.Quantity.ToString();
+                    worksheet.Range["F" + rownum + ""].Text = (item.UnitPrice * item.Quantity).ToString();
+                    i++;
+                    rownum++;
+                }
+
+                //Save the workbook to disk in xlsx format.
+                workbook.SaveAs(@"C:\excel\Sampldfsddsddse.xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
+            }
+
+            return View();
+        }
             return RedirectToAction("AddSupplierCartonDetail","Order",new { orderId = ViewBag.OrderId});
         }
 

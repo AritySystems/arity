@@ -82,6 +82,12 @@ width: 390px;
     transition: all 0.4s;
     color:#fff;
 }
+    .error-text {
+    width: 100%;
+    position: relative;
+    margin-bottom: 37px;
+    text-align:center;
+    }
     
 </style>
 <body style="background-color:#f2f2f2;">
@@ -92,10 +98,15 @@ width: 390px;
                     @using (Html.BeginForm("Login", "User", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
             {
                         @Html.AntiForgeryToken()
-                        <div class="col-md-8 col-md-offset-2" style="margin-bottom:20px;">
+                        <div class="error-text">
                             <h3> Lucious Inc</h3>
                         </div>
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="error-text">
+                            @if (TempData["ErrorMSG"] != null)
+                            {
+                                <span class="label-danger label" style="font-size:95%;"> @TempData["ErrorMSG"]</span>
+                            }
+                        </div>
                         <div class="wrap-input100">
                                 @Html.TextBoxFor(m => m.Email, new { @class = "input100",@placeholder="Username" })
                             <span class="focus-input100" data-placeholder="Email"></span>
