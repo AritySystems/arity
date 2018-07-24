@@ -533,6 +533,7 @@ namespace AritySystems.Controllers
                         objDb.SupplierCartoons.Add(model);
                         objDb.SaveChanges();
                     }
+
                 }
                 catch (Exception ex)
                 {
@@ -541,7 +542,7 @@ namespace AritySystems.Controllers
                 }
             }
             TempData["Success"] = "Supplier Carton Details added successfully. Thank you";
-            return View();
+            return RedirectToAction("AddSupplierCartonDetail", "Order", new { orderId = ViewBag.OrderId });
         }
 
         public ActionResult GeneratePerfomaInvoice(int? id)
@@ -706,8 +707,8 @@ namespace AritySystems.Controllers
 
             return View();
         }
-            return RedirectToAction("AddSupplierCartonDetail","Order",new { orderId = ViewBag.OrderId});
-        }
+        
+        
 
         /// <summary>
         /// Supplier Order List items
