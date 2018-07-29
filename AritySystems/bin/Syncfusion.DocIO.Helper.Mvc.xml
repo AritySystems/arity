@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Syncfusion.DocIO.Helper.Mvc</name>
+    </assembly>
+    <members>
+        <member name="T:Syncfusion.DocIOBaseAssembly">
+            <exclude/>
+             <summary>
+             This class holds the name of the Syncfusion.DocIO.Base assembly and provides a helper 
+             routine that helps with resolving types when loading a serialization stream and when 
+             the framework probes for assemblies by reflection. 
+             </summary>
+        </member>
+        <member name="F:Syncfusion.DocIOBaseAssembly.Name">
+            <summary>
+            The full name of this assembly without version information: "Syncfusion.DocIO.Base".
+            </summary>
+        </member>
+        <member name="F:Syncfusion.DocIOBaseAssembly.Assembly">
+            <summary>
+            A reference to the <see cref="T:System.Reflection.Assembly"/> for the DocIO assembly.
+            </summary>
+        </member>
+        <member name="F:Syncfusion.DocIOBaseAssembly.RootNamespace">
+            <summary>
+            The root namespace of this assembly. Used internally for locating resources within the assembly.
+            </summary>
+        </member>
+        <member name="T:Syncfusion.DocIO.DocIOConfig">
+            <summary>
+            Configuration class for the DocIO library. In the current version, there are no explicit settings.
+            Adding this component from the toolbar allows you to easily configure your project for MS Word support.
+            </summary>
+        </member>
+        <member name="P:Syncfusion.DocIO.DocIOConfig.Copyright">
+            <summary>
+            Copyright notice for the library.
+            </summary>
+        </member>
+        <member name="T:Syncfusion.Mvc.DocIO.DocumentResult">
+            <summary>
+            This Class represents the Custom ActionResult for WordDocument.
+            </summary>
+        </member>
+        <member name="M:Syncfusion.Mvc.DocIO.DocumentResult.#ctor(Syncfusion.DocIO.DLS.IWordDocument,System.String,Syncfusion.DocIO.FormatType,System.Web.HttpResponse,Syncfusion.DocIO.HttpContentDisposition)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Syncfusion.Mvc.DocIO.DocumentResult"/> class.
+            </summary>
+            <param name="document">The Word Document</param>
+            <param name="filename">The Filename</param>
+            <param name="formattype">The FormatType</param>
+            <param name="response">The Resposne</param>
+            <param name="contentDisposition">The Type of ContentDisposition</param>
+        </member>
+        <member name="M:Syncfusion.Mvc.DocIO.DocumentResult.ExecuteResult(System.Web.Mvc.ControllerContext)">
+            <summary>
+            Executes the result.
+            </summary>
+            <param name="context">The Context.</param>
+        </member>
+        <member name="P:Syncfusion.Mvc.DocIO.DocumentResult.FileName">
+            <summary>
+            Gets/Sets the Name of the file.
+            </summary>
+            <value>Name of the file</value>
+        </member>
+        <member name="P:Syncfusion.Mvc.DocIO.DocumentResult.Document">
+            <summary>
+            Gets the WordDocument
+            </summary>
+            <value>The WordDocument</value>
+        </member>
+        <member name="P:Syncfusion.Mvc.DocIO.DocumentResult.formatType">
+            <summary>
+            Gets/Sets the Format Type
+            </summary>
+            <value>The FormatType</value>
+        </member>
+        <member name="P:Syncfusion.Mvc.DocIO.DocumentResult.ContentDisposition">
+            <summary>
+            Gets/Sets the type of ContentDisposition
+            </summary>
+            <value>The type of the ContentDisposition.</value>
+        </member>
+        <member name="P:Syncfusion.Mvc.DocIO.DocumentResult.Response">
+            <summary>
+            Gets the response
+            </summary>
+            <value>The Response.</value>
+        </member>
+        <member name="T:Syncfusion.Mvc.DocIO.DocIOExtension">
+            <summary>
+            DocIO Extension
+            </summary>
+        </member>
+        <member name="M:Syncfusion.Mvc.DocIO.DocIOExtension.ExportAsActionResult(Syncfusion.DocIO.DLS.IWordDocument,System.String,Syncfusion.DocIO.FormatType,System.Web.HttpResponse,Syncfusion.DocIO.HttpContentDisposition)">
+            <summary>
+            Export the document as ActionResult, returns the DocResult
+            </summary>
+            <param name="document">WordDocument to serialize</param>
+            <param name="filename">Name of the File</param>
+            <param name="formattype">Format type of the document</param>
+            <param name="response">Response</param>
+            <param name="contentDisposition">HttpContentDisposition</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,1065 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Syncfusion.PresentationToPdfConverter.Base</name>
+    </assembly>
+    <members>
+        <member name="M:Syncfusion.Presentation.PortableRendering.GDIRenderer.ApplyDuoTone(System.Drawing.Image,System.Collections.Generic.List{Syncfusion.Presentation.ColorObject})">
+            <summary>
+            Apply duotone to the give image.
+            </summary>
+            <param name="image">In where the duotone need to apply. </param>
+            <param name="duotone">duotone color informations.</param>
+            <returns>Duotone applied image.</returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.GDIRenderer.ApplyColorTransform(System.Collections.Generic.List{Syncfusion.Presentation.ColorTransForm},Syncfusion.Presentation.ColorObject)">
+            <summary>
+            Apply color Transformation to the given color.
+            </summary>
+            <param name="colorTransforms">Color Transformation information.</param>
+            <param name="inputColor">color in where the transformation occur.</param>
+            <returns>Transformation applied color.</returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.GDIRenderer.ExecuteLinearInterpolation(System.Drawing.Color,System.Drawing.Color,System.Drawing.Color,System.Single)">
+            <summary>
+            Executes Linear interpolation for Duotone.
+            </summary>
+            <param name="firstColor">In where the factor is applied.</param>
+            <param name="secondColor">In where the factor is applied.</param>
+            <param name="factor">Factor value.</param>
+            <returns>Final factorized color.</returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.GDIRenderer.DrawStringBasedOnCharacterSpacing(Syncfusion.Presentation.RichText.Paragraph,System.Drawing.Font,Syncfusion.Pdf.Graphics.PdfBrush,System.Drawing.RectangleF,System.String,Syncfusion.Presentation.RichText.Font)">
+            <summary>
+            Draws the string using character spacing by splitting the string into character.
+            </summary>
+            <param name="paragraphImpl">Represents the paragraph object.</param>
+            <param name="systemFont">Represents the System.Drawing.Font.</param>
+            <param name="textBrush">Represents the solid brush to draw the text.</param>
+            <param name="bounds">Represents the bounds of the text.</param>
+            <param name="text">Represents the text content.</param>
+            <param name="font">Represents the font instance.</param>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.GDIRenderer.GetRadialGradientBrush(Syncfusion.Pdf.Graphics.PdfPath,Syncfusion.Presentation.Drawing.GradientFill,Syncfusion.Pdf.Graphics.PdfColorBlend,System.Collections.Generic.List{Syncfusion.Pdf.Graphics.PdfColor})">
+            <summary>
+            Radial Gradient Fill implementation.
+            </summary>
+            <param name="path">Path </param>
+            <param name="gradientFill"></param>
+            <param name="gradientColorBlend"></param>
+        </member>
+        <member name="F:Syncfusion.Presentation.PortableRendering.ShapePath._rectBounds">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="F:Syncfusion.Presentation.PortableRendering.ShapePath._shapeGuide">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.#ctor(System.Drawing.RectangleF,System.Collections.Generic.Dictionary{System.String,System.String})">
+             <summary>
+            
+             </summary>
+             <param name="m_rectBounds"></param>
+             <param name="m_shapeGuide"></param>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetCurvedConnectorPath">
+            <summary>
+            Get Curved Connector path
+            </summary>
+            <formula>
+            formulaColl.Add("x2","*/ w adj1 100000");
+            formulaColl.Add("x1","+/ l x2 2");
+            formulaColl.Add("x3","+/ r x2 2");
+            formulaColl.Add("y3","*/ h 3 4");
+            </formula>
+            <param name="m_rectBounds"></param>
+            <param name="m_shapeGuide"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetBentConnectorPath">
+            <summary>
+            Get Bent Connector path
+            </summary>
+            <formula>
+            formulaColl.Add("x1","*/ w adj1 100000");
+            </formula>>
+            <param name="m_rectBounds"></param>
+            <param name="m_shapeGuide"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetRoundedRectanglePath">
+             <summary>
+            
+             </summary>
+             <param name="m_rectBounds"></param>
+             <param name="m_shapeGuide"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetSnipSingleCornerRectanglePath">
+             <summary>
+            
+             </summary>
+             <param name="m_rectBounds"></param>
+             <param name="m_shapeGuide"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetSnipSameSideCornerRectanglePath">
+             <summary>
+            
+             </summary>
+             <param name="m_rectBounds"></param>
+             <param name="m_shapeGuide"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetSnipDiagonalCornerRectanglePath">
+             <summary>
+            
+             </summary>
+             <param name="m_rectBounds"></param>
+             <param name="m_shapeGuide"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetSnipAndRoundSingleCornerRectanglePath">
+             <summary>
+            
+             </summary>
+             <param name="m_rectBounds"></param>
+             <param name="m_shapeGuide"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetRoundSingleCornerRectanglePath">
+             <summary>
+            
+             </summary>
+             <param name="m_rectBounds"></param>
+             <param name="m_shapeGuide"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetRoundSameSideCornerRectanglePath">
+             <summary>
+            
+             </summary>
+             <param name="m_rectBounds"></param>
+             <param name="m_shapeGuide"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetRoundDiagonalCornerRectanglePath">
+             <summary>
+            
+             </summary>
+             <param name="m_rectBounds"></param>
+             <param name="m_shapeGuide"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetTrianglePath">
+            <summary>
+            Get Triangle path
+            </summary>
+            <param name="shapeType"></param>
+            <param name="m_rectBounds"></param>
+            <param name="m_shapeGuide"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetParallelogramPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetTrapezoidPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetRegularPentagonPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetHexagonPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetHeptagonPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetOctagonPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetDecagonPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetDodecagonPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetPiePath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetChordPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetTearDropPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFramePath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetHalfFramePath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetL_ShapePath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetDiagonalStripePath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetCrossPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetPlaquePath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetCanPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetCubePath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetBevelPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetDonutPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetNoSymbolPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetBlockArcPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFoldedCornerPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetSmileyFacePath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetHeartPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLightningBoltPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetSunPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetMoonPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetCloudPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetArcPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetDoubleBracketPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetDoubleBracePath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLeftBracketPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetRightBracketPath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLeftBracePath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetRightBracePath">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetRightArrowPath">
+            <summary>
+            Gets the right arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLeftArrowPath">
+            <summary>
+            Gets the left arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetDownArrowPath">
+            <summary>
+            Gets down arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLeftRightArrowPath">
+            <summary>
+            Gets the left right arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetCurvedRightArrowPath">
+            <summary>
+            Gets the curved right arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetCurvedLeftArrowPath">
+            <summary>
+            Gets the curved left arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetCurvedUpArrowPath">
+            <summary>
+            Gets the curved up arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetCurvedDownArrowPath">
+            <summary>
+            Gets the curved down arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetUpDownArrowPath">
+            <summary>
+            Gets up down arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetQuadArrowPath">
+            <summary>
+            Gets the quad arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLeftRightUpArrowPath">
+            <summary>
+            Gets the left right up arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetBentArrowPath">
+            <summary>
+            Gets the bent arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetUTrunArrowPath">
+            <summary>
+            Gets the U trun arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLeftUpArrowPath">
+            <summary>
+            Gets the left up arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetBentUpArrowPath">
+            <summary>
+            Gets the bent up arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetStripedRightArrowPath">
+            <summary>
+            Gets the striped right arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetNotchedRightArrowPath">
+            <summary>
+            Gets the notched right arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetPentagonPath">
+            <summary>
+            Gets the pentagon path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetChevronPath">
+            <summary>
+            Gets the chevron path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetRightArrowCalloutPath">
+            <summary>
+            Gets the right arrow callout path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetDownArrowCalloutPath">
+            <summary>
+            Gets down arrow callout path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLeftArrowCalloutPath">
+            <summary>
+            Gets the left arrow callout path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetUpArrowCalloutPath">
+            <summary>
+            Gets up arrow callout path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLeftRightArrowCalloutPath">
+            <summary>
+            Gets the left right arrow callout path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetQuadArrowCalloutPath">
+            <summary>
+            Gets the quad arrow callout path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetCircularArrowPath">
+            <summary>
+            Gets the circular arrow path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetMathPlusPath">
+            <summary>
+            Gets the math plus path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetMathMinusPath">
+            <summary>
+            Gets the math minus path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetMathMultiplyPath">
+            <summary>
+            Gets the math multiply path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetMathDivisionPath">
+            <summary>
+            Gets the math division path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetMathEqualPath">
+            <summary>
+            Gets the math equal path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetMathNotEqualPath">
+            <summary>
+            Gets the math not equal path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartAlternateProcessPath">
+            <summary>
+            Gets the flow chart alternate process path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartPredefinedProcessPath">
+            <summary>
+            Gets the flow chart predefined process path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartInternalStoragePath">
+            <summary>
+            Gets the flow chart internal storage path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartDocumentPath">
+            <summary>
+            Gets the flow chart document path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartMultiDocumentPath">
+            <summary>
+            Gets the flow chart multi document path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartTerminatorPath">
+            <summary>
+            Gets the flow chart terminator path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartPreparationPath">
+            <summary>
+            Gets the flow chart preparation path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartManualInputPath">
+            <summary>
+            Gets the flow chart manual input path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartManualOperationPath">
+            <summary>
+            Gets the flow chart manual operation path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartConnectorPath">
+            <summary>
+            Gets the flow chart connector path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartOffPageConnectorPath">
+            <summary>
+            Gets the flow chart off page connector path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartCardPath">
+            <summary>
+            Gets the flow chart card path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartPunchedTapePath">
+            <summary>
+            Gets the flow chart punched tape path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartSummingJunctionPath">
+            <summary>
+            Gets the flow chart summing junction path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartOrPath">
+            <summary>
+            Gets the flow chart or path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartCollatePath">
+            <summary>
+            Gets the flow chart collate path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartSortPath">
+            <summary>
+            Gets the flow chart sort path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartExtractPath">
+            <summary>
+            Gets the flow chart extract path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartMergePath">
+            <summary>
+            Gets the flow chart merge path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartOnlineStoragePath">
+            <summary>
+            Gets the flow chart online storage path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartDelayPath">
+            <summary>
+            Gets the flow chart delay path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartSequentialAccessStoragePath">
+            <summary>
+            Gets the flow chart sequential access storage path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartMagneticDiskPath">
+            <summary>
+            Gets the flow chart magnetic disk path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartDirectAccessStoragePath">
+            <summary>
+            Gets the flow chart direct access storage path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFlowChartDisplayPath">
+            <summary>
+            Gets the flow chart display path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetRectangularCalloutPath">
+            <summary>
+            Gets the rectangular callout path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetRoundedRectangularCalloutPath">
+            <summary>
+            Gets the rounded rectangular callout path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetOvalCalloutPath">
+            <summary>
+            Gets the oval callout path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetCloudCalloutPath">
+            <summary>
+            Gets the cloud callout path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout1Path">
+            <summary>
+            Gets the line callout1 path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout2Path">
+            <summary>
+            Gets the line callout2 path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout3Path">
+            <summary>
+            Gets the line callout3 path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout1AccentBarPath">
+            <summary>
+            Gets the line callout1 accent bar path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout2AccentBarPath">
+            <summary>
+            Gets the line callout2 accent bar path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout3AccentBarPath">
+            <summary>
+            Gets the line callout3 accent bar path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout1NoBorderPath">
+            <summary>
+            Gets the line callout1 no border path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout2NoBorderPath">
+            <summary>
+            Gets the line callout2 no border path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout3NoBorderPath">
+            <summary>
+            Gets the line callout3 no border path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout1BorderAndAccentBarPath">
+            <summary>
+            Gets the line callout1 border and accent bar path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout2BorderAndAccentBarPath">
+            <summary>
+            Gets the line callout2 border and accent bar path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetLineCallout3BorderAndAccentBarPath">
+            <summary>
+            Gets the line callout3 border and accent bar path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetDegreeValue(System.Single)">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetXYPosition(System.Single,System.Single,System.Single)">
+             <summary>
+            
+             </summary>
+             <param name="xDifference"></param>
+             <param name="yDifference"></param>
+             <param name="positionRatio"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetPathAdjustValue(Syncfusion.Presentation.AutoShapeType)">
+            <summary>
+            Get Path adjust value
+            </summary>
+            <param name="m_shapeGuide"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.ParseShapeFormula(Syncfusion.Presentation.AutoShapeType)">
+             <summary>
+            
+             </summary>
+             <param name="m_rectBounds"></param>
+             <param name="adjValue"></param>
+             <param name="formulaColl"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetFormulaValues(Syncfusion.Presentation.AutoShapeType,System.Collections.Generic.Dictionary{System.String,System.String},System.Boolean)">
+             <summary>
+            
+             </summary>
+             <param name="formulaColl"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetOperandValues(Syncfusion.Presentation.AutoShapeType,System.Collections.Generic.Dictionary{System.String,System.Single}@,System.String[],System.Boolean)">
+             <summary>
+            
+             </summary>
+             <param name="m_rectBounds"></param>
+             <param name="adjValues"></param>
+             <param name="formulaValues"></param>
+             <param name="splitFormula"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetPresetOperandValue(System.String)">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetResultValue(System.String,System.Single[])">
+             <summary>
+            
+             </summary>
+             <param name="formula"></param>
+             <param name="operandValues"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetShapeFormula(Syncfusion.Presentation.AutoShapeType)">
+             <summary>
+            
+             </summary>
+             <param name="shapeType"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Presentation.PortableRendering.ShapePath.GetDefaultPathAdjValues(Syncfusion.Presentation.AutoShapeType)">
+             <summary>
+            
+             </summary>
+             <param name="shapeType"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverter.Convert(Syncfusion.Presentation.IPresentation)">
+            <summary>
+            Converts the Presentation to PDF document.
+            </summary>
+            <param name="presentation">Represents the presentation instance.</param>
+            <returns>pdfdcoument instance</returns>
+        </member>
+        <member name="M:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverter.Convert(Syncfusion.Presentation.IPresentation,System.Boolean)">
+            <summary>
+            Converts the Presentation to PDF document.
+            </summary>
+            <param name="presentation">Represents the presentation instance.</param>
+            <param name="isPortableRendering">Represents the PDF conversion is portable or not</param>
+            <returns>pdfdcoument instance</returns>
+        </member>
+        <member name="M:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverter.Convert(Syncfusion.Presentation.IPresentation,Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings)">
+            <summary>
+            Converts the Presentation to PDF document.
+            </summary>
+            <param name="presentation">Represents the presentation instance.</param>
+            <param name="settings">Represents the converter settings instance.</param>
+            <returns>pdfdcoument instance</returns>
+        </member>
+        <member name="M:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverter.Convert(Syncfusion.Presentation.ISlide)">
+            <summary>
+            Converts the Slide to PDF document.
+            </summary>
+            <param name="slide">Represents the slide instance.</param>
+            <returns>pdfdcoument instance</returns>
+        </member>
+        <member name="T:Syncfusion.PresentationToPdfConverter.SlidesPerPage">
+            <summary>
+            Specifies the Slides per page
+            </summary>
+        </member>
+        <member name="F:Syncfusion.PresentationToPdfConverter.SlidesPerPage.Six">
+            <summary>
+            Specifies the six Slides per page.
+            </summary>
+        </member>
+        <member name="F:Syncfusion.PresentationToPdfConverter.SlidesPerPage.One">
+            <summary>
+            Specifies the one Slide per page.
+            </summary>
+        </member>
+        <member name="F:Syncfusion.PresentationToPdfConverter.SlidesPerPage.Two">
+            <summary>
+            Specifies the two Slides per page.
+            </summary>
+        </member>
+        <member name="F:Syncfusion.PresentationToPdfConverter.SlidesPerPage.Three">
+            <summary>
+            Specifies the three Slides per page.
+            </summary>
+        </member>
+        <member name="F:Syncfusion.PresentationToPdfConverter.SlidesPerPage.Four">
+            <summary>
+            Specifies the four Slides per page.
+            </summary>
+        </member>
+        <member name="F:Syncfusion.PresentationToPdfConverter.SlidesPerPage.Nine">
+            <summary>
+            Specifies the nine Slides per page.
+            </summary>
+        </member>
+        <member name="T:Syncfusion.PresentationToPdfConverter.PublishOptions">
+            <summary>
+            Specifies the publishing options of the <see cref="T:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverter"/> instance.
+            </summary>
+        </member>
+        <member name="F:Syncfusion.PresentationToPdfConverter.PublishOptions.Slides">
+            <summary>
+            Allows converting all the slides in a Presentation to PDF document. This is the default option.
+            </summary>
+        </member>
+        <member name="F:Syncfusion.PresentationToPdfConverter.PublishOptions.Handouts">
+            <summary>
+            Allows the PDF pages in the converted PDF document to hold more than one slides as specified by the <see cref="T:Syncfusion.PresentationToPdfConverter.SlidesPerPage"/> enumerator
+            </summary>
+        </member>
+        <member name="F:Syncfusion.PresentationToPdfConverter.PublishOptions.NotesPages">
+            <summary>
+            Allows to convert the notes in the slides to PDF document.
+            </summary>
+        </member>
+        <member name="M:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings.#ctor">
+            <summary>
+            Intialize the new instance of presentation to pdfConverter settings.
+            </summary>
+        </member>
+        <member name="P:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings.SlidesPerPage">
+            <summary>
+            Gets or Sets the slides per page
+            </summary>
+        </member>
+        <member name="P:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings.ShowHiddenSlides">
+            <summary>
+            Indicates whether to export hidden slides or not.
+            </summary>
+        </member>
+        <member name="P:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings.EnablePortableRendering">
+            <summary>
+            Indicates whether to enable portable rendering or not.
+            </summary>
+        </member>
+        <member name="P:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings.PublishOptions">
+            <summary>
+            Gets or sets the available publishing options to export the Presentation to PDF document.
+            </summary>
+        </member>
+        <member name="P:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings.ImageQuality">
+            <summary>
+            Gets or sets the quality. The value indicates in percentage, max value represents best quality and min value represents best compression.
+            </summary>
+            <remarks>
+            The value indicates in percentage, max value represents best quality and min value represents best compression
+            </remarks>
+        </member>
+        <member name="P:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings.ImageResolution">
+            <summary>
+            Sets the image resolution to the image, which are embedded in the PowerPoint presentation.
+            </summary>
+        </member>
+        <member name="P:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings.PdfConformanceLevel">
+            <summary>
+            Gets or sets the PDF document's Conformance-level.
+            </summary>
+            <value>The <see cref="T:Syncfusion.Pdf.PdfConformanceLevel"/> of the PDF document.</value>
+        </member>
+        <member name="P:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings.OptimizeIdenticalImages">
+            <summary>
+            Gets or Sets a value indicating whether to optimize the memory usage for the identical (duplicate) images in PPTX to PDF conversion and converted PDF document.
+            </summary>
+        </member>
+        <member name="P:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings.EmbedFonts">
+            <summary>
+            Gets or sets a value indicating whether to embed fonts in the converted PDF document. Default value is <b>false</b>
+            </summary>
+            <value>
+            <b>True:</b> if need to embed fonts in the converted PDF document; otherwise, <b>False</b>.
+            </value>
+            <remarks>
+            <list type="bullet">
+            <item>This property is supported to embed TrueType fonts only.</item>
+            </list>
+            </remarks> 
+        </member>
+        <member name="P:Syncfusion.PresentationToPdfConverter.PresentationToPdfConverterSettings.EmbedCompleteFonts">
+            <summary>
+            Gets or sets a value indicating whether to embed the complete font information in the converted PDF document. Default value is <b>false</b>
+            </summary>
+            <value>
+            <b>True:</b> if need to embed the complete font information in the converted PDF document; otherwise, <b>False</b>.
+            </value>
+            <remarks>        
+            <list type="bullet">
+            <item>This property is used to indicate whether the complete font information of 
+            the characters in the resultant PDF document to embedded or not.</item>
+            <item>This property is supported to embed TrueType fonts only.</item>
+            </list>
+            </remarks> 
+        </member>
+    </members>
+</doc>

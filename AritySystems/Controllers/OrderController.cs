@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
 using AritySystems.Models;
 using AritySystems.Data;
 using System.Collections.Generic;
-using AritySystems.Common;
 using Syncfusion.XlsIO;
 
 
@@ -552,24 +544,24 @@ namespace AritySystems.Controllers
             id = 8;
 
             var perfoma = (from order in dbContext.Orders
-                                 join user in dbContext.Users on order.CustomerId equals user.Id
-                                 join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
-                                 join product in dbContext.Products on lineItem.ProductId equals product.Id
-                                 where order.Id == id
-                                 select new PerformaInvoice()
-                                 {
-                                     ExporterName = "Exporter Co. Name",
-                                     ExporterAddress = "Exporter add	",
-                                     ExporterPhone = "Exporter phone Number",
-                                     CustomerCompanyName = user.CompanyName,
-                                     CustomerAddress = user.Address,
-                                     CustomerGST = user.GSTIN,
-                                     PINo = "17100601",
-                                     OrderDate = order.CreatedDate,
-                                     IECCode = user.IECCode,
-                                     CustomerName = user.FirstName + " " + user.LastName,
-                                     CustomerPhone = user.PhoneNumber
-                                 }).FirstOrDefault();
+                           join user in dbContext.Users on order.CustomerId equals user.Id
+                           join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
+                           join product in dbContext.Products on lineItem.ProductId equals product.Id
+                           where order.Id == id
+                           select new PerformaInvoice()
+                           {
+                               ExporterName = "Exporter Co. Name",
+                               ExporterAddress = "Exporter add	",
+                               ExporterPhone = "Exporter phone Number",
+                               CustomerCompanyName = user.CompanyName,
+                               CustomerAddress = user.Address,
+                               CustomerGST = user.GSTIN,
+                               PINo = "17100601",
+                               OrderDate = order.CreatedDate,
+                               IECCode = user.IECCode,
+                               CustomerName = user.FirstName + " " + user.LastName,
+                               CustomerPhone = user.PhoneNumber
+                           }).FirstOrDefault();
 
             productList = (from order in dbContext.Orders
                            join user in dbContext.Users on order.CustomerId equals user.Id
@@ -707,8 +699,8 @@ namespace AritySystems.Controllers
 
             return View();
         }
-        
-        
+
+
 
         /// <summary>
         /// Supplier Order List items

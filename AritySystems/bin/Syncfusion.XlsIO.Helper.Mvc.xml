@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Syncfusion.XlsIO.Helper.Mvc</name>
+    </assembly>
+    <members>
+        <member name="T:Syncfusion.XlsIOWebAssembly">
+            <exclude/>
+             <summary>
+             This class holds the name of the Syncfusion.XlsIO.Base assembly and provides a helper 
+             routine that helps with resolving types when loading a serialization stream and when 
+             the framework probes for assemblies by reflection. 
+             </summary>
+        </member>
+        <member name="F:Syncfusion.XlsIOWebAssembly.Name">
+            <summary>
+            The full name of this assembly without version information
+            </summary>
+        </member>
+        <member name="F:Syncfusion.XlsIOWebAssembly.Assembly">
+            <summary>
+            A reference to the <see cref="T:System.Reflection.Assembly"/> for the XlsIOWeb assembly.
+            </summary>
+        </member>
+        <member name="F:Syncfusion.XlsIOWebAssembly.RootNamespace">
+            <summary>
+            The root namespace of this assembly. Used internally for locating resources within the assembly.
+            </summary>
+        </member>
+        <member name="M:Syncfusion.Mvc.XlsIO.XlsIOExtension.SaveAsActionResult(Syncfusion.XlsIO.ExcelEngine,Syncfusion.XlsIO.IWorkbook,System.String,System.Web.HttpResponse)">
+            <summary>
+            
+            </summary>
+            <param name="_workbook"></param>
+            <param name="filename"></param>
+            <param name="response"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Mvc.XlsIO.XlsIOExtension.SaveAsActionResult(Syncfusion.XlsIO.ExcelEngine,Syncfusion.XlsIO.IWorkbook,System.String,System.Web.HttpResponse,Syncfusion.XlsIO.ExcelDownloadType)">
+            <summary>
+            
+            </summary>
+            <param name="_workbook"></param>
+            <param name="filename"></param>
+            <param name="response"></param>
+            <param name="DownloadType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Mvc.XlsIO.XlsIOExtension.SaveAsActionResult(Syncfusion.XlsIO.ExcelEngine,Syncfusion.XlsIO.IWorkbook,System.String,System.Web.HttpResponse,Syncfusion.XlsIO.ExcelHttpContentType)">
+            <summary>
+            
+            </summary>
+            <param name="_workbook"></param>
+            <param name="filename"></param>
+            <param name="response"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Mvc.XlsIO.XlsIOExtension.SaveAsActionResult(Syncfusion.XlsIO.ExcelEngine,Syncfusion.XlsIO.IWorkbook,System.String,System.Web.HttpResponse,Syncfusion.XlsIO.ExcelDownloadType,Syncfusion.XlsIO.ExcelHttpContentType)">
+            <summary>
+            
+            </summary>
+            <param name="_workbook"></param>
+            <param name="filename"></param>
+            <param name="response"></param>
+            <param name="DownloadType"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Mvc.XlsIO.XlsIOExtension.SaveAsActionResult(Syncfusion.XlsIO.ExcelEngine,Syncfusion.XlsIO.IWorkbook,System.String,Syncfusion.XlsIO.ExcelSaveType,System.Web.HttpResponse,Syncfusion.XlsIO.ExcelDownloadType,Syncfusion.XlsIO.ExcelHttpContentType)">
+            <summary>
+            
+            </summary>
+            <param name="_workbook"></param>
+            <param name="filename"></param>
+            <param name="saveType"></param>
+            <param name="response"></param>
+            <param name="DownloadType"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Syncfusion.Mvc.XlsIO.XlsIOExtension.SaveAsActionResult(Syncfusion.XlsIO.ExcelEngine,Syncfusion.XlsIO.IWorkbook,System.String,System.String,System.Web.HttpResponse,Syncfusion.XlsIO.ExcelDownloadType,Syncfusion.XlsIO.ExcelHttpContentType)">
+            <summary>
+            
+            </summary>
+            <param name="_workbook"></param>
+            <param name="filename"></param>
+            <param name="saveType"></param>
+            <param name="response"></param>
+            <param name="DownloadType"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
