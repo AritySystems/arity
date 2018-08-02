@@ -107,8 +107,7 @@ namespace AritySystems.Controllers
                                  join n in db.Orders on m.OrderId equals n.Id
                                  join o in db.Products on m.ProductId equals o.Id
                                  where m.OrderId == OrderId && m.Quantity > 0
-                                 select new OrderLineItemViewModel
-                                 {
+                                 select new OrderLineItemViewModel {
                                      Id = m.Id,
                                      //OrderId = m.OrderId ?? 0,
                                      Order_Name = n.Prefix,
@@ -204,7 +203,7 @@ namespace AritySystems.Controllers
                                 ActualQuantity.Quantity = ActualQuantity.Quantity - quantity;
                                 db.SaveChanges();
                             }
-
+                            
                             model.OrderSupplierMapId = Convert.ToInt32(item.OrderLineItemId);
                             model.Quantity = quantity;
                             model.Status = 1;
@@ -223,7 +222,7 @@ namespace AritySystems.Controllers
                 throw;
             }
         }
-
+        
 
         /// <summary>
         /// Add supplier carton details
@@ -300,7 +299,7 @@ namespace AritySystems.Controllers
                                Dollar_Price = pro.Dollar_Price
                            }).FirstOrDefault();
             var items = objDb.Products.Where(_ => _.Id == id).Union(objDb.Products.Where(_ => _.Parent_Id == id)).ToList();
-            items.ForEach(_ => _.MOQ = qty);
+            items.ForEach(_ => _.Quantity = qty);
             var productList = (from lst in items
                                select new Product
                                {
@@ -310,7 +309,6 @@ namespace AritySystems.Controllers
                                    RMB_Price = lst.RMB_Price,
                                    Quantity = lst.Quantity,
                                    Id = lst.Id,
-                                   MOQ = lst.MOQ,
                                    Parent_Id = lst.Parent_Id
                                }).ToList();
             return Json(new { data = productList }, JsonRequestBehavior.AllowGet);
@@ -493,7 +491,7 @@ namespace AritySystems.Controllers
             var ordersLineItems = (from a in dbContext.OrderLineItems
                                    join b in dbContext.Products on a.ProductId equals b.Id
                                    where a.OrderId == orderId
-                                   select new { a.Id, b.English_Name }).ToList();
+                                   select new { a.Id,b.English_Name}).ToList();
             ViewBag.OrderLineItems = new SelectList(ordersLineItems, "Id", "English_Name");
             return View();
         }
@@ -717,25 +715,25 @@ namespace AritySystems.Controllers
                 using (var db = new ArityEntities())
                 {
                     var model = (from a in db.SupplierCartoons
-                                 join b in db.OrderLineItem_Supplier_Mapping on a.SupplierAssignedMapId equals b.OrderLineItemId
-                                 join c in db.OrderLineItems on b.OrderLineItemId equals c.Id
-                                 join d in db.Orders on c.OrderId equals d.Id
+                               join b in db.OrderLineItem_Supplier_Mapping on a.SupplierAssignedMapId equals b.OrderLineItemId
+                               join c in db.OrderLineItems on b.OrderLineItemId equals c.Id
+                               join d in db.Orders on c.OrderId equals d.Id
                                  where d.Id == OrderId
                                  select new SupplierCartonDetailModel
                                  {
-                                     Id = a.Id,
-                                     CartoonBM = a.CartoonBM,
-                                     CartoonNumber = a.CartoonNumber,
-                                     CartoonSize = a.CartoonSize,
-                                     NetWeight = a.NetWeight,
-                                     PcsPerCartoon = a.PcsPerCartoon,
-                                     Product_Chinese_Name = c.Product.Chinese_Name,
-                                     Product_English_Name = c.Product.English_Name,
-                                     Status = 1,
-                                     SupplierAssignedMapId = a.SupplierAssignedMapId,
-                                     TotalCartoons = a.TotalCartoons,
-                                     TotalGrossWeight = a.TotalGrossWeight,
-                                     TotalNetWeight = a.TotalNetWeight
+                                      Id = a.Id,
+                                      CartoonBM = a.CartoonBM,
+                                      CartoonNumber = a.CartoonNumber,
+                                      CartoonSize = a.CartoonSize,
+                                      NetWeight = a.NetWeight,
+                                      PcsPerCartoon = a.PcsPerCartoon,
+                                      Product_Chinese_Name = c.Product.Chinese_Name,
+                                      Product_English_Name = c.Product.English_Name,
+                                      Status = 1,
+                                      SupplierAssignedMapId = a.SupplierAssignedMapId,
+                                      TotalCartoons = a.TotalCartoons,
+                                      TotalGrossWeight =a.TotalGrossWeight,
+                                      TotalNetWeight = a.TotalNetWeight
                                  }).ToList();
 
                     return Json(new { data = model }, JsonRequestBehavior.AllowGet);
