@@ -12,18 +12,21 @@
     </div>
     <div class="row">
         <div class="col-md-4">
+            @if (userType != (int)AritySystems.Common.EnumHelpers.UserType.Customer)
+            {
+                <div class="col-md-12">
+                    Internal Order Status <span class="label label-success" style="padding:4px;color:#fff;"> <i class="fa fa-check-square-o"></i> @(((AritySystems.Common.EnumHelpers.InternalOrderStatus)Model.Internal_status).ToString())</span>
+                </div>
+            }
+            <div class="col-md-12">
+               Order Status <span class="label label-primary" style="padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)Model.Status).ToString())</span>
+            </div>
             <div class="col-md-12">@Model.CreatedDate </div>
             <div class="col-md-12">
                 @Model.Prefix
             </div>
             <div class="col-md-12">
-                Order Status <span class="label label-primary" style="padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)Model.Status).ToString())</span>
-            </div>
-            <div class="col-md-12">
-                Internal Order Status <span class="label label-success" style="padding:4px;color:#fff;"> <i class="fa fa-check-square-o"></i> @(((AritySystems.Common.EnumHelpers.InternalOrderStatus)Model.Internal_status).ToString())</span>
-            </div>
-            <div class="col-md-12">
-                Order Total <i class="fa fa-usd"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarPurchasePrice)) </ div >
+                <b>Order Total <i class="fa fa-usd"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarPurchasePrice)) </b>
             </div>
             <div class="col-md-12" style="margin:25px 0px 10px 0;">
                 <h4>Order Line Items</h4>
@@ -39,25 +42,25 @@
                     <th class="col" style="text-align:center">Quntity/Unit</th>
                     @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
                     {
-                        <th class="col" style="text-align:center">Purchase Price($)</th>
-                        <th class="col" style="text-align:center">Sales Price($)</th>
-                        <th class="col" style="text-align:center">Purchase Price(RMB)</th>
-                        <th class="col" style="text-align:center">Sales Price(RMB)</th>
-                        <th class="col" style="text-align:center">Total Purchase($)</th>
-                        <th class="col" style="text-align:center">Total Sales($)</th>
-                        <th class="col" style="text-align:center">Total Purchase(RMB)</th>
-                        <th class="col" style="text-align:center">Total Sales(RMB)</th>
+                        <th class="col" style="text-align:right">Purchase Price($)</th>
+                        <th class="col" style="text-align:right">Sales Price($)</th>
+                        <th class="col" style="text-align:right">Purchase Price(RMB)</th>
+                        <th class="col" style="text-align:right">Sales Price(RMB)</th>
+                        <th class="col" style="text-align:right">Total Purchase($)</th>
+                        <th class="col" style="text-align:right">Total Sales($)</th>
+                        <th class="col" style="text-align:right">Total Purchase(RMB)</th>
+                        <th class="col" style="text-align:right">Total Sales(RMB)</th>
                     }
                     else
                     {
-                        <th class="col" style="text-align:center">Price</th>
-                        <th class="col" style="text-align:center">Total</th>
+                        <th class="col" style="text-align:right">Price</th>
+                        <th class="col" style="text-align:right">Total</th>
                     }
 
 
                 </tr>
                 @foreach (var item in Model.OrderLineItems)
-            {
+                {
                     <tr>
 
                         <td>@( itemCounter = itemCounter + 1)</td>
@@ -65,23 +68,41 @@
                         <td align="center">@item.Quantity</td>
                         @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
                         {
-                            <td align="center"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
-                            <td align="center"><i class="fa fa-usd"></i>@item.DollarSalesPrice</td>
-                            <td align="center">@item.RMDPurchasePrice</td>
-                            <td align="center">@item.RMBSalesPrice</td>
-                            <td align="center"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarPurchasePrice)</td>
-                            <td align="center"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarSalesPrice)</td>
-                            <td align="center">@(item.Quantity * item.RMDPurchasePrice)</td>
-                            <td align="center">@(item.Quantity * item.RMBSalesPrice)</td>}
+                            <td align="right"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
+                            <td align="right"><i class="fa fa-usd"></i>@item.DollarSalesPrice</td>
+                            <td align="right">@item.RMDPurchasePrice</td>
+                            <td align="right">@item.RMBSalesPrice</td>
+                            <td align="right"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarPurchasePrice)</td>
+                            <td align="right"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarSalesPrice)</td>
+                            <td align="right">@(item.Quantity * item.RMDPurchasePrice)</td>
+                            <td align="right">@(item.Quantity * item.RMBSalesPrice)</td>}
                         else
                         {
-                            <td align="center"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
-                            <td align="center"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarPurchasePrice)</td>
+                            <td align="right"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
+                            <td align="right"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarPurchasePrice)</td>
                         }
 
 
                     </tr>
                 }
+                    <tr>
+                        <td colspan="3" align="right"><b>Order Total :</b></td>
+                        @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
+                        {
+                            <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_=>_.DollarPurchasePrice))</td>
+                            <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => _.DollarSalesPrice))e</td>
+                            <td align="right">@(Model.OrderLineItems.Sum(_ => _.RMDPurchasePrice))</td>
+                            <td align="right">@(Model.OrderLineItems.Sum(_ => _.RMBSalesPrice))</td>
+                            <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => (_.DollarPurchasePrice * _.Quantity)))</td>
+                            <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity)))</td>
+                            <td align="right">@(Model.OrderLineItems.Sum(_ => (_.RMDPurchasePrice * _.Quantity)))</td>
+                            <td align="right">@(Model.OrderLineItems.Sum(_ => (_.RMBSalesPrice * _.Quantity)))</td>}
+                        else
+                        {
+                            <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => _.DollarPurchasePrice))</td>
+                            <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => (_.DollarPurchasePrice * _.Quantity)))</td>
+                        }
+                    </tr>
             </table>
             @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.WaitForAdminAproved && userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
             {

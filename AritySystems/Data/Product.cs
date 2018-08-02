@@ -11,7 +11,8 @@ namespace AritySystems.Data
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations.Schema;
+
     public partial class Product
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -32,7 +33,10 @@ namespace AritySystems.Data
         public System.DateTime CreatedDate { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public bool IsActive { get; set; }
-    
+
+        [NotMapped]
+        public decimal MOQ { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderLineItem> OrderLineItems { get; set; }
     }
