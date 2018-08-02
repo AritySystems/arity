@@ -299,7 +299,7 @@ namespace AritySystems.Controllers
                                Dollar_Price = pro.Dollar_Price
                            }).FirstOrDefault();
             var items = objDb.Products.Where(_ => _.Id == id).Union(objDb.Products.Where(_ => _.Parent_Id == id)).ToList();
-            items.ForEach(_ => _.Quantity = qty);
+            items.ForEach(_ => _.MOQ = qty);
             var productList = (from lst in items
                                select new Product
                                {
@@ -308,6 +308,7 @@ namespace AritySystems.Controllers
                                    Dollar_Price = lst.Dollar_Price,
                                    RMB_Price = lst.RMB_Price,
                                    Quantity = lst.Quantity,
+                                   MOQ = lst.MOQ,
                                    Id = lst.Id,
                                    Parent_Id = lst.Parent_Id
                                }).ToList();

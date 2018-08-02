@@ -32,12 +32,12 @@
                 <tr>
                     <th style="width:10%"></th>
                     <th style="width:10%"></th>
-                    <th style="width:35%">Order Name</th>
-                    <th style="width:15%">Date</th>
-                    <th style="width:12%">Total items</th>
-                    <th style="width:13%">Total</th>
+                    <th style="width:35%">Shipping Mark</th>
+                    <th style="width:15%">Order Date</th>
+                    <th style="width:12%">Ordered items</th>
+                    <th style="width:13%">Order Total</th>
                     <th style="width:13%">Internal Status</th>
-                    <th style="width:10%">Order Status</th>
+                    <th style="width:10%">Status</th>
                 </tr>
             </thead>
         </table>
@@ -45,7 +45,7 @@
 </div>
 @section Scripts {
     <script>
-       
+
         function format(d) {
             var html = '<div class="child-heading">All payments information of ' + d.CreatedDate + '</div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;    border: 1px solid #eee;margin-bottom: 2%;"><tr><th>Name</th><th>Amount</th><th>Payment date</th><th>Status</th></tr>';
             html += '<tr>' +

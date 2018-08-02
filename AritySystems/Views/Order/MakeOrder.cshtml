@@ -6,9 +6,16 @@
     span.child-product {
         padding-left: 30px;
     }
+
     .lable-style {
-    font-size: 18px;
-    padding: 19px;
+        font-size: 18px;
+        padding: 19px;
+    }
+
+    .spn-error {
+        display: block;
+        font-size: 12px;
+        color: red;
     }
 </style>
 <div class="container">
@@ -62,7 +69,7 @@
                     Order Total : <span class="order-total"></span>
                 </div>
                 <div class="col-md-2 col-md-offset-5">
-                    <button type="submit" class="btn btn-success"><i class="fa fa-shopping-bag"></i> Place Order</button>
+                    <button type="submit" class="btn btn-success" id="btnPlaceOrder"><i class="fa fa-shopping-bag"></i> Place Order</button>
                 </div>
             }
         </div>
@@ -74,6 +81,24 @@
     $("#btnAddToCart").attr("disabled", "disabled");
     $("#ProductQty").on('change', function () {
         EnableButton();
+    });
+    $("#btnPlaceOrder").on("click", function (e) {
+        var isClikable = false;
+
+        $("table").find(".spn-error").remove();
+        $("input").css("border-color", "");
+        $(".qty-check").each(function () {
+            if (parseInt($(this).val()) < parseInt($(this).attr('data-moq'))) {
+                isClikable = true;
+                $(this).css("border-color", "red");
+                $(this).after($("<span class='spn-error'>Quantity should be more then " + $(this).attr('data-moq') + "</span>"));
+            }
+        });
+        if (isClikable) {
+            e.preventDefault();
+            return false;
+        }
+        return true;
     });
     $("#ProductId").on("change", function () {
         if ($(this).val() != null) {
@@ -103,7 +128,7 @@
             if (response.data != null) {
                 $.each(response.data, function (e, data) {
                     if ($(".tr_" + data.Id).length <= 0) {
-                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_" + data.Id + "'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + (data.Parent_Id > 0 ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' type='number' value='" + data.Quantity + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal'>$" + (data.Dollar_Price * data.Quantity) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
+                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_" + data.Id + "'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + (data.Parent_Id > 0 ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' class='qty-check' data-moq='" + data.Quantity+"' type='number' value='" + data.MOQ + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal'>$" + (data.Dollar_Price * data.MOQ) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
                         window.productCounter = window.productCounter + 1;
                     }
                 });
