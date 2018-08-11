@@ -70,6 +70,7 @@ namespace AritySystems.Controllers
             ArityEntities objDb = new ArityEntities();
             return View(objDb.Orders.Where(_ => _.Id == id).FirstOrDefault());
         }
+
         /// <summary>
         /// Place order landing page
         /// </summary>
@@ -229,7 +230,7 @@ namespace AritySystems.Controllers
         /// </summary>
         /// <param name="supplierCarton"></param>
         /// <returns></returns>
-        public JsonResult AddSupplierCartoonDetails(SupplierCartoon supplierCartoon)
+        public JsonResult AddSupplierCartonDetails(SupplierCartoon supplierCartoon)
         {
             SupplierCartoon data = new SupplierCartoon();
             try
