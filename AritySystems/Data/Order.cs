@@ -17,8 +17,10 @@ namespace AritySystems.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Order()
         {
-            this.OrderLineItems = new HashSet<OrderLineItem>();
             this.Payments = new HashSet<Payment>();
+            this.PerfomaInvoices = new HashSet<PerfomaInvoice>();
+            this.CommercialInvoices = new HashSet<CommercialInvoice>();
+            this.OrderLineItems = new HashSet<OrderLineItem>();
         }
     
         public int Id { get; set; }
@@ -29,10 +31,19 @@ namespace AritySystems.Data
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public int Internal_status { get; set; }
+        public Nullable<int> Sales_Person_Id { get; set; }
+        public Nullable<decimal> Commission { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrderLineItem> OrderLineItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Payment> Payments { get; set; }
+        public virtual Order Order1 { get; set; }
+        public virtual Order Order2 { get; set; }
+        public virtual User User { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PerfomaInvoice> PerfomaInvoices { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CommercialInvoice> CommercialInvoices { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrderLineItem> OrderLineItems { get; set; }
     }
 }

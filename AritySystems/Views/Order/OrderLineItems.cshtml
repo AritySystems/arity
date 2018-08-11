@@ -19,7 +19,7 @@
             @ViewBag.OrderName
         </div>
         <div class="col-md-12">
-            Status <span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)ViewBag.Status).ToString())</span>
+            Status <span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)Model.Status).ToString())</span>
         </div>
         <div class="row">
             <h3>Order Items :</h3>

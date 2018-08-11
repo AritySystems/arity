@@ -26,8 +26,18 @@
                 @Model.Prefix
             </div>
             <div class="col-md-12">
-                <b>Order Total <i class="fa fa-usd"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarPurchasePrice)) </b>
+                <b>Order Total <i class="fa fa-usd"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarSalesPrice)) </b>
             </div>
+            @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
+            {
+                <div class="col-md-12">
+                    <b>Order Total (RMB) @Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMDPurchasePrice)) </b>
+                </div>
+                <div class="col-md-12">
+                    <b>Order Profit (RNB) : @(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBSalesPrice)) - Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMDPurchasePrice))) </b>
+                </div>
+
+            }
             <div class="col-md-12" style="margin:25px 0px 10px 0;">
                 <h4>Order Line Items</h4>
             </div>
