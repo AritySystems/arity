@@ -14,37 +14,25 @@
         <h1>Order Details</h1>
     </div>
     <div class="row">
-        <div class="col-md-12">@ViewBag.OrderDate </div>
-        <div class="col-md-12">
-            @ViewBag.OrderName
-        </div>
-        <div class="col-md-12">
-            Status <span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)Model.Status).ToString())</span>
-        </div>
-        <div class="row">
-            <h3>Order Items :</h3>
-        </div>
-        <div class="row">
-            <table class="table" id="tblOrderItemList">
         <div class="col-md-4">
+            <div class="col-md-12">
+                Status <span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)Model.Status).ToString())</span>
+            </div>
+            <div class="col-md-12">
+                Internal Order Status <span class="label label-success" style="padding:4px;color:#fff;"> <i class="fa fa-check-square-o"></i> @(((AritySystems.Common.EnumHelpers.InternalOrderStatus)Model.Internal_status).ToString())</span>
+            </div>
             <div class="col-md-12">@Model.CreatedDate </div>
             <div class="col-md-12">
                 @Model.Prefix
             </div>
             <div class="col-md-12">
-                Order Status <span class="label label-primary" style="padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)Model.Status).ToString())</span>
-            </div>
-            <div class="col-md-12">
-                Internal Order Status <span class="label label-success" style="padding:4px;color:#fff;"> <i class="fa fa-check-square-o"></i> @(((AritySystems.Common.EnumHelpers.InternalOrderStatus)Model.Internal_status).ToString())</span>
-            </div>
-            <div class="col-md-12">
-                Order Total <i class="fa fa-usd"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarPurchasePrice)) </ div >
+                Order Total <b><i class="fa fa-jpy"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMDPurchasePrice))</b>
             </div>
             <div class="col-md-12" style="margin:25px 0px 10px 0;">
                 <h4>Order Line Items</h4>
             </div>
         </div>
-        @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
+        @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
         {
             <div class="col-md-2 col-md-offset-5" style="text-align:right;"><button class="btn btn-success" onclick="location.href='@Url.Action("orderlist", "order")';"><i class="fa fa-print"></i> Genrate PI</button></div>}
         <div class="col-md-1 @(userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved ? "":"col-md-offset-7") "><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
@@ -55,13 +43,13 @@
                     <tr>
                         <th>Product Name</th>
                         <th>Purchase Price($)</th>
-                        <th>Purchase Price(Y)</th>
+                        <th>Purchase Price (<i class="fa fa-jpy"></i>)</th>
                         <th>Purchase Price($)</th>
-                        <th>Purchase Price(Y)</th>
+                        <th>Purchase Price (<i class="fa fa-jpy"></i>)</th>
                         <th>Sales Price($)</th>
-                        <th>Sales Price(Y)</th>
+                        <th>Sales Price (<i class="fa fa-jpy"></i>)</th>
                         <th>Sales Price($)</th>
-                        <th>Sales Price(Y)</th>
+                        <th>Sales Price (<i class="fa fa-jpy"></i>)</th>
                         <th>Qunatity</th>
                         <th>Qunatity</th>
                         <th>Suppliers</th>
@@ -142,6 +130,7 @@
         }).fail(function (jqXHR, textStatus) {
             console.log("Request failed: " + textStatus);
         });
+        });
 
 
         $(document).ready(function () {
@@ -202,6 +191,8 @@
             });
             if(userType == 4)
             {
+                tableItmes.column(1).visible(false);
+                tableItmes.column(4).visible(false);
                 tableItmes.column(5).visible(false);
                 tableItmes.column(6).visible(false);
                 tableItmes.column(7).visible(false);
@@ -258,7 +249,7 @@
             }
 
             var table = $('#tblSupplierOrderItemList').DataTable({
-                "ajax": "/Order/SuppliersOrderLineItemList?OrderId=" + orderid,
+                "ajax": "/Order/SuppliersOrderLineItemList?OrderId=" + @Model.Id,
                 "columns": [
                     {
                         "data": "Id",
@@ -270,10 +261,7 @@
                     { "data": "SupplierName" },
                     { "data": "Order_Prefix" },
                     { "data": "Quantity" },
-                    { "data": "Status" },
-                    //{
-                    //    "data": "CreatedDate",
-                    //},
+                    { "data": "Status" }
                 ],
                 "SupplierOrderLineItems": [[1, 'asc']]
             });
@@ -283,8 +271,8 @@
                 var purchaseData =[];
                 $("#tblOrderItemList tbody tr").each(function(i){
                     purchaseData.push({
-                        "ItemId":$(this).find("input.purchase-doller-price").attr("data-item-id"),
-                        "DollerPrice":$(this).find("input.purchase-doller-price").val(),
+                        "ItemId": $(this).find("input.purchase-rmb-price").attr("data-item-id"),
+                        //"DollerPrice":$(this).find("input.purchase-doller-price").val(),
                         "RMBPrice":$(this).find("input.purchase-rmb-price").val()
                     });
                 })
@@ -362,8 +350,7 @@
                 url: "@Url.Action("AddSupplierOrderLineItems", "Order")",
                 method: "POST",
             data: { id: $("#ProductId").val(), qty: $("#ProductQty").val() },
-            dataType: "json"
-        }).done(function (response) {
+            dataType: "json"}).done(function (response) {
             if (response.data != null) {
                 $.each(response.data, function (e, data) {
                     if($(".tr_"+data.Id).length <= 0)
@@ -377,12 +364,10 @@
                 });
                 $(".order-total").html('$' + OrderTotal);
                 $("#lineItem").show();
-            }
-        }).fail(function (jqXHR, textStatus) {
+            }}).fail(function (jqXHR, textStatus) {
             console.log("Request failed: " + textStatus);
-        });
-
-        });
+            });
+          });
         });
     </script>
 }

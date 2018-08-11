@@ -104,11 +104,11 @@
                         "data": null,
                         'render': function (data, type, full, meta) {
                             if(@userType == 3)
-                                return data.DollerSalesTotal;
+                                return '<i class="fa fa-jpy"></i> ' + data.RmbSalesTotal;
                             else if(@userType == 4)
-                                return '$' +data.DollerPurchaseTotal;
+                                return '<i class="fa fa-jpy"></i> ' + data.RmbPurchaseTotal;
                             else
-                                return '$'+data.DollerPurchaseTotal;
+                                return '<i class="fa fa-jpy"></i> ' + data.RmbPurchaseTotal;
                         }
                     },
                     {
