@@ -258,6 +258,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ArityDB.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Data\CommercialInvoice.cs">
+      <DependentUpon>ArityDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\CommercialInvoiceItem.cs">
+      <DependentUpon>ArityDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\Order.cs">
       <DependentUpon>ArityDB.tt</DependentUpon>
     </Compile>
@@ -268,6 +274,12 @@
       <DependentUpon>ArityDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\Payment.cs">
+      <DependentUpon>ArityDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PerfomaInvoice.cs">
+      <DependentUpon>ArityDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PerfomaInvoiceItem.cs">
       <DependentUpon>ArityDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\Product.cs">
