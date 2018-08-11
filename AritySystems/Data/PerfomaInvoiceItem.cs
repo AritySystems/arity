@@ -12,20 +12,15 @@ namespace AritySystems.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class OrderLineItem
+    public partial class PerfomaInvoiceItem
     {
         public int Id { get; set; }
-        public Nullable<int> OrderId { get; set; }
+        public Nullable<int> PerfomaInvoiceId { get; set; }
         public Nullable<int> ProductId { get; set; }
-        public decimal DollarPurchasePrice { get; set; }
-        public decimal RMBPurchasePrice { get; set; }
-        public decimal DollarSalesPrice { get; set; }
-        public decimal RMBSalesPrice { get; set; }
-        public decimal Quantity { get; set; }
-        public System.DateTime CreatedDate { get; set; }
-        public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public Nullable<decimal> RMB_ProductPrice { get; set; }
+        public Nullable<decimal> Dollar_ProductPrice { get; set; }
     
-        public virtual Order Order { get; set; }
+        public virtual PerfomaInvoice PerfomaInvoice { get; set; }
         public virtual Product Product { get; set; }
     }
 }
