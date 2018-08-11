@@ -31,10 +31,10 @@
             @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
             {
                 <div class="col-md-12">
-                    <b>Order Total (RMB) @Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMDPurchasePrice)) </b>
+                    <b>Order Total (RMB) @Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice)) </b>
                 </div>
                 <div class="col-md-12">
-                    <b>Order Profit (RNB) : @(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBSalesPrice)) - Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMDPurchasePrice))) </b>
+                    <b>Order Profit (RNB) : @(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBSalesPrice)) - Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice))) </b>
                 </div>
 
             }
@@ -80,11 +80,11 @@
                         {
                             <td align="right"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
                             <td align="right"><i class="fa fa-usd"></i>@item.DollarSalesPrice</td>
-                            <td align="right">@item.RMDPurchasePrice</td>
+                            <td align="right">@item.RMBPurchasePrice</td>
                             <td align="right">@item.RMBSalesPrice</td>
                             <td align="right"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarPurchasePrice)</td>
                             <td align="right"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarSalesPrice)</td>
-                            <td align="right">@(item.Quantity * item.RMDPurchasePrice)</td>
+                            <td align="right">@(item.Quantity * item.RMBPurchasePrice)</td>
                             <td align="right">@(item.Quantity * item.RMBSalesPrice)</td>}
                         else
                         {
@@ -101,11 +101,11 @@
                     {
                         <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => _.DollarPurchasePrice))</td>
                         <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => _.DollarSalesPrice))e</td>
-                        <td align="right">@(Model.OrderLineItems.Sum(_ => _.RMDPurchasePrice))</td>
+                        <td align="right">@(Model.OrderLineItems.Sum(_ => _.RMBPurchasePrice))</td>
                         <td align="right">@(Model.OrderLineItems.Sum(_ => _.RMBSalesPrice))</td>
                         <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => (_.DollarPurchasePrice * _.Quantity)))</td>
                         <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity)))</td>
-                        <td align="right">@(Model.OrderLineItems.Sum(_ => (_.RMDPurchasePrice * _.Quantity)))</td>
+                        <td align="right">@(Model.OrderLineItems.Sum(_ => (_.RMBPurchasePrice * _.Quantity)))</td>
                         <td align="right">@(Model.OrderLineItems.Sum(_ => (_.RMBSalesPrice * _.Quantity)))</td>}
                     else
                     {
