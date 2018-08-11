@@ -26,7 +26,6 @@ namespace AritySystems.Data
         }
     
         public virtual DbSet<Order> Orders { get; set; }
-        public virtual DbSet<OrderLineItem> OrderLineItems { get; set; }
         public virtual DbSet<OrderLineItem_Supplier_Mapping> OrderLineItem_Supplier_Mapping { get; set; }
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<Product> Products { get; set; }
@@ -34,5 +33,10 @@ namespace AritySystems.Data
         public virtual DbSet<SupplierCartoon> SupplierCartoons { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserType> UserTypes { get; set; }
+        public virtual DbSet<PerfomaInvoice> PerfomaInvoices { get; set; }
+        public virtual DbSet<PerfomaInvoiceItem> PerfomaInvoiceItems { get; set; }
+        public virtual DbSet<CommercialInvoice> CommercialInvoices { get; set; }
+        public virtual DbSet<CommercialInvoiceItem> CommercialInvoiceItems { get; set; }
+        public virtual DbSet<OrderLineItem> OrderLineItems { get; set; }
     }
 }

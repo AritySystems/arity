@@ -55,7 +55,7 @@ namespace AritySystems.Controllers
                                 DollerSalesTotal = order.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity)),
                                 DollerPurchaseTotal = order.OrderLineItems.Sum(_ => (_.DollarPurchasePrice * _.Quantity)),
                                 RmbSalesTotal = order.OrderLineItems.Sum(_ => (_.RMBSalesPrice * _.Quantity)),
-                                RmbPurchaseTotal = order.OrderLineItems.Sum(_ => (_.RMDPurchasePrice * _.Quantity)),
+                                RmbPurchaseTotal = order.OrderLineItems.Sum(_ => (_.RMBPurchasePrice * _.Quantity)),
                             }).ToList();
             return Json(new { data = orderLst }, JsonRequestBehavior.AllowGet);
         }
@@ -115,7 +115,7 @@ namespace AritySystems.Controllers
                                      Product_Name = o.English_Name + "(" + o.Chinese_Name + ")",
                                      Purchase_Price_dollar = m.DollarPurchasePrice,
                                      Sales_Price_dollar = m.DollarSalesPrice,
-                                     Purchase_Price_rmb = m.RMDPurchasePrice,
+                                     Purchase_Price_rmb = m.RMBPurchasePrice,
                                      Sales_Price_rmb = m.RMBSalesPrice,
                                      quantity = m.Quantity,
                                      //CreatedDate = m.CreatedDate.ToString(),
@@ -351,7 +351,7 @@ namespace AritySystems.Controllers
                                 DollarSalesPrice = prodcut.Dollar_Price,
                                 DollarPurchasePrice = prodcut.Dollar_Price,
                                 RMBSalesPrice = prodcut.RMB_Price,
-                                RMDPurchasePrice = prodcut.RMB_Price,
+                                RMBPurchasePrice = prodcut.RMB_Price,
                                 Quantity = item.Value,
                                 CreatedDate = DateTime.Now
                             });
@@ -404,8 +404,8 @@ namespace AritySystems.Controllers
                         var orderLineItem = objDb.OrderLineItems.Where(_ => _.Id == item.ItemId).FirstOrDefault();
                         if (type != null && !string.IsNullOrEmpty(type) && type.ToLower().Equals("purchase"))
                         {
-                            //orderLineItem.DollarPurchasePrice = item.DollerPrice;
-                            orderLineItem.RMDPurchasePrice = item.RMBPrice;
+                            orderLineItem.DollarPurchasePrice = item.DollerPrice;
+                            orderLineItem.RMBPurchasePrice = item.RMBPrice;
                         }
                         else
                         {

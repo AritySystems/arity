@@ -14,7 +14,7 @@ namespace AritySystems.Controllers
     [Authorize]
     public class UserController : Controller
     {
-
+        
         ArityEntities dataContext;
 
         public UserController()

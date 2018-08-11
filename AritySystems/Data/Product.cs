@@ -11,16 +11,17 @@ namespace AritySystems.Data
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-
+    
     public partial class Product
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Product()
         {
+            this.PerfomaInvoiceItems = new HashSet<PerfomaInvoiceItem>();
+            this.CommercialInvoiceItems = new HashSet<CommercialInvoiceItem>();
             this.OrderLineItems = new HashSet<OrderLineItem>();
         }
-
+    
         public int Id { get; set; }
         public string Chinese_Name { get; set; }
         public string English_Name { get; set; }
@@ -33,10 +34,14 @@ namespace AritySystems.Data
         public System.DateTime CreatedDate { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public bool IsActive { get; set; }
-
-        [NotMapped]
-        public decimal MOQ { get; set; }
-
+        public string Suppliers { get; set; }
+        public string ParentIds { get; set; }
+        public Nullable<decimal> MOQ { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PerfomaInvoiceItem> PerfomaInvoiceItems { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CommercialInvoiceItem> CommercialInvoiceItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderLineItem> OrderLineItems { get; set; }
     }

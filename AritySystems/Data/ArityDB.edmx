@@ -4,7 +4,25 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="DB_A3E8AF_luceousModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="DB_A3E8AF_luceousModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="CommercialInvoice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderId" Type="int" />
+          <Property Name="CommercialInvoiceReferece" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="CommercialInvoiceItems">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="CommercialInvoiceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProductId" Type="int" />
+          <Property Name="RMB_ProductPrice" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Dollar_ProductPrice" Type="decimal" Precision="18" Scale="0" />
+        </EntityType>
         <EntityType Name="Order">
           <Key>
             <PropertyRef Name="Id" />
@@ -17,6 +35,8 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="Internal_status" Type="int" Nullable="false" />
+          <Property Name="Sales_Person_Id" Type="int" />
+          <Property Name="Commission" Type="decimal" Precision="18" Scale="0" />
         </EntityType>
         <EntityType Name="OrderLineItem">
           <Key>
@@ -26,7 +46,7 @@
           <Property Name="OrderId" Type="int" />
           <Property Name="ProductId" Type="int" />
           <Property Name="DollarPurchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="RMDPurchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="RMBPurchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="DollarSalesPrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="RMBSalesPrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" Nullable="false" />
@@ -58,6 +78,24 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
+        <EntityType Name="PerfomaInvoice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderId" Type="int" />
+          <Property Name="PerfomaInvoiceReferece" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="PerfomaInvoiceItems">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PerfomaInvoiceId" Type="int" />
+          <Property Name="ProductId" Type="int" />
+          <Property Name="RMB_ProductPrice" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Dollar_ProductPrice" Type="decimal" Precision="18" Scale="0" />
+        </EntityType>
         <EntityType Name="Product">
           <Key>
             <PropertyRef Name="Id" />
@@ -74,6 +112,9 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="Suppliers" Type="nvarchar(max)" />
+          <Property Name="ParentIds" Type="nvarchar(max)" />
+          <Property Name="MOQ" Type="decimal" Precision="18" Scale="0" />
         </EntityType>
         <EntityType Name="Supplier_Assigned_OrderLineItem">
           <Key>
@@ -136,6 +177,66 @@
           <Property Name="UserId" Type="int" />
           <Property Name="Type" Type="nvarchar" MaxLength="50" />
         </EntityType>
+        <Association Name="FK_CommercialInvoice_Order">
+          <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
+          <End Role="CommercialInvoice" Type="Self.CommercialInvoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommercialInvoice">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommercialInvoiceItems_CommercialInvoice">
+          <End Role="CommercialInvoice" Type="Self.CommercialInvoice" Multiplicity="1" />
+          <End Role="CommercialInvoiceItems" Type="Self.CommercialInvoiceItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommercialInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommercialInvoiceItems">
+              <PropertyRef Name="CommercialInvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommercialInvoiceItems_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="0..1" />
+          <End Role="CommercialInvoiceItems" Type="Self.CommercialInvoiceItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommercialInvoiceItems">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Order_Order">
+          <End Role="Order" Type="Self.Order" Multiplicity="1" />
+          <End Role="Order1" Type="Self.Order" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Order1">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Order_User">
+          <End Role="User" Type="Self.User" Multiplicity="0..1" />
+          <End Role="Order" Type="Self.Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="Sales_Person_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_OrderLineItem_Order">
           <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
           <End Role="OrderLineItem" Type="Self.OrderLineItem" Multiplicity="*" />
@@ -208,6 +309,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PerfomaInvoice_Order">
+          <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
+          <End Role="PerfomaInvoice" Type="Self.PerfomaInvoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PerfomaInvoice">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PerfomaInvoiceItems_PerfomaInvoice">
+          <End Role="PerfomaInvoice" Type="Self.PerfomaInvoice" Multiplicity="0..1" />
+          <End Role="PerfomaInvoiceItems" Type="Self.PerfomaInvoiceItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PerfomaInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PerfomaInvoiceItems">
+              <PropertyRef Name="PerfomaInvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PerfomaInvoiceItems_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="0..1" />
+          <End Role="PerfomaInvoiceItems" Type="Self.PerfomaInvoiceItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PerfomaInvoiceItems">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping">
           <End Role="OrderLineItem_Supplier_Mapping" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="0..1" />
           <End Role="Supplier_Assigned_OrderLineItem" Type="Self.Supplier_Assigned_OrderLineItem" Multiplicity="*" />
@@ -245,15 +382,39 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="DB_A3E8AF_luceousModelStoreContainer">
+          <EntitySet Name="CommercialInvoice" EntityType="Self.CommercialInvoice" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CommercialInvoiceItems" EntityType="Self.CommercialInvoiceItems" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Order" EntityType="Self.Order" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderLineItem" EntityType="Self.OrderLineItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OrderLineItem_Supplier_Mapping" EntityType="Self.OrderLineItem_Supplier_Mapping" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Payment" EntityType="Self.Payment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PerfomaInvoice" EntityType="Self.PerfomaInvoice" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PerfomaInvoiceItems" EntityType="Self.PerfomaInvoiceItems" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Supplier_Assigned_OrderLineItem" EntityType="Self.Supplier_Assigned_OrderLineItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SupplierCartoon" EntityType="Self.SupplierCartoon" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserType" EntityType="Self.UserType" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_CommercialInvoice_Order" Association="Self.FK_CommercialInvoice_Order">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="CommercialInvoice" EntitySet="CommercialInvoice" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommercialInvoiceItems_CommercialInvoice" Association="Self.FK_CommercialInvoiceItems_CommercialInvoice">
+            <End Role="CommercialInvoice" EntitySet="CommercialInvoice" />
+            <End Role="CommercialInvoiceItems" EntitySet="CommercialInvoiceItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommercialInvoiceItems_Product" Association="Self.FK_CommercialInvoiceItems_Product">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="CommercialInvoiceItems" EntitySet="CommercialInvoiceItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Order_Order" Association="Self.FK_Order_Order">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="Order1" EntitySet="Order" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Order_User" Association="Self.FK_Order_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Order" EntitySet="Order" />
+          </AssociationSet>
           <AssociationSet Name="FK_OrderLineItem_Order" Association="Self.FK_OrderLineItem_Order">
             <End Role="Order" EntitySet="Order" />
             <End Role="OrderLineItem" EntitySet="OrderLineItem" />
@@ -278,6 +439,18 @@
             <End Role="User" EntitySet="User" />
             <End Role="Payment" EntitySet="Payment" />
           </AssociationSet>
+          <AssociationSet Name="FK_PerfomaInvoice_Order" Association="Self.FK_PerfomaInvoice_Order">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="PerfomaInvoice" EntitySet="PerfomaInvoice" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PerfomaInvoiceItems_PerfomaInvoice" Association="Self.FK_PerfomaInvoiceItems_PerfomaInvoice">
+            <End Role="PerfomaInvoice" EntitySet="PerfomaInvoice" />
+            <End Role="PerfomaInvoiceItems" EntitySet="PerfomaInvoiceItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PerfomaInvoiceItems_Product" Association="Self.FK_PerfomaInvoiceItems_Product">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="PerfomaInvoiceItems" EntitySet="PerfomaInvoiceItems" />
+          </AssociationSet>
           <AssociationSet Name="FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping" Association="Self.FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping">
             <End Role="OrderLineItem_Supplier_Mapping" EntitySet="OrderLineItem_Supplier_Mapping" />
             <End Role="Supplier_Assigned_OrderLineItem" EntitySet="Supplier_Assigned_OrderLineItem" />
@@ -291,8 +464,7 @@
             <End Role="UserType" EntitySet="UserType" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="DB_A3E8AF_luceousModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -308,25 +480,15 @@
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Internal_status" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="OrderLineItems" Relationship="Self.FK_OrderLineItem_Order" FromRole="Order" ToRole="OrderLineItem" />
           <NavigationProperty Name="Payments" Relationship="Self.FK_Payment_Order" FromRole="Order" ToRole="Payment" />
-        </EntityType>
-        <EntityType Name="OrderLineItem">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="OrderId" Type="Int32" />
-          <Property Name="ProductId" Type="Int32" />
-          <Property Name="DollarPurchasePrice" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="RMDPurchasePrice" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="DollarSalesPrice" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="RMBSalesPrice" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Order" Relationship="Self.FK_OrderLineItem_Order" FromRole="OrderLineItem" ToRole="Order" />
-          <NavigationProperty Name="Product" Relationship="Self.FK_OrderLineItem_Product" FromRole="OrderLineItem" ToRole="Product" />
+          <Property Name="Sales_Person_Id" Type="Int32" />
+          <Property Name="Commission" Type="Decimal" Precision="18" Scale="0" />
+          <NavigationProperty Name="Order1" Relationship="DB_A3E8AF_luceousModel.FK_Order_Order" FromRole="Order" ToRole="Order1" />
+          <NavigationProperty Name="Order2" Relationship="DB_A3E8AF_luceousModel.FK_Order_Order" FromRole="Order1" ToRole="Order" />
+          <NavigationProperty Name="User" Relationship="DB_A3E8AF_luceousModel.FK_Order_User" FromRole="Order" ToRole="User" />
+          <NavigationProperty Name="PerfomaInvoices" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoice_Order" FromRole="Order" ToRole="PerfomaInvoice" />
+          <NavigationProperty Name="CommercialInvoices" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoice_Order" FromRole="Order" ToRole="CommercialInvoice" />
+          <NavigationProperty Name="OrderLineItems" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order" FromRole="Order" ToRole="OrderLineItem" />
         </EntityType>
         <EntityType Name="OrderLineItem_Supplier_Mapping">
           <Key>
@@ -375,7 +537,12 @@
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="OrderLineItems" Relationship="Self.FK_OrderLineItem_Product" FromRole="Product" ToRole="OrderLineItem" />
+          <Property Name="Suppliers" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ParentIds" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PerfomaInvoiceItems" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_Product" FromRole="Product" ToRole="PerfomaInvoiceItem" />
+          <Property Name="MOQ" Type="Decimal" Precision="18" Scale="0" />
+          <NavigationProperty Name="CommercialInvoiceItems" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_Product" FromRole="Product" ToRole="CommercialInvoiceItem" />
+          <NavigationProperty Name="OrderLineItems" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Product" FromRole="Product" ToRole="OrderLineItem" />
         </EntityType>
         <EntityType Name="Supplier_Assigned_OrderLineItem">
           <Key>
@@ -435,6 +602,7 @@
           <NavigationProperty Name="Payments" Relationship="Self.FK_Payment_User" FromRole="User" ToRole="Payment" />
           <NavigationProperty Name="Supplier_Assigned_OrderLineItem" Relationship="Self.FK_Supplier_Assigned_OrderLineItem_User" FromRole="User" ToRole="Supplier_Assigned_OrderLineItem" />
           <NavigationProperty Name="UserTypes" Relationship="Self.FK_UserType_User" FromRole="User" ToRole="UserType" />
+          <NavigationProperty Name="Orders" Relationship="DB_A3E8AF_luceousModel.FK_Order_User" FromRole="User" ToRole="Order" />
         </EntityType>
         <EntityType Name="UserType">
           <Key>
@@ -445,18 +613,6 @@
           <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="User" Relationship="Self.FK_UserType_User" FromRole="UserType" ToRole="User" />
         </EntityType>
-        <Association Name="FK_OrderLineItem_Order">
-          <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
-          <End Role="OrderLineItem" Type="Self.OrderLineItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Order">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="OrderLineItem">
-              <PropertyRef Name="OrderId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Payment_Order">
           <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
           <End Role="Payment" Type="Self.Payment" Multiplicity="*" />
@@ -466,18 +622,6 @@
             </Principal>
             <Dependent Role="Payment">
               <PropertyRef Name="OrderId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_OrderLineItem_Product">
-          <End Role="Product" Type="Self.Product" Multiplicity="0..1" />
-          <End Role="OrderLineItem" Type="Self.OrderLineItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Product">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="OrderLineItem">
-              <PropertyRef Name="ProductId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -555,7 +699,6 @@
         </Association>
         <EntityContainer Name="DB_A3E8AF_luceousEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Orders" EntityType="Self.Order" />
-          <EntitySet Name="OrderLineItems" EntityType="Self.OrderLineItem" />
           <EntitySet Name="OrderLineItem_Supplier_Mapping" EntityType="Self.OrderLineItem_Supplier_Mapping" />
           <EntitySet Name="Payments" EntityType="Self.Payment" />
           <EntitySet Name="Products" EntityType="Self.Product" />
@@ -563,17 +706,9 @@
           <EntitySet Name="SupplierCartoons" EntityType="Self.SupplierCartoon" />
           <EntitySet Name="Users" EntityType="Self.User" />
           <EntitySet Name="UserTypes" EntityType="Self.UserType" />
-          <AssociationSet Name="FK_OrderLineItem_Order" Association="Self.FK_OrderLineItem_Order">
-            <End Role="Order" EntitySet="Orders" />
-            <End Role="OrderLineItem" EntitySet="OrderLineItems" />
-          </AssociationSet>
           <AssociationSet Name="FK_Payment_Order" Association="Self.FK_Payment_Order">
             <End Role="Order" EntitySet="Orders" />
             <End Role="Payment" EntitySet="Payments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_OrderLineItem_Product" Association="Self.FK_OrderLineItem_Product">
-            <End Role="Product" EntitySet="Products" />
-            <End Role="OrderLineItem" EntitySet="OrderLineItems" />
           </AssociationSet>
           <AssociationSet Name="FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" Association="Self.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem">
             <End Role="OrderLineItem_Supplier_Mapping" EntitySet="OrderLineItem_Supplier_Mapping" />
@@ -599,7 +734,233 @@
             <End Role="User" EntitySet="Users" />
             <End Role="UserType" EntitySet="UserTypes" />
           </AssociationSet>
+          <EntitySet Name="PerfomaInvoices" EntityType="DB_A3E8AF_luceousModel.PerfomaInvoice" />
+          <EntitySet Name="PerfomaInvoiceItems" EntityType="DB_A3E8AF_luceousModel.PerfomaInvoiceItem" />
+          <AssociationSet Name="FK_Order_Order" Association="DB_A3E8AF_luceousModel.FK_Order_Order">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="Order1" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Order_User" Association="DB_A3E8AF_luceousModel.FK_Order_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Order" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PerfomaInvoice_Order" Association="DB_A3E8AF_luceousModel.FK_PerfomaInvoice_Order">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="PerfomaInvoice" EntitySet="PerfomaInvoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PerfomaInvoiceItems_PerfomaInvoice" Association="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_PerfomaInvoice">
+            <End Role="PerfomaInvoice" EntitySet="PerfomaInvoices" />
+            <End Role="PerfomaInvoiceItem" EntitySet="PerfomaInvoiceItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PerfomaInvoiceItems_Product" Association="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_Product">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="PerfomaInvoiceItem" EntitySet="PerfomaInvoiceItems" />
+          </AssociationSet>
+          <EntitySet Name="CommercialInvoices" EntityType="DB_A3E8AF_luceousModel.CommercialInvoice" />
+          <EntitySet Name="CommercialInvoiceItems" EntityType="DB_A3E8AF_luceousModel.CommercialInvoiceItem" />
+          <AssociationSet Name="FK_CommercialInvoice_Order" Association="DB_A3E8AF_luceousModel.FK_CommercialInvoice_Order">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="CommercialInvoice" EntitySet="CommercialInvoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommercialInvoiceItems_CommercialInvoice" Association="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_CommercialInvoice">
+            <End Role="CommercialInvoice" EntitySet="CommercialInvoices" />
+            <End Role="CommercialInvoiceItem" EntitySet="CommercialInvoiceItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommercialInvoiceItems_Product" Association="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_Product">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="CommercialInvoiceItem" EntitySet="CommercialInvoiceItems" />
+          </AssociationSet>
+          <EntitySet Name="OrderLineItems" EntityType="DB_A3E8AF_luceousModel.OrderLineItem" />
+          <AssociationSet Name="FK_OrderLineItem_Order" Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="OrderLineItem" EntitySet="OrderLineItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderLineItem_Product" Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Product">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="OrderLineItem" EntitySet="OrderLineItems" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="PerfomaInvoice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int32" />
+          <Property Name="PerfomaInvoiceReferece" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoice_Order" FromRole="PerfomaInvoice" ToRole="Order" />
+          <NavigationProperty Name="PerfomaInvoiceItems" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_PerfomaInvoice" FromRole="PerfomaInvoice" ToRole="PerfomaInvoiceItem" />
+        </EntityType>
+        <EntityType Name="PerfomaInvoiceItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PerfomaInvoiceId" Type="Int32" />
+          <Property Name="ProductId" Type="Int32" />
+          <Property Name="RMB_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Dollar_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
+          <NavigationProperty Name="PerfomaInvoice" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_PerfomaInvoice" FromRole="PerfomaInvoiceItem" ToRole="PerfomaInvoice" />
+          <NavigationProperty Name="Product" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_Product" FromRole="PerfomaInvoiceItem" ToRole="Product" />
+        </EntityType>
+        <Association Name="FK_Order_Order">
+          <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="1" />
+          <End Type="DB_A3E8AF_luceousModel.Order" Role="Order1" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Order1">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Order_User">
+          <End Type="DB_A3E8AF_luceousModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="Sales_Person_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PerfomaInvoice_Order">
+          <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.PerfomaInvoice" Role="PerfomaInvoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PerfomaInvoice">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PerfomaInvoiceItems_PerfomaInvoice">
+          <End Type="DB_A3E8AF_luceousModel.PerfomaInvoice" Role="PerfomaInvoice" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.PerfomaInvoiceItem" Role="PerfomaInvoiceItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PerfomaInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PerfomaInvoiceItem">
+              <PropertyRef Name="PerfomaInvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PerfomaInvoiceItems_Product">
+          <End Type="DB_A3E8AF_luceousModel.Product" Role="Product" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.PerfomaInvoiceItem" Role="PerfomaInvoiceItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PerfomaInvoiceItem">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CommercialInvoice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int32" />
+          <Property Name="CommercialInvoiceReferece" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoice_Order" FromRole="CommercialInvoice" ToRole="Order" />
+          <NavigationProperty Name="CommercialInvoiceItems" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_CommercialInvoice" FromRole="CommercialInvoice" ToRole="CommercialInvoiceItem" />
+        </EntityType>
+        <EntityType Name="CommercialInvoiceItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="CommercialInvoiceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProductId" Type="Int32" />
+          <Property Name="RMB_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Dollar_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
+          <NavigationProperty Name="CommercialInvoice" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_CommercialInvoice" FromRole="CommercialInvoiceItem" ToRole="CommercialInvoice" />
+          <NavigationProperty Name="Product" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_Product" FromRole="CommercialInvoiceItem" ToRole="Product" />
+        </EntityType>
+        <Association Name="FK_CommercialInvoice_Order">
+          <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.CommercialInvoice" Role="CommercialInvoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommercialInvoice">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommercialInvoiceItems_CommercialInvoice">
+          <End Type="DB_A3E8AF_luceousModel.CommercialInvoice" Role="CommercialInvoice" Multiplicity="1" />
+          <End Type="DB_A3E8AF_luceousModel.CommercialInvoiceItem" Role="CommercialInvoiceItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommercialInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommercialInvoiceItem">
+              <PropertyRef Name="CommercialInvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommercialInvoiceItems_Product">
+          <End Type="DB_A3E8AF_luceousModel.Product" Role="Product" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.CommercialInvoiceItem" Role="CommercialInvoiceItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommercialInvoiceItem">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="OrderLineItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderId" Type="Int32" />
+          <Property Name="ProductId" Type="Int32" />
+          <Property Name="DollarPurchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="RMBPurchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="DollarSalesPrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="RMBSalesPrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="Quantity" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order" FromRole="OrderLineItem" ToRole="Order" />
+          <NavigationProperty Name="Product" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Product" FromRole="OrderLineItem" ToRole="Product" />
+        </EntityType>
+        <Association Name="FK_OrderLineItem_Order">
+          <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.OrderLineItem" Role="OrderLineItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="OrderLineItem">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderLineItem_Product">
+          <End Type="DB_A3E8AF_luceousModel.Product" Role="Product" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.OrderLineItem" Role="OrderLineItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="OrderLineItem">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -609,6 +970,8 @@
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.Order">
               <MappingFragment StoreEntitySet="Order">
+                <ScalarProperty Name="Commission" ColumnName="Commission" />
+                <ScalarProperty Name="Sales_Person_Id" ColumnName="Sales_Person_Id" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
                 <ScalarProperty Name="Prefix" ColumnName="Prefix" />
@@ -617,22 +980,6 @@
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="Internal_status" ColumnName="Internal_status" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="OrderLineItems">
-            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.OrderLineItem">
-              <MappingFragment StoreEntitySet="OrderLineItem">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
-                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
-                <ScalarProperty Name="DollarPurchasePrice" ColumnName="DollarPurchasePrice" />
-                <ScalarProperty Name="RMDPurchasePrice" ColumnName="RMDPurchasePrice" />
-                <ScalarProperty Name="DollarSalesPrice" ColumnName="DollarSalesPrice" />
-                <ScalarProperty Name="RMBSalesPrice" ColumnName="RMBSalesPrice" />
-                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -666,6 +1013,9 @@
           <EntitySetMapping Name="Products">
             <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.Product">
               <MappingFragment StoreEntitySet="Product">
+                <ScalarProperty Name="MOQ" ColumnName="MOQ" />
+                <ScalarProperty Name="ParentIds" ColumnName="ParentIds" />
+                <ScalarProperty Name="Suppliers" ColumnName="Suppliers" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Chinese_Name" ColumnName="Chinese_Name" />
                 <ScalarProperty Name="English_Name" ColumnName="English_Name" />
@@ -743,6 +1093,62 @@
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PerfomaInvoices">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.PerfomaInvoice">
+              <MappingFragment StoreEntitySet="PerfomaInvoice">
+                <ScalarProperty Name="PerfomaInvoiceReferece" ColumnName="PerfomaInvoiceReferece" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PerfomaInvoiceItems">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.PerfomaInvoiceItem">
+              <MappingFragment StoreEntitySet="PerfomaInvoiceItems">
+                <ScalarProperty Name="Dollar_ProductPrice" ColumnName="Dollar_ProductPrice" />
+                <ScalarProperty Name="RMB_ProductPrice" ColumnName="RMB_ProductPrice" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="PerfomaInvoiceId" ColumnName="PerfomaInvoiceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CommercialInvoices">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.CommercialInvoice">
+              <MappingFragment StoreEntitySet="CommercialInvoice">
+                <ScalarProperty Name="CommercialInvoiceReferece" ColumnName="CommercialInvoiceReferece" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CommercialInvoiceItems">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.CommercialInvoiceItem">
+              <MappingFragment StoreEntitySet="CommercialInvoiceItems">
+                <ScalarProperty Name="Dollar_ProductPrice" ColumnName="Dollar_ProductPrice" />
+                <ScalarProperty Name="RMB_ProductPrice" ColumnName="RMB_ProductPrice" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="CommercialInvoiceId" ColumnName="CommercialInvoiceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderLineItems">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.OrderLineItem">
+              <MappingFragment StoreEntitySet="OrderLineItem">
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="RMBSalesPrice" ColumnName="RMBSalesPrice" />
+                <ScalarProperty Name="DollarSalesPrice" ColumnName="DollarSalesPrice" />
+                <ScalarProperty Name="RMBPurchasePrice" ColumnName="RMBPurchasePrice" />
+                <ScalarProperty Name="DollarPurchasePrice" ColumnName="DollarPurchasePrice" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
