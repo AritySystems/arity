@@ -405,7 +405,6 @@ namespace AritySystems.Controllers
                         var orderLineItem = objDb.OrderLineItems.Where(_ => _.Id == item.ItemId).FirstOrDefault();
                         if (type != null && !string.IsNullOrEmpty(type) && type.ToLower().Equals("purchase"))
                         {
-                            orderLineItem.DollarPurchasePrice = item.DollerPrice;
                             orderLineItem.RMBPurchasePrice = item.RMBPrice;
                         }
                         else
