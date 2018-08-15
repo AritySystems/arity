@@ -107,7 +107,8 @@ namespace AritySystems.Controllers
                                  join n in db.Orders on m.OrderId equals n.Id
                                  join o in db.Products on m.ProductId equals o.Id
                                  where m.OrderId == OrderId && m.Quantity > 0
-                                 select new OrderLineItemViewModel {
+                                 select new OrderLineItemViewModel
+                                 {
                                      Id = m.Id,
                                      //OrderId = m.OrderId ?? 0,
                                      Order_Name = n.Prefix,
@@ -203,7 +204,7 @@ namespace AritySystems.Controllers
                                 ActualQuantity.Quantity = ActualQuantity.Quantity - quantity;
                                 db.SaveChanges();
                             }
-                            
+
                             model.OrderSupplierMapId = Convert.ToInt32(item.OrderLineItemId);
                             model.Quantity = quantity;
                             model.Status = 1;
@@ -222,7 +223,7 @@ namespace AritySystems.Controllers
                 throw;
             }
         }
-        
+
 
         /// <summary>
         /// Add supplier carton details
@@ -492,7 +493,7 @@ namespace AritySystems.Controllers
             var ordersLineItems = (from a in dbContext.OrderLineItems
                                    join b in dbContext.Products on a.ProductId equals b.Id
                                    where a.OrderId == orderId
-                                   select new { a.Id,b.English_Name}).ToList();
+                                   select new { a.Id, b.English_Name }).ToList();
             ViewBag.OrderLineItems = new SelectList(ordersLineItems, "Id", "English_Name");
             return View();
         }
@@ -544,20 +545,27 @@ namespace AritySystems.Controllers
             List<PerfomaProductList> productList = new List<PerfomaProductList>();
             id = 8;
 
+            List<string> PerfomaList = dbContext.PerfomaInvoices.Where(x => x.OrderId == id).Select(x => x.PerfomaInvoiceReferece).ToList();
+
+            List<string> maxPerfoma = PerfomaList.Select(x => x.Replace("PI", "")).ToList();
+
+            int asIntegers = maxPerfoma.Select(s => int.Parse(s)).ToArray().Max();
+
             var perfoma = (from order in dbContext.Orders
                            join user in dbContext.Users on order.CustomerId equals user.Id
                            join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
                            join product in dbContext.Products on lineItem.ProductId equals product.Id
-                           where order.Id == id
+                           join exporterDetail in dbContext.Users on order.ExporterId equals exporterDetail.Id
+                           where order.Id == id && exporterDetail.UserType == 6
                            select new PerformaInvoice()
                            {
-                               ExporterName = "Exporter Co. Name",
-                               ExporterAddress = "Exporter add	",
-                               ExporterPhone = "Exporter phone Number",
+                               ExporterName = exporterDetail.FirstName + " " + exporterDetail.LastName,
+                               ExporterAddress = exporterDetail.Address,
+                               ExporterPhone = exporterDetail.PhoneNumber,
                                CustomerCompanyName = user.CompanyName,
                                CustomerAddress = user.Address,
                                CustomerGST = user.GSTIN,
-                               PINo = "17100601",
+                               PINo = "PI" + (asIntegers + 1),
                                OrderDate = order.CreatedDate,
                                IECCode = user.IECCode,
                                CustomerName = user.FirstName + " " + user.LastName,
@@ -568,42 +576,25 @@ namespace AritySystems.Controllers
                            join user in dbContext.Users on order.CustomerId equals user.Id
                            join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
                            join product in dbContext.Products on lineItem.ProductId equals product.Id
-                           select new PerfomaProductList()
+                           select new
                            {
-                               Partiular = product.English_Name,
-                               Quantity = lineItem.Quantity,
-                               Unit = "NOs",
-                               UnitPrice = lineItem.DollarSalesPrice,
-                               TotalUSD = lineItem.Quantity * lineItem.DollarSalesPrice
+                               l = lineItem,
+                               p = product
+                           }).AsEnumerable().Select(x => new PerfomaProductList()
+                           {
+                               Partiular = x.p.English_Name,
+                               Quantity = x.l.Quantity,
+                               Unit = getEnumValue(Convert.ToInt32(x.p.Unit)),
+                               UnitPrice = x.l.DollarSalesPrice,
+                               TotalUSD = x.l.Quantity * x.l.DollarSalesPrice,
+                               ProductId = x.p.Id,
+                               RMBUnitPrice = x.l.RMBSalesPrice,
+                               TotalRMB = x.l.Quantity * x.l.RMBSalesPrice
+                                
                            }).ToList();
 
             perfoma.ProductList = productList;
 
-            //PerformaInvoice perfoma = new PerformaInvoice()
-            //{
-            //    ExporterName = "Exporter Co. Name",
-            //    ExporterAddress = "Exporter add	",
-            //    ExporterPhone = "Exporter phone Number",
-            //    CustomerCompanyName = "Customer Company Name",
-            //    CustomerAddress = "Cusomer Address",
-            //    CustomerGST = "GST123",
-            //    PINo = "17100601",
-            //    OrderDate = DateTime.Now,
-            //    IECCode = "Customer IEC Number",
-            //    CustomerName = "Customer contact name",
-            //    CustomerPhone = "Customer contact No.",
-            //    ProductList = productList
-            //};
-
-            //productList.Add(new PerfomaProductList()
-            //{
-            //    SRNO = 1,
-            //    Partiular = "Product Description",
-            //    UnitPrice = 12,
-            //    Unit = "NOs",
-            //    Quantity = 10,
-            //    TotalUSD = 120,
-            //});
 
             //Create an instance of ExcelEngine.
             using (ExcelEngine excelEngine = new ExcelEngine())
@@ -679,7 +670,8 @@ namespace AritySystems.Controllers
                 worksheet.Range["D11"].Text = "Unit";
                 worksheet.Range["E11"].Text = "Qty";
                 worksheet.Range["F11"].Text = "Total USD";
-
+                worksheet.Range["G11"].Text = "Total RMB";
+                worksheet.Range["H11"].Text = "RMB";
                 int i = 1;
                 int rownum = 12;
                 foreach (var item in perfoma.ProductList)
@@ -690,12 +682,78 @@ namespace AritySystems.Controllers
                     worksheet.Range["D" + rownum + ""].Text = item.Unit.ToString();
                     worksheet.Range["E" + rownum + ""].Text = item.Quantity.ToString();
                     worksheet.Range["F" + rownum + ""].Text = (item.UnitPrice * item.Quantity).ToString();
+                    worksheet.Range["G" + rownum + ""].Text = item.TotalRMB.ToString();
+                    worksheet.Range["H" + rownum + ""].Text = item.RMBUnitPrice.ToString();
                     i++;
                     rownum++;
                 }
 
+                decimal totalItems = 0;
+                decimal totalRMB = 0;
+
+                foreach(var item in productList)
+                {
+                    totalItems +=  item.TotalUSD;
+                    totalRMB += item.TotalRMB;
+                }
+
+                rownum += 10;
+
+                worksheet.Range["A" + rownum + ""].Text = "Total"; //totalItems.ToString();
+                worksheet.Range["$A$" + rownum + ":$E$" + rownum].Merge();
+
+                worksheet.Range["F" + rownum + ""].Text = "$" + totalItems.ToString();
+                worksheet.Range["G" + rownum + ""].Text = "$" + totalRMB.ToString();
+
+                rownum += 2;
+
+                worksheet.Range["A" + rownum + ""].Text = "Terms And Conditions:";
+                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+
+                rownum += 1;
+                worksheet.Range["A" + rownum + ""].Text = "Based On , FOB, X work, CNF, CIF";
+                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+
+                rownum += 1;
+                worksheet.Range["A" + rownum + ""].Text = "Payment terms - advance.. Balance.. LC TT ";
+                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+
+                rownum += 1;
+                worksheet.Range["A" + rownum + ""].Text = "Delivery period- … days after receipt/confirmation of ...";
+                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+
+                rownum += 1;
+                worksheet.Range["A" + rownum + ""].Text = "(4)   Bank Details for remittance:  TT and LC both always show according to selection of exporter";
+                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+
+                PerfomaInvoice perfomaInvoice = new PerfomaInvoice()
+                {
+                    OrderId = id,
+                    PerfomaInvoiceReferece = perfoma.PINo
+                };
+
+                dbContext.PerfomaInvoices.Add(perfomaInvoice);
+                dbContext.SaveChanges();
+                int perfomaId = perfomaInvoice.Id;
+
+                foreach (var item in productList)
+                {
+                    PerfomaInvoiceItem perfomaInvoiceItem = new PerfomaInvoiceItem()
+                    {
+                        PerfomaInvoiceId = perfomaId,
+                        ProductId = item.ProductId,
+                        Dollar_ProductPrice = item.UnitPrice,
+                        RMB_ProductPrice = item.RMBUnitPrice
+                       
+                    };
+
+                    dbContext.PerfomaInvoiceItems.Add(perfomaInvoiceItem);
+                }
+
+                dbContext.SaveChanges();
+
                 //Save the workbook to disk in xlsx format.
-                workbook.SaveAs(@"C:\excel\Sampldfsddsddse.xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
+                workbook.SaveAs(@"C:\excel\" + perfomaInvoice.OrderId + perfoma.PINo + ".xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
             }
 
             return View();
@@ -716,25 +774,25 @@ namespace AritySystems.Controllers
                 using (var db = new ArityEntities())
                 {
                     var model = (from a in db.SupplierCartoons
-                               join b in db.OrderLineItem_Supplier_Mapping on a.SupplierAssignedMapId equals b.OrderLineItemId
-                               join c in db.OrderLineItems on b.OrderLineItemId equals c.Id
-                               join d in db.Orders on c.OrderId equals d.Id
+                                 join b in db.OrderLineItem_Supplier_Mapping on a.SupplierAssignedMapId equals b.OrderLineItemId
+                                 join c in db.OrderLineItems on b.OrderLineItemId equals c.Id
+                                 join d in db.Orders on c.OrderId equals d.Id
                                  where d.Id == OrderId
                                  select new SupplierCartonDetailModel
                                  {
-                                      Id = a.Id,
-                                      CartoonBM = a.CartoonBM,
-                                      CartoonNumber = a.CartoonNumber,
-                                      CartoonSize = a.CartoonSize,
-                                      NetWeight = a.NetWeight,
-                                      PcsPerCartoon = a.PcsPerCartoon,
-                                      Product_Chinese_Name = c.Product.Chinese_Name,
-                                      Product_English_Name = c.Product.English_Name,
-                                      Status = 1,
-                                      SupplierAssignedMapId = a.SupplierAssignedMapId,
-                                      TotalCartoons = a.TotalCartoons,
-                                      TotalGrossWeight =a.TotalGrossWeight,
-                                      TotalNetWeight = a.TotalNetWeight
+                                     Id = a.Id,
+                                     CartoonBM = a.CartoonBM,
+                                     CartoonNumber = a.CartoonNumber,
+                                     CartoonSize = a.CartoonSize,
+                                     NetWeight = a.NetWeight,
+                                     PcsPerCartoon = a.PcsPerCartoon,
+                                     Product_Chinese_Name = c.Product.Chinese_Name,
+                                     Product_English_Name = c.Product.English_Name,
+                                     Status = 1,
+                                     SupplierAssignedMapId = a.SupplierAssignedMapId,
+                                     TotalCartoons = a.TotalCartoons,
+                                     TotalGrossWeight = a.TotalGrossWeight,
+                                     TotalNetWeight = a.TotalNetWeight
                                  }).ToList();
 
                     return Json(new { data = model }, JsonRequestBehavior.AllowGet);
@@ -744,6 +802,12 @@ namespace AritySystems.Controllers
             {
                 throw;
             }
+        }
+
+        public string getEnumValue(int value)
+        {
+            Common.EnumHelpers.Units unitValue = (Common.EnumHelpers.Units)value;
+            return unitValue.ToString();
         }
     }
 }

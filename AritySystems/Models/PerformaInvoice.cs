@@ -43,6 +43,12 @@ namespace AritySystems.Models
         public decimal Quantity { get; set; }
 
         public decimal TotalUSD { get; set; }
+
+        public int ProductId { get; set; }
+
+        public decimal TotalRMB { get; set; }
+
+        public decimal RMBUnitPrice { get; set; }
     }
 
 }
