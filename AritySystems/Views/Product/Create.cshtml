@@ -80,7 +80,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.ParentIds, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.ParentIds, ViewBag.productList as SelectList, "-- Select Parent Product --", new { @class = "form-control", @id = "parentProducts", @multiple = "multiple" })
+                @Html.ListBoxFor(model => model.ParentIdsArray, ViewBag.productList as MultiSelectList, new { @class = "form-control liveSearch", @id = "parentProducts", Multiple = "multiple", @data_placeholder = "--Select Parent Product--" })
 
                 @Html.ValidationMessageFor(model => model.Parent_Id, "", new { @class = "text-danger" })
             </div>
@@ -88,7 +88,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Suppliers, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Suppliers, ViewBag.supplierList as SelectList, "-- Select Suppliers --", new { @class = "form-control", @id = "suppliers", @multiple = "multiple" })
+                @Html.ListBoxFor(model => model.SuppliersArray, ViewBag.supplierList as MultiSelectList,  new { @class = "form-control liveSearch", @id = "suppliers", Multiple = "multiple", @data_placeholder = "--Select Suppliers--" })
 
                 @Html.ValidationMessageFor(model => model.Parent_Id, "", new { @class = "text-danger" })
             </div>
@@ -111,8 +111,6 @@
 </div>
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-}
-
 <script type="text/javascript">
 
     //var j = jQuery.noConflict();
@@ -123,8 +121,11 @@
     //});
 
     $(function () {
-        $('#parentProducts, #suppliers').multiselect({
-            includeSelectAllOption: true
-        });
+        //$('#parentProducts, #suppliers').multiselect({
+        //    includeSelectAllOption: true
+        //});
+        $('.liveSearch').chosen();
     });
 </script>
+}
+
