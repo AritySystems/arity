@@ -9,10 +9,17 @@ namespace AritySystems.Common
     {
         public enum Units
         {
-            NOs = 1,
+            Nos = 1,
             Ltr = 2,
             Kg = 3,
-            gm = 4
+            Gm = 4,
+            Set = 5,
+            Bag = 6,
+            Roll = 7,
+            Mtr = 8,
+            ThousandNos = 9,
+            tone = 10,
+            Sqmtr = 11
         }
 
         public enum OrderStatus
@@ -36,7 +43,7 @@ namespace AritySystems.Common
         {
             Draft = 1,
             RedyForSales = 2,
-            WaitForAdminAproved =3,
+            WaitForAdminAproved = 3,
             Approved = 4,
             Rejected = 5
         }

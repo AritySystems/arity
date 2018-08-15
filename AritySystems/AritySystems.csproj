@@ -308,14 +308,18 @@
     <Compile Include="Models\OrderLineItemViewModel.cs" />
     <Compile Include="Models\PerformaInvoice.cs" />
     <Compile Include="Models\PriceUpdateModel.cs" />
+    <Compile Include="Models\ProductDetails.cs" />
     <Compile Include="Models\SupplierCartonDetailModel.cs" />
     <Compile Include="Models\SupplierOrderLineItemModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\bootstrap-multiselect.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\chosen-sprite.png" />
+    <Content Include="Content\chosen.min.css" />
     <Content Include="Data\ArityDB.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>ArityDB.edmx</DependentUpon>
@@ -329,6 +333,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Scripts\bootstrap-multiselect.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <EntityDeploy Include="Data\ArityDB.edmx">
@@ -339,6 +344,7 @@
       <DependentUpon>ArityDB.edmx</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\chosen.jquery.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
