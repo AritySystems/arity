@@ -24,14 +24,21 @@ namespace AritySystems.Controllers
             {
                 Product product = new Product();
                 ArityEntities dataContext = new ArityEntities();
+                int[] parentIds = null;
+                int[] supplierIds = null;
                 product = dataContext.Products.Where(x => x.Id == Id).FirstOrDefault();
-                ViewBag.productList = product == null ? new SelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name") : new SelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name", product.Parent_Id);
+                if (product != null)
+                {
+                    parentIds = product.ParentIds != null ? Array.ConvertAll(product.ParentIds.Split(','), int.Parse) : null;
+                    supplierIds = product.Suppliers != null ? Array.ConvertAll(product.Suppliers.Split(','), int.Parse) : null;
+                }
+                ViewBag.productList = product == null ? new MultiSelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name") : new MultiSelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name", parentIds);
                 var suppliers = dataContext.Users.Where(x => x.UserType == 5).Select(s => new
                 {
                     Id = s.Id,
                     SupplierName = s.FirstName + " " + s.LastName
                 }).ToList();
-                ViewBag.supplierList = new SelectList(suppliers, "Id", "SupplierName"); //: new SelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name", product.Parent_Id);
+                ViewBag.supplierList = product == null ? new MultiSelectList(suppliers, "Id", "SupplierName") : new MultiSelectList(suppliers, "Id", "SupplierName", supplierIds); //: new SelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name", product.Parent_Id);
                 return View(product);
             }
 
@@ -43,19 +50,19 @@ namespace AritySystems.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Product product, string[] ParentIds, string[] Suppliers)
+        public ActionResult Create(Product product)
         {
             string productParentIds = string.Empty;
             string suppliers = string.Empty;
             int parent = 0;
-            if (ParentIds != null && ParentIds.Count() > 0)
+            if (product.ParentIdsArray != null)
             {
-                productParentIds = string.Join(",", ParentIds);
+                productParentIds = string.Join(",", product.ParentIdsArray);
                 parent = 1;
             }
-            if (Suppliers != null && Suppliers.Count() > 0)
+            if (product.Suppliers != null)
             {
-                suppliers = string.Join(",", Suppliers);
+                suppliers = string.Join(",", product.Suppliers);
             }
 
             ArityEntities dataContext = new ArityEntities();

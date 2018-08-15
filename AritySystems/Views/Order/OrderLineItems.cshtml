@@ -285,7 +285,23 @@
                     { "data": "SupplierName" },
                     { "data": "Order_Prefix" },
                     { "data": "Quantity" },
-                    { "data": "Status" }
+                    {
+                        "className": 'order-status',
+                        "orderable": false,
+                        "data": null,
+                        'render': function (data, type, full, meta) {
+                            if (data.Status == 1)
+                                return '<label class="label label-primary"><i class="fa fa-plane"></i> Draft</label>';
+                            else if (data.Status == 4)
+                                return '<label class="lable-danger lable"><i class="fa fa-times-circle"></i> Canceled</label>';
+                            else if (data.Status == 3)
+                                return '<label class="label label-success"><i class="fa fa-check-square-o"></i> Complete</label>';
+                            else if (data.Status == 2)
+                                return '<label class="label label-default"><i class="fa fa-spinner"></i> In Process</label>';
+                            else
+                                return '';
+                        }
+                    }
                 ],
                 "SupplierOrderLineItems": [[1, 'asc']]
             });
