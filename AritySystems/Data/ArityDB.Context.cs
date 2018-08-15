@@ -16,7 +16,7 @@ namespace AritySystems.Data
     public partial class ArityEntities : DbContext
     {
         public ArityEntities()
-            : base("name=DB_A3E8AF_luceousEntities")
+            : base("name=Dev_luceousEntities")
         {
         }
     
