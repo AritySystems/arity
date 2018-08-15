@@ -70,6 +70,7 @@ namespace AritySystems.Controllers
             ArityEntities objDb = new ArityEntities();
             return View(objDb.Orders.Where(_ => _.Id == id).FirstOrDefault());
         }
+
         /// <summary>
         /// Place order landing page
         /// </summary>
@@ -185,27 +186,44 @@ namespace AritySystems.Controllers
         /// <param name="SupplierOrderLineItemModel"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddSupplierOrderLineItems(List<SupplierOrderItemAdd> data)
+        public ActionResult AddSupplierOrderLineItems(List<SupplierOrderItemAdd> addData)
         {
             Supplier_Assigned_OrderLineItem model = new Supplier_Assigned_OrderLineItem();
             try
             {
-                if (data != null)
+                if (addData != null)
                 {
-                    foreach (var item in data)
+                    foreach (var item in addData)
                     {
                         using (var db = new ArityEntities())
                         {
                             var orderItemId = Convert.ToInt32(item.OrderLineItemId);
-                            var quantity = Convert.ToDecimal(item.Quantity);
-                            OrderLineItem ActualQuantity = db.OrderLineItems.Where(x => x.Id == orderItemId).FirstOrDefault();
-                            if (ActualQuantity.Quantity > quantity)
+                            var quantity = Convert.ToDecimal(item.NewQuantity);
+                            var oldQuantity = Convert.ToDecimal(item.OldQuantity);
+                            //OrderLineItem ActualQuantity = db.OrderLineItems.Where(x => x.Id == orderItemId).FirstOrDefault();
+                            if (oldQuantity > quantity)
                             {
-                                ActualQuantity.Quantity = ActualQuantity.Quantity - quantity;
+                                oldQuantity = oldQuantity - quantity;
+                                //db.SaveChanges();
+                            }
+                            if (oldQuantity > 0)
+                            {
+                                OrderLineItem remainData = db.OrderLineItems.Where(x => x.Id == orderItemId).FirstOrDefault();
+                                remainData.Quantity = oldQuantity;
                                 db.SaveChanges();
                             }
 
-                            model.OrderSupplierMapId = Convert.ToInt32(item.OrderLineItemId);
+
+                            OrderLineItem_Supplier_Mapping dataModel = new OrderLineItem_Supplier_Mapping();
+                            dataModel.CreatedDate = DateTime.Now;
+                            dataModel.ModifiedDate = DateTime.Now;
+                            dataModel.OrderLineItemId = Convert.ToInt32(item.OrderLineItemId);
+                            dataModel.Quantity = quantity;
+                            dataModel.SupplierId = Convert.ToInt32(item.SupplierId);
+                            db.OrderLineItem_Supplier_Mapping.Add(dataModel);
+
+                            var count = db.OrderLineItem_Supplier_Mapping.Count();
+                            model.OrderSupplierMapId = count + 1;
                             model.Quantity = quantity;
                             model.Status = 1;
                             model.SupplierId = Convert.ToInt32(item.SupplierId);
@@ -216,7 +234,7 @@ namespace AritySystems.Controllers
                         }
                     }
                 }
-                return Json(new { data = data }, JsonRequestBehavior.AllowGet);
+                return Json(new { data = addData }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -230,7 +248,7 @@ namespace AritySystems.Controllers
         /// </summary>
         /// <param name="supplierCarton"></param>
         /// <returns></returns>
-        public JsonResult AddSupplierCartoonDetails(SupplierCartoon supplierCartoon)
+        public JsonResult AddSupplierCartonDetails(SupplierCartoon supplierCartoon)
         {
             SupplierCartoon data = new SupplierCartoon();
             try
@@ -405,7 +423,6 @@ namespace AritySystems.Controllers
                         var orderLineItem = objDb.OrderLineItems.Where(_ => _.Id == item.ItemId).FirstOrDefault();
                         if (type != null && !string.IsNullOrEmpty(type) && type.ToLower().Equals("purchase"))
                         {
-                            orderLineItem.DollarPurchasePrice = item.DollerPrice;
                             orderLineItem.RMBPurchasePrice = item.RMBPrice;
                         }
                         else

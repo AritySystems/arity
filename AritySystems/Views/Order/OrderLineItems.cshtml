@@ -26,7 +26,7 @@
                 @Model.Prefix
             </div>
             <div class="col-md-12">
-                Order Total <b><i class="fa fa-jpy"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMDPurchasePrice))</b>
+                Order Total <b><i class="fa fa-jpy"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice))</b>
             </div>
             <div class="col-md-12" style="margin:25px 0px 10px 0;">
                 <h4>Order Line Items</h4>
@@ -35,7 +35,7 @@
         @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
         {
             <div class="col-md-2 col-md-offset-5" style="text-align:right;"><button class="btn btn-success" onclick="location.href='@Url.Action("orderlist", "order")';"><i class="fa fa-print"></i> Genrate PI</button></div>}
-        <div class="col-md-1 @(userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved ? "":"col-md-offset-7") "><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+        <div class="col-md-1 @((userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase || userType == (int)AritySystems.Common.EnumHelpers.UserType.Sales) && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved ? "":"col-md-offset-7") "><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
         <hr class="col-md-12" style="margin-bottom:25px;" />
         <div class="col-md-12" style="margin-bottom:50px;">
             <table class="display" id="tblOrderItemList">
@@ -53,6 +53,7 @@
                         <th>Qunatity</th>
                         <th>Qunatity</th>
                         <th>Suppliers</th>
+                        <th class="lineitemid"></th>
                     </tr>
                 </thead>
             </table>
@@ -89,7 +90,7 @@
                             <th>Order Prefix </th>
                             <th>Quantity</th>
                             <th>Status</th>
-                            
+
                         </tr>
                     </thead>
                 </table>
@@ -99,41 +100,52 @@
     </div>
 </div>
 @section Scripts {
-
     <script>
         $("#btnSave").click(function () {
             alert("Order Line Item information saved successfully");
         });
         $("#btnSubmit").click(function () {
-            var UpdatedQuantity = $('#txtQuantity').val();
-            var SupplierId = $('#jsonSupplierList').val();
+            debugger;
+            var data =[];
+            $('#tblOrderItemList tbody tr').each(function (i, el) {
+                debugger;
+                var $tds = $(this).find('td'),
+                    productName = $tds.eq(0).text(),
+                    price = $tds.eq(1).text(),
+                    quantity = $tds.eq(2).text(),
+                    newquantity = $tds.find('input#txtQuantity').val(),
+                    supplierid = $tds.find('#jsonSupplierList option:selected').attr('id'),
+                    orderLineItem = $(this).find("input#txtOrderLineItemId").val();
+                var items = {}
+                items["OldQuantity"] = quantity,
+                items["NewQuantity"] = newquantity,
+                items["supplierid"] = supplierid;
+                items["OrderLineItemId"] = orderLineItem;
+                debugger;
+                data.push(items);
+            });
+            var addData =JSON.stringify(data);
+            debugger;
             $.ajax({
                 url: "@Url.Action("AddSupplierOrderLineItems", "Order")",
                 method: "POST",
-            data: { id: $("#ProductId").val(), qty: $("#ProductQty").val() },
-            dataType: "json"
-        }).done(function (response) {
-            if (response.data != null) {
-                $.each(response.data, function (e, data) {
-                    if($(".tr_"+data.Id).length <= 0)
-                    {
-                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_"+data.Id+"'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + (data.Parent_Id > 0 ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' type='number' value='" + data.Quantity + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal'>$" + (data.Dollar_Price * data.Quantity) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
-                        window.productCounter = window.productCounter + 1;}
-                });
-                var OrderTotal = 0;
-                $(".itemTotal").each(function () {
-                    OrderTotal = OrderTotal + parseInt($(this).text().replace('$', ''));
-                });
-                $(".order-total").html('$' + OrderTotal);
-                $("#lineItem").show();
-            }
-        }).fail(function (jqXHR, textStatus) {
-            console.log("Request failed: " + textStatus);
+                data: addData,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+            }).done(function (response) 
+            {
+                if (response.data != null) {
+                    $.each(response.data, function (e, data) {
+                        debugger;
+                    });
+                }
+            }).fail(function (jqXHR, textStatus) {
+                console.log("Request failed: " + textStatus);
+            });
         });
-        });
-
 
         $(document).ready(function () {
+            $('#lineitemid').hide();
             var userType = @userType;
             var orderInternalStatus = @Model.Internal_status;
             var tableItmes = $('#tblOrderItemList').DataTable({
@@ -186,13 +198,21 @@
 
                             return ddl;
                         }
-                    }],
+                    },
+                    {
+                        "data":"Id",
+                        "render": function (data, type, full) {
+                            return '<input type="hidden" id="txtOrderLineItemId" value="' + data + '"/>'
+                        }   
+                    }
+                ],
                 "orderLineItems": [[1, 'asc']]
             });
+
             if(userType == 4)
             {
                 tableItmes.column(1).visible(false);
-                tableItmes.column(4).visible(false);
+
                 tableItmes.column(5).visible(false);
                 tableItmes.column(6).visible(false);
                 tableItmes.column(7).visible(false);
@@ -201,6 +221,7 @@
                 {
                     tableItmes.column(3).visible(false);
                     tableItmes.column(4).visible(false);
+                    tableItmes.column(4).visible(false);
                     tableItmes.column(10).visible(false);
                     tableItmes.column(11).visible(false);
                 }
@@ -208,20 +229,24 @@
                 {
                     tableItmes.column(1).visible(false);
                     tableItmes.column(2).visible(false);
+                    tableItmes.column(3).visible(false);
                 }
                 else
                 {
+                    tableItmes.column(4).visible(false);
                     tableItmes.column(1).visible(false);
                     tableItmes.column(2).visible(false);
                     tableItmes.column(10).visible(false);
                     tableItmes.column(11).visible(false);
                 }
             }
-            else if(userType ==3){
+            else if(userType == 3){
                 tableItmes.column(1).visible(false);
                 tableItmes.column(2).visible(false);
                 tableItmes.column(3).visible(false);
                 tableItmes.column(4).visible(false);
+                tableItmes.column(5).visible(false);
+                tableItmes.column(7).visible(false);
                 tableItmes.column(10).visible(false);
                 tableItmes.column(11).visible(false);
                 if(orderInternalStatus ==2)
@@ -241,7 +266,6 @@
                 tableItmes.column(3).visible(false);
                 tableItmes.column(4).visible(false);
                 tableItmes.column(5).visible(false);
-                tableItmes.column(6).visible(false);
                 tableItmes.column(7).visible(false);
                 tableItmes.column(8).visible(false);
                 tableItmes.column(9).visible(false);
@@ -295,8 +319,7 @@
                 var purchaseData =[];
                 $("#tblOrderItemList tbody tr").each(function(i){
                     purchaseData.push({
-                        "ItemId":$(this).find("input.sales-doller-price").attr("data-item-id"),
-                        "DollerPrice":$(this).find("input.sales-doller-price").val(),
+                        "ItemId": $(this).find("input.sales-rmb-price").attr("data-item-id"),
                         "RMBPrice":$(this).find("input.sales-rmb-price").val()
                     });
                 })
@@ -343,31 +366,6 @@
                         console.log("Request failed: " + textStatus);
                     });}
             });
-           $("#btnSubmit").click(function () {
-            var UpdatedQuantity = $('#txtQuantity').val();
-            var SupplierId = $('#jsonSupplierList').val();
-            $.ajax({
-                url: "@Url.Action("AddSupplierOrderLineItems", "Order")",
-                method: "POST",
-            data: { id: $("#ProductId").val(), qty: $("#ProductQty").val() },
-            dataType: "json"}).done(function (response) {
-            if (response.data != null) {
-                $.each(response.data, function (e, data) {
-                    if($(".tr_"+data.Id).length <= 0)
-                    {
-                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_"+data.Id+"'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + (data.Parent_Id > 0 ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' type='number' value='" + data.Quantity + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal'>$" + (data.Dollar_Price * data.Quantity) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
-                        window.productCounter = window.productCounter + 1;}
-                });
-                var OrderTotal = 0;
-                $(".itemTotal").each(function () {
-                    OrderTotal = OrderTotal + parseInt($(this).text().replace('$', ''));
-                });
-                $(".order-total").html('$' + OrderTotal);
-                $("#lineItem").show();
-            }}).fail(function (jqXHR, textStatus) {
-            console.log("Request failed: " + textStatus);
-            });
-          });
         });
     </script>
 }

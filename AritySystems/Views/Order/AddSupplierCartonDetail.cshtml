@@ -14,6 +14,7 @@
     </div>
     <div class="row">
         <div class="row">
+            <div class="col-md-offset-11"><button class="btn btn-primary" onclick="location.href='@Url.Action("OrderLineItems","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
             @using (Html.BeginForm("AddSupplierCartonDetail", "Order", FormMethod.Post, new { id = ViewBag.OrderId }))
             {
                 <div class="col-md-8" style="margin-bottom:20px;">
@@ -26,12 +27,13 @@
                         <div class="col-md-12">
                             <h4> Status<span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @ViewBag.Status</span></h4>
                         </div>
-                    </div>
-                   </div>
+                    </div>                   
+                        </div>
                 <div class="col-md-12">
                     <table class="table borderless" id="tblSupplierCartonDetail">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Product Name</th>
                                 @*<th>Order Line Item</th>*@
                                 <th>Pcs Per Carton</th>
@@ -87,7 +89,7 @@
                     </div>
                 </div>
             }
-            <div class="col-md-1 col-md-offset-3"><button class="btn btn-primary" onclick="location.href='@Url.Action("OrderLineItems","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+           
         </div>
        
     </div>
@@ -100,7 +102,7 @@
 
         });
 
-        $(document).ready(function () {
+        $(document).ready(function () {            
             var orderid = $('#OrderId').val();
             var table = $('#tblSupplierCartonDetail').DataTable({
                 "ajax": "/Order/SupplierCartonList?OrderId=" + orderid,
