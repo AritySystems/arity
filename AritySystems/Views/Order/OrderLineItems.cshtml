@@ -134,11 +134,7 @@
                 contentType: "application/json; charset=utf-8",
             }).done(function (response) 
             {
-                if (response.data != null) {
-                    $.each(response.data, function (e, data) {
-                        debugger;
-                    });
-                }
+                location.reload();
             }).fail(function (jqXHR, textStatus) {
                 console.log("Request failed: " + textStatus);
             });

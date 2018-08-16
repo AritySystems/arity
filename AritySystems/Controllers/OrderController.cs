@@ -158,7 +158,7 @@ namespace AritySystems.Controllers
                                  join b in db.OrderLineItem_Supplier_Mapping on a.OrderSupplierMapId equals b.Id
                                  join c in db.OrderLineItems on b.OrderLineItemId equals c.Id
                                  join d in db.Orders on c.OrderId equals d.Id
-                                 where c.OrderId == OrderId && c.Quantity > 0
+                                 where c.OrderId == OrderId //&& c.Quantity > 0
                                  select new SupplierOrderLineItemModel
                                  {
                                      Id = a.Id,
@@ -203,12 +203,12 @@ namespace AritySystems.Controllers
                             var quantity = Convert.ToDecimal(item.NewQuantity);
                             var oldQuantity = Convert.ToDecimal(item.OldQuantity);
                             //OrderLineItem ActualQuantity = db.OrderLineItems.Where(x => x.Id == orderItemId).FirstOrDefault();
-                            if (oldQuantity > quantity)
+                            if (oldQuantity >= quantity)
                             {
                                 newQuantity = oldQuantity - quantity;
                                 //db.SaveChanges();
                             }
-                            if (oldQuantity > 0)
+                            if (newQuantity >= 0)
                             {
                                 OrderLineItem remainData = db.OrderLineItems.Where(x => x.Id == orderItemId).FirstOrDefault();
                                 remainData.Quantity = newQuantity;
@@ -220,14 +220,14 @@ namespace AritySystems.Controllers
                             dataModel.CreatedDate = DateTime.Now;
                             dataModel.ModifiedDate = DateTime.Now;
                             dataModel.OrderLineItemId = Convert.ToInt32(item.OrderLineItemId);
-                            dataModel.Quantity = newQuantity;
+                            dataModel.Quantity = quantity;
                             dataModel.SupplierId = Convert.ToInt32(item.SupplierId);
                             db.OrderLineItem_Supplier_Mapping.Add(dataModel);
                             db.SaveChanges();
                             //var count = db.OrderLineItem_Supplier_Mapping.Count();
                             var id = dataModel.Id;
                             model.OrderSupplierMapId = id;
-                            model.Quantity = newQuantity;
+                            model.Quantity = quantity;
                             model.Status = 1;
                             model.SupplierId = Convert.ToInt32(item.SupplierId);
                             model.CreatedDate = DateTime.Now;
