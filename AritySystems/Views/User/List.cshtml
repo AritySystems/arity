@@ -77,18 +77,18 @@
                         "orderable": false,
                         "data": null,
                         'render': function (data, type, full, meta) {
-                            return '<a id="updateUser" href="/user/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a id="deleteUser" href="/user/Delete/' + data.Id + '"><i style="color:red;" class="fa fa-times"></i></a>';
+                            return '<a id="updateUser" href="/user/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a class="deleteUser" data-href="/user/Delete/' + data.Id + '" href="#"><i style="color:red;" class="fa fa-times"></i></a>';
                         }
                     }
                     ],
                 "order": [[1, 'asc']]
             });
 
-            $('#deleteUser').click(function () {
-                deleteLinkObj = $(this);  //for future use
-                var data = confirm("Are you Sure, you wish to Delete?");
-                alert(data);
-                return data;
+            $('body').on("click", ".deleteUser", function () {
+                if (confirm("Are you Sure, you wish to Delete?")) {
+                    location.href = $(this).attr('data-href')
+                    
+                }
             });
         });
 
