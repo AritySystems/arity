@@ -62,5 +62,7 @@ namespace AritySystems.Models
         [Required]
         [Display(Name ="User Type")]
         public int? UserType { get; set; }
+
+        public string FullName { get; set; }
     }
 }
