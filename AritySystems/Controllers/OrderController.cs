@@ -574,7 +574,6 @@ namespace AritySystems.Controllers
         {
             ArityEntities dbContext = new ArityEntities();
             List<PerfomaProductList> productList = new List<PerfomaProductList>();
-            id = 8;
 
             List<string> PerfomaList = dbContext.PerfomaInvoices.Where(x => x.OrderId == id).Select(x => x.PerfomaInvoiceReferece).ToList();
 
@@ -734,7 +733,7 @@ namespace AritySystems.Controllers
                 worksheet.Range["$A$" + rownum + ":$E$" + rownum].Merge();
 
                 worksheet.Range["F" + rownum + ""].Text = "$" + totalItems.ToString();
-                worksheet.Range["G" + rownum + ""].Text = "$" + totalRMB.ToString();
+                worksheet.Range["G" + rownum + ""].Text = "¥" + totalRMB.ToString();
 
                 rownum += 2;
 
@@ -784,7 +783,7 @@ namespace AritySystems.Controllers
                 dbContext.SaveChanges();
 
                 //Save the workbook to disk in xlsx format.
-                workbook.SaveAs(@"C:\excel\" + perfomaInvoice.OrderId + perfoma.PINo + ".xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
+                workbook.SaveAs(@"/Content/PerfomaInvoice/" + perfomaInvoice.OrderId + perfoma.PINo + ".xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
             }
 
             return View();
