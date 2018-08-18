@@ -117,27 +117,35 @@ namespace AritySystems.Controllers
                 using (var db = new ArityEntities())
                 {
                     var model = (from m in db.OrderLineItems
-                                 join n in db.Orders on m.OrderId equals n.Id
-                                 join o in db.Products on m.ProductId equals o.Id
+                                 join o in db.Orders on m.OrderId equals o.Id
+                                 join n in db.Products on m.ProductId equals n.Id
                                  where m.OrderId == OrderId && m.Quantity > 0
-                                 select new 
+                                 select new
                                  {
-                                     Id = m.Id,
-                                     //OrderId = m.OrderId ?? 0,
-                                     Order_Name = n.Prefix,
-                                     ProductId = m.ProductId ?? 0 ,
-                                     Product_Name = o.English_Name + "(" + o.Chinese_Name + ")",
-                                     Purchase_Price_dollar = m.DollarPurchasePrice,
-                                     Sales_Price_dollar = m.DollarSalesPrice,
-                                     Purchase_Price_rmb = m.RMBPurchasePrice,
-                                     Sales_Price_rmb = m.RMBSalesPrice,
-                                     quantity = m.Quantity,
-                                     //CreatedDate = m.CreatedDate.ToString(),
-                                     //ModifiedDate = m.ModifiedDate ?? DateTime.MinValue,
-                                     Suppliers = GetProductSuppliers(m.ProductId ?? 0).ToList()
-                                 }).ToList();
+                                     OrderLineItem = m,
+                                     Orders = o,
+                                     Products = n
+                                 }
+                                 ).ToList();
 
-                    return Json(new { data = model }, JsonRequestBehavior.AllowGet);
+                    var newModel = model.Select(_ => new
+                    {
+                        Id = _.OrderLineItem.Id,
+                        //OrderId = m.OrderId ?? 0,
+                        Order_Name = _.Orders.Prefix,
+                        ProductId = _.OrderLineItem.ProductId ?? 0,
+                        Product_Name = _.Products.English_Name + "(" + _.Products.Chinese_Name + ")",
+                        Purchase_Price_dollar = _.OrderLineItem.DollarPurchasePrice,
+                        Sales_Price_dollar = _.OrderLineItem.DollarSalesPrice,
+                        Purchase_Price_rmb = _.OrderLineItem.RMBPurchasePrice,
+                        Sales_Price_rmb = _.OrderLineItem.RMBSalesPrice,
+                        quantity = _.OrderLineItem.Quantity,
+                        //CreatedDate = m.CreatedDate.ToString(),
+                        //ModifiedDate = m.ModifiedDate ?? DateTime.MinValue,
+                        Suppliers = GetProductSuppliers(_.OrderLineItem.ProductId ?? 0).ToList()
+                    }).ToList();
+
+                    return Json(new { data = newModel }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception ex)
@@ -228,7 +236,7 @@ namespace AritySystems.Controllers
                             dataModel.SupplierId = Convert.ToInt32(item.SupplierId);
                             db.OrderLineItem_Supplier_Mapping.Add(dataModel);
                             db.SaveChanges();
-                            
+
                             var id = dataModel.Id;
                             model.OrderSupplierMapId = id;
                             model.Quantity = quantity;
@@ -504,7 +512,7 @@ namespace AritySystems.Controllers
             return Json(new { data = orders }, JsonRequestBehavior.AllowGet);
         }
 
-       // [Route("AddSupplierCartonDetail/{orderId}")]
+        // [Route("AddSupplierCartonDetail/{orderId}")]
         public ActionResult AddSupplierCartonDetail(int orderId)
         {
             SupplierCartoon carton = new SupplierCartoon();
@@ -516,7 +524,7 @@ namespace AritySystems.Controllers
                                  join c in dbContext.Supplier_Assigned_OrderLineItem on b.Id equals c.OrderSupplierMapId
                                  where a.OrderId == orderId
                                  select c.CreatedDate).FirstOrDefault();
-            
+
             var Status = dbContext.Orders.Where(x => x.Id == orderId).Select(x => x.Status).FirstOrDefault();
             ViewBag.Status = ((AritySystems.Common.EnumHelpers.OrderStatus)Status).ToString();
             var ordersLineItems = (from a in dbContext.OrderLineItems
@@ -576,13 +584,13 @@ namespace AritySystems.Controllers
         {
             ArityEntities dbContext = new ArityEntities();
             List<PerfomaProductList> productList = new List<PerfomaProductList>();
-
+            int asIntegers = 0;
             List<string> PerfomaList = dbContext.PerfomaInvoices.Where(x => x.OrderId == id).Select(x => x.PerfomaInvoiceReferece).ToList();
-
-            List<string> maxPerfoma = PerfomaList.Select(x => x.Replace("PI", "")).ToList();
-
-            int asIntegers = maxPerfoma.Select(s => int.Parse(s)).ToArray().Max();
-
+            if (PerfomaList != null && PerfomaList.Count > 0)
+            {
+                List<string> maxPerfoma = PerfomaList.Select(x => x.Replace("PI", "")).ToList();
+                asIntegers = maxPerfoma.Select(s => int.Parse(s)).ToArray().Max();
+            }
             var perfoma = (from order in dbContext.Orders
                            join user in dbContext.Users on order.CustomerId equals user.Id
                            join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
@@ -608,6 +616,7 @@ namespace AritySystems.Controllers
                            join user in dbContext.Users on order.CustomerId equals user.Id
                            join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
                            join product in dbContext.Products on lineItem.ProductId equals product.Id
+                           where order.Id == id
                            select new
                            {
                                l = lineItem,
@@ -796,12 +805,12 @@ namespace AritySystems.Controllers
             ArityEntities dataContext = new ArityEntities();
             List<SelectListItem> suppliers = new List<SelectListItem>();
             var suppliersCsv = (from data in dataContext.Products
-                              where data.Id == productId 
-                              select new
-                              {
-                                  Id = data.Id,
-                                  suppliers = data.Suppliers
-                              }).ToList();
+                                where data.Id == productId && data.Suppliers != null 
+                                select new
+                                {
+                                    Id = data.Id,
+                                    suppliers = data.Suppliers
+                                }).ToList();
 
             foreach (var data in suppliersCsv)
             {
@@ -809,12 +818,12 @@ namespace AritySystems.Controllers
                               .Select(x => int.Parse(x))
                               .ToArray();
 
-                suppliers = (from u in dataContext.Users.ToList().Where(x => ids.Contains(x.Id) && x.UserType == 1)
-                                 select new SelectListItem
-                                 {
-                                     Text = u.Id.ToString(),
-                                     Value = u.FirstName + " " + u.LastName
-                                 }).ToList();
+                suppliers = (from u in dataContext.Users.ToList().Where(x => ids.Contains(x.Id) && x.UserType == (int)Common.EnumHelpers.UserType.Supplier)
+                             select new SelectListItem
+                             {
+                                 Text = u.Id.ToString(),
+                                 Value = u.FirstName + " " + u.LastName
+                             }).ToList();
 
             }
 
