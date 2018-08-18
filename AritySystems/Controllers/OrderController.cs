@@ -68,7 +68,20 @@ namespace AritySystems.Controllers
         public ActionResult OrderDetail(int id)
         {
             ArityEntities objDb = new ArityEntities();
-            return View(objDb.Orders.Where(_ => _.Id == id).FirstOrDefault());
+            var orders = objDb.Orders.Where(_ => _.Id == id).FirstOrDefault();
+            ViewBag.Sales_Person_Id = orders != null && (orders.Sales_Person_Id ?? 0) > 0 ? new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Sales), "Id", "FullName", orders.Sales_Person_Id) : new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Sales), "Id", "FullName");
+            ViewBag.ExporterList = orders != null && (orders.ExporterId ?? 0) > 0 ? new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Exporter), "Id", "FullName", orders.ExporterId) : new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Exporter), "Id", "FullName");
+            return View(orders);
+        }
+
+        private List<UserModel> GetUerList(int Usertype)
+        {
+            ArityEntities objDb = new ArityEntities();
+            return objDb.Users.Where(_ => (_.UserType ?? 0) == Usertype).Select(_ => new UserModel
+            {
+                Id = _.Id,
+                FullName = _.FirstName + " " + _.LastName
+            }).ToList();
         }
 
         /// <summary>
@@ -316,11 +329,10 @@ namespace AritySystems.Controllers
             ArityEntities objDb = new ArityEntities();
             var product = (from pro in objDb.Products.ToList()
                            where pro.Id == id
-                           select new Product
-                           {
-                               Dollar_Price = pro.Dollar_Price
-                           }).FirstOrDefault();
-            var items = objDb.Products.Where(_ => _.Id == id).Union(objDb.Products.Where(_ => _.Parent_Id == id)).ToList();
+                           select pro).FirstOrDefault();
+            var items = new List<Product>();
+            items.Add(product);
+            items.AddRange(GetChildProducts(id));
             items.ForEach(_ => _.MOQ = qty);
             var productList = (from lst in items
                                select new Product
@@ -332,7 +344,7 @@ namespace AritySystems.Controllers
                                    Quantity = lst.Quantity,
                                    MOQ = lst.MOQ,
                                    Id = lst.Id,
-                                   Parent_Id = lst.Parent_Id
+                                   ParentIds = lst.ParentIds
                                }).ToList();
             return Json(new { data = productList }, JsonRequestBehavior.AllowGet);
         }
@@ -430,7 +442,6 @@ namespace AritySystems.Controllers
                         }
                         else
                         {
-                            orderLineItem.DollarSalesPrice = item.DollerPrice;
                             orderLineItem.RMBSalesPrice = item.RMBPrice;
                         }
                     }
@@ -610,7 +621,7 @@ namespace AritySystems.Controllers
                                ProductId = x.p.Id,
                                RMBUnitPrice = x.l.RMBSalesPrice,
                                TotalRMB = x.l.Quantity * x.l.RMBSalesPrice
-                                
+
                            }).ToList();
 
             perfoma.ProductList = productList;
@@ -711,9 +722,9 @@ namespace AritySystems.Controllers
                 decimal totalItems = 0;
                 decimal totalRMB = 0;
 
-                foreach(var item in productList)
+                foreach (var item in productList)
                 {
-                    totalItems +=  item.TotalUSD;
+                    totalItems += item.TotalUSD;
                     totalRMB += item.TotalRMB;
                 }
 
@@ -764,7 +775,7 @@ namespace AritySystems.Controllers
                         ProductId = item.ProductId,
                         Dollar_ProductPrice = item.UnitPrice,
                         RMB_ProductPrice = item.RMBUnitPrice
-                       
+
                     };
 
                     dbContext.PerfomaInvoiceItems.Add(perfomaInvoiceItem);
@@ -828,6 +839,76 @@ namespace AritySystems.Controllers
         {
             Common.EnumHelpers.Units unitValue = (Common.EnumHelpers.Units)value;
             return unitValue.ToString();
+        }
+
+        private List<Product> GetChildProducts(int parentId)
+        {
+            ArityEntities dataContext = new ArityEntities();
+            List<Product> childProductList = new List<Product>();
+
+            var parentsCsv = (from data in dataContext.Products
+                              where data.ParentIds != null && data.ParentIds != string.Empty
+                              select new
+                              {
+                                  Id = data.Id,
+                                  parents = data.ParentIds
+                              }).ToList();
+
+            foreach (var data in parentsCsv)
+            {
+                var ids = data.parents.Split(new[] { ',' })
+                              .Select(x => int.Parse(x))
+                              .ToArray();
+
+                var childProductDetails = (from childProduct in dataContext.Products.ToList().Where(x => ids.Contains(parentId) && x.Id == data.Id)
+                                           select new Product()
+                                           {
+                                               Id = childProduct.Id,
+                                               Chinese_Name = childProduct.Chinese_Name,
+                                               Description = childProduct.Description,
+                                               Dollar_Price = childProduct.Dollar_Price,
+                                               ModifiedDate = childProduct.ModifiedDate,
+                                               English_Name = childProduct.English_Name,
+                                               Quantity = childProduct.Quantity,
+                                               RMB_Price = childProduct.RMB_Price,
+                                               Unit = getEnumValue(Convert.ToInt32(childProduct.Unit)),
+                                               ParentIds = childProduct.ParentIds
+                                           }).FirstOrDefault();
+
+
+
+                if (childProductDetails != null)
+                {
+                    childProductList.Add(childProductDetails);
+                }
+
+            }
+
+            return childProductList;
+        }
+
+        public JsonResult AssignSalesPersonToOrder(int id, int salesPerson)
+        {
+            var dbContext = new ArityEntities();
+            var order = dbContext.Orders.Where(_ => _.Id == id).FirstOrDefault();
+            if (order != null)
+            {
+                order.Sales_Person_Id = salesPerson > 0 ? salesPerson : (int?)null;
+                dbContext.SaveChanges();
+            }
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult AssignExporterToOrder(int id, int exporterId)
+        {
+            var dbContext = new ArityEntities();
+            var order = dbContext.Orders.Where(_ => _.Id == id).FirstOrDefault();
+            if (order != null)
+            {
+                order.ExporterId = exporterId > 0 ? exporterId : (int?)null;
+                dbContext.SaveChanges();
+            }
+            return Json("", JsonRequestBehavior.AllowGet);
         }
     }
 }
