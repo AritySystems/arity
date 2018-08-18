@@ -84,7 +84,7 @@
                         "orderable": false,
                         "data": null,
                         'render': function (data, type, full, meta) {
-                            return '<a href="/product/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a href="/product/Delete/' + data.Id + '"><i style="color:red;" class="fa fa-times"></i></a>';
+                            return '<a href="/product/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a class="deleteUser" data-href="/product/Delete/' + data.Id + '" href="#"><i style="color:red;" class="fa fa-times"></i></a>';
                         }
                     }],
                 "order": [[1, 'asc']]
@@ -110,6 +110,13 @@
                     row.child(format(row.data())).show();
                     tr.find(".details-control").find(".btn").html("<i class='fa fa-minus-circle'></i> Sub Products");
                     tr.addClass('shown');
+                }
+            });
+
+            $('body').on("click", ".deleteUser", function () {
+                if (confirm("Are you Sure, you wish to Delete?")) {
+                    location.href = $(this).attr('data-href')
+
                 }
             });
         });

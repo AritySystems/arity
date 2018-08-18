@@ -11,7 +11,7 @@
         <h1><i class="fa fa-shopping-cart"></i> @(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin ? "Order Details" : "Your Order Details")</h1>
     </div>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
             @if (userType != (int)AritySystems.Common.EnumHelpers.UserType.Customer)
             {
                 <div class="col-md-12">
@@ -26,23 +26,26 @@
                 @Model.Prefix
             </div>
             <div class="col-md-12">
-                <b>Order Total <i class="fa fa-usd"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarSalesPrice)) </b>
+                <b>Order Total:  <i class="fa fa-usd"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarSalesPrice)) </b>
             </div>
             @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
             {
                 <div class="col-md-12">
-                    <b>Order Total (RMB) @Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice)) </b>
+                    <b>Order Total:  <i class="fa fa-jpy"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice)) </b>
                 </div>
                 <div class="col-md-12">
-                    <b>Order Profit (RNB) : @(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBSalesPrice)) - Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice))) </b>
+                    <b>Order Profit:  <i class="fa fa-jpy"></i>@(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBSalesPrice)) - Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice))) </b>
                 </div>
-
+                <div class="col-md-12">
+                    <div style="display:block;margin:10px 0 10px;"> <b>Assign Sales Person:  @Html.DropDownListFor(_ => _.Sales_Person_Id, ViewBag.SalesPersonList as SelectList, "-- Select Sales Person --", new { @class = "form-control" })</b></div>
+                    <div style="display:block;margin:10px 0 10px;"> <b>Assign Exporter:  @Html.DropDownListFor(_ => _.ExporterId, ViewBag.ExporterList as SelectList, "-- Select Exporter --",new { @class="form-control"})</b></div>
+                </div>
             }
             <div class="col-md-12" style="margin:25px 0px 10px 0;">
                 <h4>Order Line Items</h4>
             </div>
         </div>
-        <div class="col-md-1 col-md-offset-7"><button class="btn btn-primary" onclick="location.href='@(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin? Url.Action("orders","order") :Url.Action("orderlist","order"))';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+        <div class="col-md-1 col-md-offset-5"><button class="btn btn-primary" onclick="location.href='@(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin? Url.Action("orders","order") :Url.Action("orderlist","order"))';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
         <hr class="col-md-12" style="margin-bottom:25px;" />
         <div class="col-md-12" style="margin-bottom:50px;">
             <table class="tab-content table-striped" style="width:100%">
@@ -80,12 +83,12 @@
                         {
                             <td align="right"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
                             <td align="right"><i class="fa fa-usd"></i>@item.DollarSalesPrice</td>
-                            <td align="right">@item.RMBPurchasePrice</td>
-                            <td align="right">@item.RMBSalesPrice</td>
+                            <td align="right"><i class="fa fa-jpy"></i>@item.RMBPurchasePrice</td>
+                            <td align="right"><i class="fa fa-jpy"></i>@item.RMBSalesPrice</td>
                             <td align="right"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarPurchasePrice)</td>
                             <td align="right"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarSalesPrice)</td>
-                            <td align="right">@(item.Quantity * item.RMBPurchasePrice)</td>
-                            <td align="right">@(item.Quantity * item.RMBSalesPrice)</td>}
+                            <td align="right"><i class="fa fa-jpy"></i>@(item.Quantity * item.RMBPurchasePrice)</td>
+                            <td align="right"><i class="fa fa-jpy"></i>@(item.Quantity * item.RMBSalesPrice)</td>}
                         else
                         {
                             <td align="right"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
@@ -100,13 +103,13 @@
                     @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
                     {
                         <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => _.DollarPurchasePrice))</td>
-                        <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => _.DollarSalesPrice))e</td>
-                        <td align="right">@(Model.OrderLineItems.Sum(_ => _.RMBPurchasePrice))</td>
-                        <td align="right">@(Model.OrderLineItems.Sum(_ => _.RMBSalesPrice))</td>
+                        <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => _.DollarSalesPrice))</td>
+                        <td align="right"><i class="fa fa-jpy"></i>@(Model.OrderLineItems.Sum(_ => _.RMBPurchasePrice))</td>
+                        <td align="right"><i class="fa fa-jpy"></i>@(Model.OrderLineItems.Sum(_ => _.RMBSalesPrice))</td>
                         <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => (_.DollarPurchasePrice * _.Quantity)))</td>
                         <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity)))</td>
-                        <td align="right">@(Model.OrderLineItems.Sum(_ => (_.RMBPurchasePrice * _.Quantity)))</td>
-                        <td align="right">@(Model.OrderLineItems.Sum(_ => (_.RMBSalesPrice * _.Quantity)))</td>}
+                        <td align="right"><i class="fa fa-jpy"></i>@(Model.OrderLineItems.Sum(_ => (_.RMBPurchasePrice * _.Quantity)))</td>
+                        <td align="right"><i class="fa fa-jpy"></i>@(Model.OrderLineItems.Sum(_ => (_.RMBSalesPrice * _.Quantity)))</td>}
                     else
                     {
                         <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => _.DollarPurchasePrice))</td>
@@ -128,6 +131,31 @@
 
 @section Scripts {
     <script>
+        $('select').chosen();
+        $("#Sales_Person_Id").on("change", function () {
+            $.ajax({
+                url: "@Url.Action("AssignSalesPersonToOrder", "Order")",
+                method: "GET",
+                data: { id: @Model.Id, salesPerson:$(this).val() == '' ? 0 : $(this).val()  },
+                dataType: "json"
+            }).done(function (response) {
+                location.reload();
+            }).fail(function (jqXHR, textStatus) {
+                console.log("Request failed: " + textStatus);
+            });
+        });
+        $("#ExporterId").on("change", function () {
+            $.ajax({
+                url: "@Url.Action("AssignExporterToOrder", "Order")",
+                method: "GET",
+                data: { id: @Model.Id, exporterId:$(this).val() == '' ? 0 : $(this).val()  },
+                dataType: "json"
+            }).done(function (response) {
+                location.reload();
+            }).fail(function (jqXHR, textStatus) {
+                console.log("Request failed: " + textStatus);
+            });
+        });
         $("#btnApproved").on("click", function () {
             updateStatus(@((int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved));
         });

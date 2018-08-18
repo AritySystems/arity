@@ -53,7 +53,6 @@
                         <th>Qunatity</th>
                         <th>Qunatity</th>
                         <th>Suppliers</th>
-                        <th class="lineitemid"></th>
                     </tr>
                 </thead>
             </table>
@@ -85,7 +84,6 @@
                 <table class="display" id="tblSupplierOrderItemList">
                     <thead>
                         <tr>
-                            <th></th>
                             <th>Supplier Name</th>
                             <th>Order Prefix </th>
                             <th>Quantity</th>
@@ -106,39 +104,34 @@
         });
         $("#btnSubmit").click(function () {
             debugger;
+            $("#btnSubmit").prop('disabled', true);
             var data =[];
             $('#tblOrderItemList tbody tr').each(function (i, el) {
-                debugger;
                 var $tds = $(this).find('td'),
                     productName = $tds.eq(0).text(),
                     price = $tds.eq(1).text(),
                     quantity = $tds.eq(2).text(),
                     newquantity = $tds.find('input#txtQuantity').val(),
                     supplierid = $tds.find('#jsonSupplierList option:selected').attr('id'),
-                    orderLineItem = $(this).find("input#txtOrderLineItemId").val();
+                    orderLineItem = $(this).find("span.purchase-rmb-price").attr("data-item-id");
                 var items = {}
                 items["OldQuantity"] = quantity,
                 items["NewQuantity"] = newquantity,
                 items["supplierid"] = supplierid;
                 items["OrderLineItemId"] = orderLineItem;
-                debugger;
                 data.push(items);
             });
             var addData =JSON.stringify(data);
-            debugger;
             $.ajax({
                 url: "@Url.Action("AddSupplierOrderLineItems", "Order")",
                 method: "POST",
                 data: addData,
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",
-            }).done(function (response) 
+            }).done(function (response)
             {
-                if (response.data != null) {
-                    $.each(response.data, function (e, data) {
-                        debugger;
-                    });
-                }
+                $("#btnSubmit").prop('disabled', false);
+                location.reload();
             }).fail(function (jqXHR, textStatus) {
                 console.log("Request failed: " + textStatus);
             });
@@ -165,7 +158,12 @@
                         }
                     },
                     { "data": "Purchase_Price_dollar" },
-                    { "data": "Purchase_Price_rmb" },
+                    {
+                        "data": null,
+                        "render": function (data, type, full) {
+                            return '<span data-item-id="' + data.Id + '" class="purchase-rmb-price">' + data.Purchase_Price_rmb + '</span>'
+                        }
+                    },
                     {
                         "data": null,
                         "render": function (data, type, full) {
@@ -198,17 +196,11 @@
 
                             return ddl;
                         }
-                    },
-                    {
-                        "data":"Id",
-                        "render": function (data, type, full) {
-                            return '<input type="hidden" id="txtOrderLineItemId" value="' + data + '"/>'
-                        }   
                     }
                 ],
                 "orderLineItems": [[1, 'asc']]
             });
-
+            console.log(orderInternalStatus)
             if(userType == 4)
             {
                 tableItmes.column(1).visible(false);
@@ -233,7 +225,8 @@
                 }
                 else
                 {
-                    tableItmes.column(4).visible(false);
+                    tableItmes.column(3).visible(false);
+                    tableItmes.column(4).visible(true);
                     tableItmes.column(1).visible(false);
                     tableItmes.column(2).visible(false);
                     tableItmes.column(10).visible(false);
@@ -275,13 +268,6 @@
             var table = $('#tblSupplierOrderItemList').DataTable({
                 "ajax": "/Order/SuppliersOrderLineItemList?OrderId=" + @Model.Id,
                 "columns": [
-                    {
-                        "data": "Id",
-                        "ordering": false,
-                        "render": function (data, type, full) {
-                            return '<input type="hidden" id="txtId" value="' + data + '"/>'
-                        }
-                    },
                     { "data": "SupplierName" },
                     { "data": "Order_Prefix" },
                     { "data": "Quantity" },

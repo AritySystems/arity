@@ -14,10 +14,17 @@ namespace AritySystems
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "AddSupplierCartonDetail",
+                url: "Order/AddSupplierCartonDetail/{orderId}",
+                defaults: new { controller = "Order", action = "AddSupplierCartonDetail" }
+            );
+
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "User", action = "Login", id = UrlParameter.Optional }
             );
+            
         }
     }
 }

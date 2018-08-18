@@ -68,7 +68,20 @@ namespace AritySystems.Controllers
         public ActionResult OrderDetail(int id)
         {
             ArityEntities objDb = new ArityEntities();
-            return View(objDb.Orders.Where(_ => _.Id == id).FirstOrDefault());
+            var orders = objDb.Orders.Where(_ => _.Id == id).FirstOrDefault();
+            ViewBag.Sales_Person_Id = orders != null && (orders.Sales_Person_Id ?? 0) > 0 ? new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Sales), "Id", "FullName", orders.Sales_Person_Id) : new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Sales), "Id", "FullName");
+            ViewBag.ExporterList = orders != null && (orders.ExporterId ?? 0) > 0 ? new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Exporter), "Id", "FullName", orders.ExporterId) : new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Exporter), "Id", "FullName");
+            return View(orders);
+        }
+
+        private List<UserModel> GetUerList(int Usertype)
+        {
+            ArityEntities objDb = new ArityEntities();
+            return objDb.Users.Where(_ => (_.UserType ?? 0) == Usertype).Select(_ => new UserModel
+            {
+                Id = _.Id,
+                FullName = _.FirstName + " " + _.LastName
+            }).ToList();
         }
 
         /// <summary>
@@ -103,36 +116,36 @@ namespace AritySystems.Controllers
             {
                 using (var db = new ArityEntities())
                 {
-
                     var model = (from m in db.OrderLineItems
-                                 join n in db.Orders on m.OrderId equals n.Id
-                                 join o in db.Products on m.ProductId equals o.Id
+                                 join o in db.Orders on m.OrderId equals o.Id
+                                 join n in db.Products on m.ProductId equals n.Id
                                  where m.OrderId == OrderId && m.Quantity > 0
-                                 select new OrderLineItemViewModel
+                                 select new
                                  {
-                                     Id = m.Id,
-                                     //OrderId = m.OrderId ?? 0,
-                                     Order_Name = n.Prefix,
-                                     //ProductId = m.ProductId ?? 0,
-                                     Product_Name = o.English_Name + "(" + o.Chinese_Name + ")",
-                                     Purchase_Price_dollar = m.DollarPurchasePrice,
-                                     Sales_Price_dollar = m.DollarSalesPrice,
-                                     Purchase_Price_rmb = m.RMBPurchasePrice,
-                                     Sales_Price_rmb = m.RMBSalesPrice,
-                                     quantity = m.Quantity,
-                                     //CreatedDate = m.CreatedDate.ToString(),
-                                     //ModifiedDate = m.ModifiedDate ?? DateTime.MinValue,
-                                     Suppliers = (from a in db.Users
-                                                  join b in db.UserTypes on a.Id equals b.UserId
-                                                  where b.Id == 1
-                                                  select new SelectListItem
-                                                  {
-                                                      Text = a.Id.ToString(),
-                                                      Value = a.FirstName + " " + a.LastName
-                                                  }).ToList()
-                                 }).ToList();
+                                     OrderLineItem = m,
+                                     Orders = o,
+                                     Products = n
+                                 }
+                                 ).ToList();
 
-                    return Json(new { data = model }, JsonRequestBehavior.AllowGet);
+                    var newModel = model.Select(_ => new
+                    {
+                        Id = _.OrderLineItem.Id,
+                        //OrderId = m.OrderId ?? 0,
+                        Order_Name = _.Orders.Prefix,
+                        ProductId = _.OrderLineItem.ProductId ?? 0,
+                        Product_Name = _.Products.English_Name + "(" + _.Products.Chinese_Name + ")",
+                        Purchase_Price_dollar = _.OrderLineItem.DollarPurchasePrice,
+                        Sales_Price_dollar = _.OrderLineItem.DollarSalesPrice,
+                        Purchase_Price_rmb = _.OrderLineItem.RMBPurchasePrice,
+                        Sales_Price_rmb = _.OrderLineItem.RMBSalesPrice,
+                        quantity = _.OrderLineItem.Quantity,
+                        //CreatedDate = m.CreatedDate.ToString(),
+                        //ModifiedDate = m.ModifiedDate ?? DateTime.MinValue,
+                        Suppliers = GetProductSuppliers(_.OrderLineItem.ProductId ?? 0).ToList()
+                    }).ToList();
+
+                    return Json(new { data = newModel }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception ex)
@@ -158,7 +171,7 @@ namespace AritySystems.Controllers
                                  join b in db.OrderLineItem_Supplier_Mapping on a.OrderSupplierMapId equals b.Id
                                  join c in db.OrderLineItems on b.OrderLineItemId equals c.Id
                                  join d in db.Orders on c.OrderId equals d.Id
-                                 where c.OrderId == OrderId && c.Quantity > 0
+                                 where c.OrderId == OrderId //&& c.Quantity > 0
                                  select new SupplierOrderLineItemModel
                                  {
                                      Id = a.Id,
@@ -203,31 +216,30 @@ namespace AritySystems.Controllers
                             var quantity = Convert.ToDecimal(item.NewQuantity);
                             var oldQuantity = Convert.ToDecimal(item.OldQuantity);
                             //OrderLineItem ActualQuantity = db.OrderLineItems.Where(x => x.Id == orderItemId).FirstOrDefault();
-                            if (oldQuantity > quantity)
+                            if (oldQuantity >= quantity)
                             {
                                 newQuantity = oldQuantity - quantity;
                                 //db.SaveChanges();
                             }
-                            if (oldQuantity > 0)
+                            if (newQuantity >= 0)
                             {
                                 OrderLineItem remainData = db.OrderLineItems.Where(x => x.Id == orderItemId).FirstOrDefault();
                                 remainData.Quantity = newQuantity;
-                                db.SaveChanges();
+                                //db.SaveChanges();
                             }
-
 
                             OrderLineItem_Supplier_Mapping dataModel = new OrderLineItem_Supplier_Mapping();
                             dataModel.CreatedDate = DateTime.Now;
                             dataModel.ModifiedDate = DateTime.Now;
                             dataModel.OrderLineItemId = Convert.ToInt32(item.OrderLineItemId);
-                            dataModel.Quantity = newQuantity;
+                            dataModel.Quantity = quantity;
                             dataModel.SupplierId = Convert.ToInt32(item.SupplierId);
                             db.OrderLineItem_Supplier_Mapping.Add(dataModel);
                             db.SaveChanges();
-                            //var count = db.OrderLineItem_Supplier_Mapping.Count();
+
                             var id = dataModel.Id;
                             model.OrderSupplierMapId = id;
-                            model.Quantity = newQuantity;
+                            model.Quantity = quantity;
                             model.Status = 1;
                             model.SupplierId = Convert.ToInt32(item.SupplierId);
                             model.CreatedDate = DateTime.Now;
@@ -316,11 +328,10 @@ namespace AritySystems.Controllers
             ArityEntities objDb = new ArityEntities();
             var product = (from pro in objDb.Products.ToList()
                            where pro.Id == id
-                           select new Product
-                           {
-                               Dollar_Price = pro.Dollar_Price
-                           }).FirstOrDefault();
-            var items = objDb.Products.Where(_ => _.Id == id).Union(objDb.Products.Where(_ => _.Parent_Id == id)).ToList();
+                           select pro).FirstOrDefault();
+            var items = new List<Product>();
+            items.Add(product);
+            items.AddRange(GetChildProducts(id));
             items.ForEach(_ => _.MOQ = qty);
             var productList = (from lst in items
                                select new Product
@@ -332,7 +343,7 @@ namespace AritySystems.Controllers
                                    Quantity = lst.Quantity,
                                    MOQ = lst.MOQ,
                                    Id = lst.Id,
-                                   Parent_Id = lst.Parent_Id
+                                   ParentIds = lst.ParentIds
                                }).ToList();
             return Json(new { data = productList }, JsonRequestBehavior.AllowGet);
         }
@@ -430,7 +441,6 @@ namespace AritySystems.Controllers
                         }
                         else
                         {
-                            orderLineItem.DollarSalesPrice = item.DollerPrice;
                             orderLineItem.RMBSalesPrice = item.RMBPrice;
                         }
                     }
@@ -490,24 +500,31 @@ namespace AritySystems.Controllers
                           join supplieritem in objDb.Supplier_Assigned_OrderLineItem.ToList() on supplierorder.Id equals supplieritem.OrderSupplierMapId
                           select new
                           {
-                              SupplierOrderId = supplierorder.Id,
-                              Prefix = "",
+                              SupplierOrderId = orderlineitem.OrderId,
+                              Prefix = order.Prefix,
                               OrderId = order.Id,
-                              CreatedOn = supplierorder.CreatedDate.ToString("MM/dd/yyyy h:m tt"),
-                              Quantity = supplierorder.Quantity,
-                              DollerSalesTotal = 0,
-                              RmbSalesTotal = 0,
-                              Status = 1
+                              CreatedOn = supplieritem.CreatedDate.ToString("MM/dd/yyyy h:m tt"),
+                              Quantity = supplieritem.Quantity,
+                              //DollerSalesTotal = 0,
+                              RmbSalesTotal = orderlineitem.RMBSalesPrice,
+                              Status = supplieritem.Status
                           }).ToList();
             return Json(new { data = orders }, JsonRequestBehavior.AllowGet);
         }
 
+        // [Route("AddSupplierCartonDetail/{orderId}")]
         public ActionResult AddSupplierCartonDetail(int orderId)
         {
+            SupplierCartoon carton = new SupplierCartoon();
             ArityEntities dbContext = new ArityEntities();
             ViewBag.OrderId = orderId;
             ViewBag.OrderName = dbContext.Orders.Where(x => x.Id == orderId).Select(x => x.Prefix).FirstOrDefault();
-            ViewBag.OrderDate = dbContext.Orders.Where(x => x.Id == orderId).Select(x => x.CreatedDate).FirstOrDefault();
+            ViewBag.OrderDate = (from a in dbContext.OrderLineItems
+                                 join b in dbContext.OrderLineItem_Supplier_Mapping on a.Id equals b.OrderLineItemId
+                                 join c in dbContext.Supplier_Assigned_OrderLineItem on b.Id equals c.OrderSupplierMapId
+                                 where a.OrderId == orderId
+                                 select c.CreatedDate).FirstOrDefault();
+
             var Status = dbContext.Orders.Where(x => x.Id == orderId).Select(x => x.Status).FirstOrDefault();
             ViewBag.Status = ((AritySystems.Common.EnumHelpers.OrderStatus)Status).ToString();
             var ordersLineItems = (from a in dbContext.OrderLineItems
@@ -515,9 +532,13 @@ namespace AritySystems.Controllers
                                    where a.OrderId == orderId
                                    select new { a.Id, b.English_Name }).ToList();
             ViewBag.OrderLineItems = new SelectList(ordersLineItems, "Id", "English_Name");
-            return View();
+            carton.PcsPerCartoon = (from a in dbContext.OrderLineItems
+                                    join b in dbContext.OrderLineItem_Supplier_Mapping on a.Id equals b.OrderLineItemId
+                                    join c in dbContext.Supplier_Assigned_OrderLineItem on b.Id equals c.OrderSupplierMapId
+                                    where a.OrderId == orderId
+                                    select c.Quantity).FirstOrDefault();
+            return View(carton);
         }
-
 
         [HttpPost]
         public ActionResult AddSupplierCartonDetail(FormCollection fc)
@@ -563,14 +584,13 @@ namespace AritySystems.Controllers
         {
             ArityEntities dbContext = new ArityEntities();
             List<PerfomaProductList> productList = new List<PerfomaProductList>();
-            id = 8;
-
+            int asIntegers = 0;
             List<string> PerfomaList = dbContext.PerfomaInvoices.Where(x => x.OrderId == id).Select(x => x.PerfomaInvoiceReferece).ToList();
-
-            List<string> maxPerfoma = PerfomaList.Select(x => x.Replace("PI", "")).ToList();
-
-            int asIntegers = maxPerfoma.Select(s => int.Parse(s)).ToArray().Max();
-
+            if (PerfomaList != null && PerfomaList.Count > 0)
+            {
+                List<string> maxPerfoma = PerfomaList.Select(x => x.Replace("PI", "")).ToList();
+                asIntegers = maxPerfoma.Select(s => int.Parse(s)).ToArray().Max();
+            }
             var perfoma = (from order in dbContext.Orders
                            join user in dbContext.Users on order.CustomerId equals user.Id
                            join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
@@ -596,6 +616,7 @@ namespace AritySystems.Controllers
                            join user in dbContext.Users on order.CustomerId equals user.Id
                            join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
                            join product in dbContext.Products on lineItem.ProductId equals product.Id
+                           where order.Id == id
                            select new
                            {
                                l = lineItem,
@@ -610,7 +631,7 @@ namespace AritySystems.Controllers
                                ProductId = x.p.Id,
                                RMBUnitPrice = x.l.RMBSalesPrice,
                                TotalRMB = x.l.Quantity * x.l.RMBSalesPrice
-                                
+
                            }).ToList();
 
             perfoma.ProductList = productList;
@@ -711,9 +732,9 @@ namespace AritySystems.Controllers
                 decimal totalItems = 0;
                 decimal totalRMB = 0;
 
-                foreach(var item in productList)
+                foreach (var item in productList)
                 {
-                    totalItems +=  item.TotalUSD;
+                    totalItems += item.TotalUSD;
                     totalRMB += item.TotalRMB;
                 }
 
@@ -723,7 +744,7 @@ namespace AritySystems.Controllers
                 worksheet.Range["$A$" + rownum + ":$E$" + rownum].Merge();
 
                 worksheet.Range["F" + rownum + ""].Text = "$" + totalItems.ToString();
-                worksheet.Range["G" + rownum + ""].Text = "$" + totalRMB.ToString();
+                worksheet.Range["G" + rownum + ""].Text = "¥" + totalRMB.ToString();
 
                 rownum += 2;
 
@@ -764,7 +785,7 @@ namespace AritySystems.Controllers
                         ProductId = item.ProductId,
                         Dollar_ProductPrice = item.UnitPrice,
                         RMB_ProductPrice = item.RMBUnitPrice
-                       
+
                     };
 
                     dbContext.PerfomaInvoiceItems.Add(perfomaInvoiceItem);
@@ -773,13 +794,41 @@ namespace AritySystems.Controllers
                 dbContext.SaveChanges();
 
                 //Save the workbook to disk in xlsx format.
-                workbook.SaveAs(@"C:\excel\" + perfomaInvoice.OrderId + perfoma.PINo + ".xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
+                workbook.SaveAs(@"/Content/PerfomaInvoice/" + perfomaInvoice.OrderId + perfoma.PINo + ".xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
             }
 
             return View();
         }
 
+        public List<SelectListItem> GetProductSuppliers(int productId)
+        {
+            ArityEntities dataContext = new ArityEntities();
+            List<SelectListItem> suppliers = new List<SelectListItem>();
+            var suppliersCsv = (from data in dataContext.Products
+                                where data.Id == productId && data.Suppliers != null 
+                                select new
+                                {
+                                    Id = data.Id,
+                                    suppliers = data.Suppliers
+                                }).ToList();
 
+            foreach (var data in suppliersCsv)
+            {
+                var ids = data.suppliers.Split(new[] { ',' })
+                              .Select(x => int.Parse(x))
+                              .ToArray();
+
+                suppliers = (from u in dataContext.Users.ToList().Where(x => ids.Contains(x.Id) && x.UserType == (int)Common.EnumHelpers.UserType.Supplier)
+                             select new SelectListItem
+                             {
+                                 Text = u.Id.ToString(),
+                                 Value = u.FirstName + " " + u.LastName
+                             }).ToList();
+
+            }
+
+            return suppliers;
+        }
 
         /// <summary>
         /// Supplier Order List items
@@ -828,6 +877,76 @@ namespace AritySystems.Controllers
         {
             Common.EnumHelpers.Units unitValue = (Common.EnumHelpers.Units)value;
             return unitValue.ToString();
+        }
+
+        private List<Product> GetChildProducts(int parentId)
+        {
+            ArityEntities dataContext = new ArityEntities();
+            List<Product> childProductList = new List<Product>();
+
+            var parentsCsv = (from data in dataContext.Products
+                              where data.ParentIds != null && data.ParentIds != string.Empty
+                              select new
+                              {
+                                  Id = data.Id,
+                                  parents = data.ParentIds
+                              }).ToList();
+
+            foreach (var data in parentsCsv)
+            {
+                var ids = data.parents.Split(new[] { ',' })
+                              .Select(x => int.Parse(x))
+                              .ToArray();
+
+                var childProductDetails = (from childProduct in dataContext.Products.ToList().Where(x => ids.Contains(parentId) && x.Id == data.Id)
+                                           select new Product()
+                                           {
+                                               Id = childProduct.Id,
+                                               Chinese_Name = childProduct.Chinese_Name,
+                                               Description = childProduct.Description,
+                                               Dollar_Price = childProduct.Dollar_Price,
+                                               ModifiedDate = childProduct.ModifiedDate,
+                                               English_Name = childProduct.English_Name,
+                                               Quantity = childProduct.Quantity,
+                                               RMB_Price = childProduct.RMB_Price,
+                                               Unit = getEnumValue(Convert.ToInt32(childProduct.Unit)),
+                                               ParentIds = childProduct.ParentIds
+                                           }).FirstOrDefault();
+
+
+
+                if (childProductDetails != null)
+                {
+                    childProductList.Add(childProductDetails);
+                }
+
+            }
+
+            return childProductList;
+        }
+
+        public JsonResult AssignSalesPersonToOrder(int id, int salesPerson)
+        {
+            var dbContext = new ArityEntities();
+            var order = dbContext.Orders.Where(_ => _.Id == id).FirstOrDefault();
+            if (order != null)
+            {
+                order.Sales_Person_Id = salesPerson > 0 ? salesPerson : (int?)null;
+                dbContext.SaveChanges();
+            }
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult AssignExporterToOrder(int id, int exporterId)
+        {
+            var dbContext = new ArityEntities();
+            var order = dbContext.Orders.Where(_ => _.Id == id).FirstOrDefault();
+            if (order != null)
+            {
+                order.ExporterId = exporterId > 0 ? exporterId : (int?)null;
+                dbContext.SaveChanges();
+            }
+            return Json("", JsonRequestBehavior.AllowGet);
         }
     }
 }
