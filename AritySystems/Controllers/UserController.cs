@@ -8,13 +8,14 @@ using AritySystems.Data;
 using System;
 using System.Web;
 using System.IO;
+using AritySystems.Models;
 
 namespace AritySystems.Controllers
 {
     [Authorize]
     public class UserController : Controller
     {
-        
+
         ArityEntities dataContext;
 
         public UserController()
@@ -91,7 +92,7 @@ namespace AritySystems.Controllers
                     //check user credentials
                     var userInfo = db.Users.Where(s => s.EmailId == entity.Email.Trim() && s.Password == entity.Password.Trim()).FirstOrDefault();
 
-                    if (userInfo != null)
+                    if (userInfo != null && userInfo.IsActive == true)
                     {
                         FormsAuthentication.SetAuthCookie(entity.Email, true);
                         //Set A Unique name in session  
@@ -107,7 +108,7 @@ namespace AritySystems.Controllers
                     else
                     {
                         //Login Fail  
-                        TempData["ErrorMSG"] = "Access Denied! Wrong Credential";
+                        TempData["ErrorMSG"] = "Access Denied! Wrong Credential or User is not Active";
                         return View(entity);
                     }
                 }
@@ -120,19 +121,32 @@ namespace AritySystems.Controllers
 
         public ActionResult Create(int? id)
         {
-            currentContext.User userModel = new currentContext.User();
+            currentContext.User user = new currentContext.User();
+            UserModel userModel = new UserModel();
 
             if (id > 0)
             {
-                userModel = dataContext.Users.Where(x => x.Id == id).FirstOrDefault();
+                user = dataContext.Users.Where(x => x.Id == id).FirstOrDefault();
+
+                if (user != null)
+                {
+                    userModel = ConvertDTOtoModel(user);
+                }
             }
             return View(userModel);
         }
 
         [HttpPost]
-        public ActionResult Create(currentContext.User user, HttpPostedFileBase logo)
+        public ActionResult Create(UserModel user, HttpPostedFileBase logo)
         {
-            if (user != null && user.Id > 0)
+            var data = dataContext.Users.Where(x => x.EmailId == user.EmailId).FirstOrDefault();
+            if(data != null && data.Id != user.Id)
+            {
+                TempData["ErrorMSG"] = "Same Email Exist, Please choose another one";
+                return View(user);
+            }
+
+            else if (user != null && user.Id > 0)
             {
                 var existingProduct = dataContext.Users.Where(_ => _.Id == user.Id).FirstOrDefault();
                 existingProduct.FirstName = user.FirstName;
@@ -146,8 +160,8 @@ namespace AritySystems.Controllers
                 existingProduct.UserName = user.UserName;
                 existingProduct.Password = user.Password;
                 existingProduct.CompanyName = user.CompanyName;
-                existingProduct.Logo = user.Logo;
                 existingProduct.ModifiedDate = DateTime.Now;
+                existingProduct.IsActive = true;
                 if (logo != null && logo.ContentLength > 0)
                 {
                     if (!Directory.Exists(Server.MapPath("~/Content/img/user")))
@@ -162,11 +176,15 @@ namespace AritySystems.Controllers
             }
             else
             {
+
+
                 user.CreatedDate = DateTime.Now;
                 user.ModifiedDate = DateTime.Now;
-                dataContext.Users.Add(user);
+                user.IsActive = true;
+                Data.User userModel = ConvertModeltoDTO(user);
+                dataContext.Users.Add(userModel);
                 dataContext.SaveChanges();
-                var userData = dataContext.Users.Where(_ => _.Id == user.Id).FirstOrDefault();
+                var userData = dataContext.Users.Where(_ => _.Id == userModel.Id).FirstOrDefault();
                 if (logo != null && logo.ContentLength > 0)
                 {
                     if (!Directory.Exists(Server.MapPath("~/Content/img/user")))
@@ -192,7 +210,7 @@ namespace AritySystems.Controllers
         {
             try
             {
-                var userList = (from user in dataContext.Users.ToList()
+                var userList = (from user in dataContext.Users.Where(x => x.IsActive == true).ToList()
                                 select new
                                 {
                                     Id = user.Id,
@@ -224,11 +242,56 @@ namespace AritySystems.Controllers
             var user = dataContext.Users.Where(x => x.Id == id).FirstOrDefault();
             if (user != null)
             {
-                // user.IsActive = false;
+                user.IsActive = false;
                 dataContext.SaveChanges();
             }
 
             return RedirectToAction("List");
+        }
+
+        private User ConvertModeltoDTO(UserModel user)
+        {
+            return new User
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Prefix = user.Prefix,
+                EmailId = user.EmailId,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.EmailId,
+                IECCode = user.IECCode,
+                GSTIN = user.GSTIN,
+                UserName = user.UserName,
+                Password = user.Password,
+                CompanyName = user.CompanyName,
+                UserType = user.UserType,
+                Logo = user.Logo,
+                IsActive = user.IsActive
+            };
+        }
+
+        private UserModel ConvertDTOtoModel(currentContext.User user)
+        {
+            return new UserModel
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Prefix = user.Prefix,
+                EmailId = user.EmailId,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.EmailId,
+                IECCode = user.IECCode,
+                GSTIN = user.GSTIN,
+                UserName = user.UserName,
+                Password = user.Password,
+                CompanyName = user.CompanyName,
+                UserType = user.UserType,
+                Logo = user.Logo,
+                IsActive = user.IsActive
+
+            };
         }
     }
 }

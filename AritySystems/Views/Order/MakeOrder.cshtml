@@ -27,11 +27,11 @@
             <div class="col-md-5 col-md-offset-5">
                 @if (TempData["Success"] != null)
                 {
-                    <span class="label-success label lable-style"> <i class="fa fa-check-square-o"></i> @TempData["Success"]</span>
+                    <span class="label-success label lable-style" style="font-size:17px;"> <i class="fa fa-check-square-o"></i> @TempData["Success"]</span>
                 }
                 else if (TempData["Error"] != null)
                 {
-                    <span class="label-danger label lable-style"> <i class="fa fa-question-circle-o"></i> @TempData["Error"]</span>
+                    <span class="label-danger label lable-style" style="font-size:17px;"> <i class="fa fa-question-circle-o"></i> @TempData["Error"]</span>
                 }
             </div>
             <div class="col-md-8" style="margin-bottom:20px;">
@@ -84,7 +84,7 @@
     });
     $("#btnPlaceOrder").on("click", function (e) {
         var isClikable = false;
-
+        
         $("table").find(".spn-error").remove();
         $("input").css("border-color", "");
         $(".qty-check").each(function () {
@@ -128,7 +128,7 @@
             if (response.data != null) {
                 $.each(response.data, function (e, data) {
                     if ($(".tr_" + data.Id).length <= 0) {
-                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_" + data.Id + "'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + (data.Parent_Id > 0 ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' class='qty-check' data-moq='" + data.Quantity+"' type='number' value='" + data.MOQ + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal'>$" + (data.Dollar_Price * data.MOQ) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
+                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_" + data.Id + "'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + ((data.ParentIds != null && data.ParentIds != '') ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' class='qty-check' data-moq='" + data.Quantity + "' type='number' value='" + data.MOQ + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal'>$" + (data.Dollar_Price * data.MOQ) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
                         window.productCounter = window.productCounter + 1;
                     }
                 });

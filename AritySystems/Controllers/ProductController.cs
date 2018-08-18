@@ -29,17 +29,20 @@ namespace AritySystems.Controllers
                 product = dataContext.Products.Where(x => x.Id == Id).FirstOrDefault();
                 if (product != null)
                 {
-                    parentIds = product.ParentIds != null ? Array.ConvertAll(product.ParentIds.Split(','), int.Parse) : null;
-                    supplierIds = product.Suppliers != null ? Array.ConvertAll(product.Suppliers.Split(','), int.Parse) : null;
+                    parentIds = !string.IsNullOrWhiteSpace(product.ParentIds) ? Array.ConvertAll(product.ParentIds.Split(','), int.Parse) : null;
+                    supplierIds = !string.IsNullOrWhiteSpace(product.Suppliers) ? Array.ConvertAll(product.Suppliers.Split(','), int.Parse) : null;
                 }
-                ViewBag.productList = product == null ? new MultiSelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name") : new MultiSelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name", parentIds);
-                var suppliers = dataContext.Users.Where(x => x.UserType == 5).Select(s => new
+                ViewBag.productList = product == null ? new MultiSelectList(dataContext.Products.Where(x => x.Parent_Id == 0 && x.IsActive == true).ToList(), "Id", "English_Name") : new MultiSelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name", parentIds);
+                var suppliers = dataContext.Users.Where(x => x.UserType == 5 && x.IsActive == true).Select(s => new
                 {
                     Id = s.Id,
                     SupplierName = s.FirstName + " " + s.LastName
                 }).ToList();
-                ViewBag.supplierList = product == null ? new MultiSelectList(suppliers, "Id", "SupplierName") : new MultiSelectList(suppliers, "Id", "SupplierName", supplierIds); //: new SelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name", product.Parent_Id);
-                return View(product);
+                ViewBag.supplierList = product == null || supplierIds == null || supplierIds.Count() == 0 ? new MultiSelectList(suppliers, "Id", "SupplierName") : new MultiSelectList(suppliers, "Id", "SupplierName", supplierIds);
+
+                ProductDetails productModel = ConvertModeltoDTO(product);
+
+                return View(productModel);
             }
 
             catch (Exception ex)
@@ -50,7 +53,7 @@ namespace AritySystems.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Product product)
+        public ActionResult Create(ProductDetails product)
         {
             string productParentIds = string.Empty;
             string suppliers = string.Empty;
@@ -79,14 +82,17 @@ namespace AritySystems.Controllers
                 existingProduct.Description = product.Description;
                 existingProduct.ModifiedDate = DateTime.Now;
                 existingProduct.ParentIds = productParentIds;
+                existingProduct.Suppliers = suppliers;
+                existingProduct.IsActive = true;
             }
             else
             {
                 product.Parent_Id = parent;
                 product.ParentIds = productParentIds;
-                product.CreatedDate = DateTime.Now;
                 product.ModifiedDate = DateTime.Now;
-                dataContext.Products.Add(product);
+                product.CreatedDate = DateTime.Now;
+                product.IsActive = true;
+                dataContext.Products.Add(ConvertDTOtoModel(product));
             }
             dataContext.SaveChanges();
             return RedirectToAction("list", "product");
@@ -154,7 +160,7 @@ namespace AritySystems.Controllers
             List<ProductDetails> childProductList = new List<ProductDetails>();
 
             var parentsCsv = (from data in dataContext.Products
-                              where data.ParentIds != null && data.ParentIds != string.Empty
+                              where data.ParentIds != null && data.ParentIds != string.Empty && data.IsActive
                               select new
                               {
                                   Id = data.Id,
@@ -167,7 +173,7 @@ namespace AritySystems.Controllers
                               .Select(x => int.Parse(x))
                               .ToArray();
 
-                var childProductDetails = (from childProduct in dataContext.Products.ToList().Where(x => ids.Contains(parentId) && x.Id == data.Id)
+                var childProductDetails = (from childProduct in dataContext.Products.ToList().Where(x => ids.Contains(parentId) && x.Id == data.Id )
                                            select new ProductDetails()
                                            {
                                                Id = childProduct.Id,
@@ -191,6 +197,44 @@ namespace AritySystems.Controllers
             }
 
             return childProductList;
+        }
+
+
+        private ProductDetails ConvertModeltoDTO(Product product)
+        {
+            return new ProductDetails()
+            {
+                Id = product.Id,
+                Chinese_Name = product.Chinese_Name,
+                Description = product.Description,
+                Dollar_Price = product.Dollar_Price,
+                ModifiedDate = product.ModifiedDate,
+                English_Name = product.English_Name,
+                Quantity = product.Quantity,
+                RMB_Price = product.RMB_Price,
+                Unit = getEnumValue(product.Unit),
+            };
+        }
+
+        private Product ConvertDTOtoModel(ProductDetails product)
+        {
+            return new Product()
+            {
+                Id = product.Id,
+                Chinese_Name = product.Chinese_Name,
+                Description = product.Description,
+                Dollar_Price = product.Dollar_Price,
+                ModifiedDate = product.ModifiedDate,
+                English_Name = product.English_Name,
+                Quantity = product.Quantity,
+                RMB_Price = product.RMB_Price,
+                Unit = product.Unit,
+                Suppliers = product.Suppliers,
+                ParentIds = product.ParentIds,
+                CreatedDate = product.CreatedDate,
+                IsActive = product.IsActive,
+                Parent_Id = product.Parent_Id
+            };
         }
 
     }
