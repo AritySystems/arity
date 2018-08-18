@@ -14,7 +14,7 @@
     </div>
     <div class="row">
         <div class="row">
-            <div class="col-md-offset-11"><button class="btn btn-primary" onclick="location.href='@Url.Action("OrderLineItems","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+            <div class="col-md-offset-11"><button class="btn btn-primary" onclick="location.href='@Url.Action("SuppliersOrder","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
             @using (Html.BeginForm("AddSupplierCartonDetail", "Order", FormMethod.Post, new { id = ViewBag.OrderId }))
             {
                 <div class="col-md-8" style="margin-bottom:20px;">
@@ -85,7 +85,7 @@
                     </div>
 
                     <div class="col-md-2 col-md-offset-5">
-                        <button type="submit" class="btn btn-success"><i class="fa fa-shopping-bag"></i> Submit</button>
+                        <button type="submit" class="btn btn-success" id="btnSubmit"><i class="fa fa-shopping-bag"></i> Submit</button>
                     </div>
                 </div>
             }
@@ -99,10 +99,11 @@
     <script>
 
         $("#btnSubmit").click(function () {
-
+            $("#btnSubmit").prop('disabled', true);
         });
 
-        $(document).ready(function () {            
+        $(document).ready(function () {           
+            $("#btnSubmit").prop('disabled', false);
             var orderid = $('#OrderId').val();
             var table = $('#tblSupplierCartonDetail').DataTable({
                 "ajax": "/Order/SupplierCartonList?OrderId=" + orderid,
