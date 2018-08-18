@@ -1,47 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Schema Namespace="ArityEntityModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+<Schema Namespace="DB_A3E8AF_luceousModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
   <EntityType Name="Order">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="CustomerId" Type="Int32" Nullable="false" />
+    <Property Name="CustomerId" Type="Int32" />
     <Property Name="Prefix" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Status" Type="Int32" Nullable="false" />
     <Property Name="ExporterId" Type="Int32" />
     <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
-    <NavigationProperty Name="User" Relationship="Self.FK_Order_User" FromRole="Order" ToRole="User" />
-    <NavigationProperty Name="User1" Relationship="Self.FK_Order_User1" FromRole="Order" ToRole="User" />
-    <NavigationProperty Name="OrderLineItems" Relationship="Self.FK_OrderLineItem_Order" FromRole="Order" ToRole="OrderLineItem" />
+    <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="Internal_status" Type="Int32" Nullable="false" />
     <NavigationProperty Name="Payments" Relationship="Self.FK_Payment_Order" FromRole="Order" ToRole="Payment" />
-  </EntityType>
-  <EntityType Name="OrderLineItem">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="OrderId" Type="Int32" />
-    <Property Name="ProductId" Type="Int32" />
-    <Property Name="DollarPurchasePrice" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="RMDPurchasePrice" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="DollarSalesPrice" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="RMBSalesPrice" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
-    <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-    <NavigationProperty Name="Order" Relationship="Self.FK_OrderLineItem_Order" FromRole="OrderLineItem" ToRole="Order" />
-    <NavigationProperty Name="Product" Relationship="Self.FK_OrderLineItem_Product" FromRole="OrderLineItem" ToRole="Product" />
+    <Property Name="Sales_Person_Id" Type="Int32" />
+    <Property Name="Commission" Type="Decimal" Precision="18" Scale="0" />
+    <NavigationProperty Name="Order1" Relationship="DB_A3E8AF_luceousModel.FK_Order_Order" FromRole="Order" ToRole="Order1" />
+    <NavigationProperty Name="Order2" Relationship="DB_A3E8AF_luceousModel.FK_Order_Order" FromRole="Order1" ToRole="Order" />
+    <NavigationProperty Name="User" Relationship="DB_A3E8AF_luceousModel.FK_Order_User" FromRole="Order" ToRole="User" />
+    <NavigationProperty Name="PerfomaInvoices" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoice_Order" FromRole="Order" ToRole="PerfomaInvoice" />
+    <NavigationProperty Name="CommercialInvoices" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoice_Order" FromRole="Order" ToRole="CommercialInvoice" />
+    <NavigationProperty Name="OrderLineItems" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order" FromRole="Order" ToRole="OrderLineItem" />
   </EntityType>
   <EntityType Name="OrderLineItem_Supplier_Mapping">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
-    <Property Name="OrderLineItemId" Type="Int32" Nullable="false" />
+    <Property Name="OrderLineItemId" Type="Int32" />
     <Property Name="SupplierId" Type="Int32" />
-    <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" />
+    <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
     <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
     <NavigationProperty Name="OrderLineItem_Supplier_Mapping1" Relationship="Self.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" FromRole="OrderLineItem_Supplier_Mapping" ToRole="OrderLineItem_Supplier_Mapping1" />
     <NavigationProperty Name="OrderLineItem_Supplier_Mapping2" Relationship="Self.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" FromRole="OrderLineItem_Supplier_Mapping1" ToRole="OrderLineItem_Supplier_Mapping" />
@@ -54,12 +43,12 @@
     </Key>
     <Property Name="UserId" Type="Int32" />
     <Property Name="OrderId" Type="Int32" />
-    <Property Name="PaymentDate" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="DollarAmount" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="RMBAmount" Type="Decimal" Precision="18" Scale="0" />
+    <Property Name="PaymentDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="Status" Type="Int32" Nullable="false" />
+    <Property Name="DollarAmount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="RMBAmount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
     <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
     <NavigationProperty Name="Order" Relationship="Self.FK_Payment_Order" FromRole="Payment" ToRole="Order" />
     <NavigationProperty Name="User" Relationship="Self.FK_Payment_User" FromRole="Payment" ToRole="User" />
@@ -69,17 +58,23 @@
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="Chinese_Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-    <Property Name="English_Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-    <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="Dollar_Price" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="RMB_Price" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="Unit" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="Parent_Id" Type="Int32" />
+    <Property Name="Chinese_Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="English_Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="Dollar_Price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="RMB_Price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="Unit" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Parent_Id" Type="Int32" Nullable="false" />
     <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
     <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-    <NavigationProperty Name="OrderLineItems" Relationship="Self.FK_OrderLineItem_Product" FromRole="Product" ToRole="OrderLineItem" />
+    <Property Name="IsActive" Type="Boolean" Nullable="false" />
+    <Property Name="Suppliers" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="ParentIds" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="PerfomaInvoiceItems" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_Product" FromRole="Product" ToRole="PerfomaInvoiceItem" />
+    <Property Name="MOQ" Type="Decimal" Precision="18" Scale="0" />
+    <NavigationProperty Name="CommercialInvoiceItems" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_Product" FromRole="Product" ToRole="CommercialInvoiceItem" />
+    <NavigationProperty Name="OrderLineItems" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Product" FromRole="Product" ToRole="OrderLineItem" />
   </EntityType>
   <EntityType Name="Supplier_Assigned_OrderLineItem">
     <Key>
@@ -88,10 +83,10 @@
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="SupplierId" Type="Int32" />
     <Property Name="OrderSupplierMapId" Type="Int32" />
-    <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" />
+    <Property Name="Status" Type="Int32" Nullable="false" />
+    <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
     <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
     <NavigationProperty Name="OrderLineItem_Supplier_Mapping" Relationship="Self.FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping" FromRole="Supplier_Assigned_OrderLineItem" ToRole="OrderLineItem_Supplier_Mapping" />
     <NavigationProperty Name="User" Relationship="Self.FK_Supplier_Assigned_OrderLineItem_User" FromRole="Supplier_Assigned_OrderLineItem" ToRole="User" />
   </EntityType>
@@ -100,18 +95,18 @@
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="SupplierAssignedMapId" Type="Int32" />
-    <Property Name="PcsPerCartoon" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="TotalCartoons" Type="Int32" />
-    <Property Name="NetWeight" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="TotalNetWeight" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="GrossWeight" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="TotalGrossWeight" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="CartoonSize" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="CartoonBM" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="CartoonNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <Property Name="SupplierAssignedMapId" Type="Int32" Nullable="false" />
+    <Property Name="PcsPerCartoon" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="TotalCartoons" Type="Int32" Nullable="false" />
+    <Property Name="NetWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="TotalNetWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="GrossWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="TotalGrossWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="CartoonSize" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="CartoonBM" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="CartoonNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Status" Type="Int32" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
     <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
   </EntityType>
   <EntityType Name="User">
@@ -133,12 +128,13 @@
     <Property Name="Logo" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
     <Property Name="CreatedDate" Type="DateTime" Precision="3" />
     <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-    <NavigationProperty Name="Orders" Relationship="Self.FK_Order_User" FromRole="User" ToRole="Order" />
-    <NavigationProperty Name="Orders1" Relationship="Self.FK_Order_User1" FromRole="User" ToRole="Order" />
+    <Property Name="IsActive" Type="Boolean" />
+    <Property Name="UserType" Type="Int32" />
     <NavigationProperty Name="OrderLineItem_Supplier_Mapping" Relationship="Self.FK_OrderLineItem_Supplier_Mapping_User" FromRole="User" ToRole="OrderLineItem_Supplier_Mapping" />
     <NavigationProperty Name="Payments" Relationship="Self.FK_Payment_User" FromRole="User" ToRole="Payment" />
     <NavigationProperty Name="Supplier_Assigned_OrderLineItem" Relationship="Self.FK_Supplier_Assigned_OrderLineItem_User" FromRole="User" ToRole="Supplier_Assigned_OrderLineItem" />
     <NavigationProperty Name="UserTypes" Relationship="Self.FK_UserType_User" FromRole="User" ToRole="UserType" />
+    <NavigationProperty Name="Orders" Relationship="DB_A3E8AF_luceousModel.FK_Order_User" FromRole="User" ToRole="Order" />
   </EntityType>
   <EntityType Name="UserType">
     <Key>
@@ -149,42 +145,6 @@
     <Property Name="Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
     <NavigationProperty Name="User" Relationship="Self.FK_UserType_User" FromRole="UserType" ToRole="User" />
   </EntityType>
-  <Association Name="FK_Order_User">
-    <End Role="User" Type="Self.User" Multiplicity="1" />
-    <End Role="Order" Type="Self.Order" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="User">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="Order">
-        <PropertyRef Name="CustomerId" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK_Order_User1">
-    <End Role="User" Type="Self.User" Multiplicity="0..1" />
-    <End Role="Order" Type="Self.Order" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="User">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="Order">
-        <PropertyRef Name="ExporterId" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK_OrderLineItem_Order">
-    <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
-    <End Role="OrderLineItem" Type="Self.OrderLineItem" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="Order">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="OrderLineItem">
-        <PropertyRef Name="OrderId" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <Association Name="FK_Payment_Order">
     <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
     <End Role="Payment" Type="Self.Payment" Multiplicity="*" />
@@ -197,20 +157,8 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK_OrderLineItem_Product">
-    <End Role="Product" Type="Self.Product" Multiplicity="0..1" />
-    <End Role="OrderLineItem" Type="Self.OrderLineItem" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="Product">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="OrderLineItem">
-        <PropertyRef Name="ProductId" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <Association Name="FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem">
-    <End Role="OrderLineItem_Supplier_Mapping" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="1" />
+    <End Role="OrderLineItem_Supplier_Mapping" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="0..1" />
     <End Role="OrderLineItem_Supplier_Mapping1" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="OrderLineItem_Supplier_Mapping">
@@ -281,9 +229,8 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <EntityContainer Name="ArityEntities" annotation:LazyLoadingEnabled="true">
+  <EntityContainer Name="DB_A3E8AF_luceousEntities" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="Orders" EntityType="Self.Order" />
-    <EntitySet Name="OrderLineItems" EntityType="Self.OrderLineItem" />
     <EntitySet Name="OrderLineItem_Supplier_Mapping" EntityType="Self.OrderLineItem_Supplier_Mapping" />
     <EntitySet Name="Payments" EntityType="Self.Payment" />
     <EntitySet Name="Products" EntityType="Self.Product" />
@@ -291,25 +238,9 @@
     <EntitySet Name="SupplierCartoons" EntityType="Self.SupplierCartoon" />
     <EntitySet Name="Users" EntityType="Self.User" />
     <EntitySet Name="UserTypes" EntityType="Self.UserType" />
-    <AssociationSet Name="FK_Order_User" Association="Self.FK_Order_User">
-      <End Role="User" EntitySet="Users" />
-      <End Role="Order" EntitySet="Orders" />
-    </AssociationSet>
-    <AssociationSet Name="FK_Order_User1" Association="Self.FK_Order_User1">
-      <End Role="User" EntitySet="Users" />
-      <End Role="Order" EntitySet="Orders" />
-    </AssociationSet>
-    <AssociationSet Name="FK_OrderLineItem_Order" Association="Self.FK_OrderLineItem_Order">
-      <End Role="Order" EntitySet="Orders" />
-      <End Role="OrderLineItem" EntitySet="OrderLineItems" />
-    </AssociationSet>
     <AssociationSet Name="FK_Payment_Order" Association="Self.FK_Payment_Order">
       <End Role="Order" EntitySet="Orders" />
       <End Role="Payment" EntitySet="Payments" />
-    </AssociationSet>
-    <AssociationSet Name="FK_OrderLineItem_Product" Association="Self.FK_OrderLineItem_Product">
-      <End Role="Product" EntitySet="Products" />
-      <End Role="OrderLineItem" EntitySet="OrderLineItems" />
     </AssociationSet>
     <AssociationSet Name="FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" Association="Self.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem">
       <End Role="OrderLineItem_Supplier_Mapping" EntitySet="OrderLineItem_Supplier_Mapping" />
@@ -335,5 +266,231 @@
       <End Role="User" EntitySet="Users" />
       <End Role="UserType" EntitySet="UserTypes" />
     </AssociationSet>
+    <EntitySet Name="PerfomaInvoices" EntityType="DB_A3E8AF_luceousModel.PerfomaInvoice" />
+    <EntitySet Name="PerfomaInvoiceItems" EntityType="DB_A3E8AF_luceousModel.PerfomaInvoiceItem" />
+    <AssociationSet Name="FK_Order_Order" Association="DB_A3E8AF_luceousModel.FK_Order_Order">
+      <End Role="Order" EntitySet="Orders" />
+      <End Role="Order1" EntitySet="Orders" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Order_User" Association="DB_A3E8AF_luceousModel.FK_Order_User">
+      <End Role="User" EntitySet="Users" />
+      <End Role="Order" EntitySet="Orders" />
+    </AssociationSet>
+    <AssociationSet Name="FK_PerfomaInvoice_Order" Association="DB_A3E8AF_luceousModel.FK_PerfomaInvoice_Order">
+      <End Role="Order" EntitySet="Orders" />
+      <End Role="PerfomaInvoice" EntitySet="PerfomaInvoices" />
+    </AssociationSet>
+    <AssociationSet Name="FK_PerfomaInvoiceItems_PerfomaInvoice" Association="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_PerfomaInvoice">
+      <End Role="PerfomaInvoice" EntitySet="PerfomaInvoices" />
+      <End Role="PerfomaInvoiceItem" EntitySet="PerfomaInvoiceItems" />
+    </AssociationSet>
+    <AssociationSet Name="FK_PerfomaInvoiceItems_Product" Association="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_Product">
+      <End Role="Product" EntitySet="Products" />
+      <End Role="PerfomaInvoiceItem" EntitySet="PerfomaInvoiceItems" />
+    </AssociationSet>
+    <EntitySet Name="CommercialInvoices" EntityType="DB_A3E8AF_luceousModel.CommercialInvoice" />
+    <EntitySet Name="CommercialInvoiceItems" EntityType="DB_A3E8AF_luceousModel.CommercialInvoiceItem" />
+    <AssociationSet Name="FK_CommercialInvoice_Order" Association="DB_A3E8AF_luceousModel.FK_CommercialInvoice_Order">
+      <End Role="Order" EntitySet="Orders" />
+      <End Role="CommercialInvoice" EntitySet="CommercialInvoices" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CommercialInvoiceItems_CommercialInvoice" Association="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_CommercialInvoice">
+      <End Role="CommercialInvoice" EntitySet="CommercialInvoices" />
+      <End Role="CommercialInvoiceItem" EntitySet="CommercialInvoiceItems" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CommercialInvoiceItems_Product" Association="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_Product">
+      <End Role="Product" EntitySet="Products" />
+      <End Role="CommercialInvoiceItem" EntitySet="CommercialInvoiceItems" />
+    </AssociationSet>
+    <EntitySet Name="OrderLineItems" EntityType="DB_A3E8AF_luceousModel.OrderLineItem" />
+    <AssociationSet Name="FK_OrderLineItem_Order" Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order">
+      <End Role="Order" EntitySet="Orders" />
+      <End Role="OrderLineItem" EntitySet="OrderLineItems" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OrderLineItem_Product" Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Product">
+      <End Role="Product" EntitySet="Products" />
+      <End Role="OrderLineItem" EntitySet="OrderLineItems" />
+    </AssociationSet>
   </EntityContainer>
+  <EntityType Name="PerfomaInvoice">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="OrderId" Type="Int32" />
+    <Property Name="PerfomaInvoiceReferece" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoice_Order" FromRole="PerfomaInvoice" ToRole="Order" />
+    <NavigationProperty Name="PerfomaInvoiceItems" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_PerfomaInvoice" FromRole="PerfomaInvoice" ToRole="PerfomaInvoiceItem" />
+  </EntityType>
+  <EntityType Name="PerfomaInvoiceItem">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="PerfomaInvoiceId" Type="Int32" />
+    <Property Name="ProductId" Type="Int32" />
+    <Property Name="RMB_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
+    <Property Name="Dollar_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
+    <NavigationProperty Name="PerfomaInvoice" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_PerfomaInvoice" FromRole="PerfomaInvoiceItem" ToRole="PerfomaInvoice" />
+    <NavigationProperty Name="Product" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_Product" FromRole="PerfomaInvoiceItem" ToRole="Product" />
+  </EntityType>
+  <Association Name="FK_Order_Order">
+    <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="1" />
+    <End Type="DB_A3E8AF_luceousModel.Order" Role="Order1" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Order">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Order1">
+        <PropertyRef Name="Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Order_User">
+    <End Type="DB_A3E8AF_luceousModel.User" Role="User" Multiplicity="0..1" />
+    <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Order">
+        <PropertyRef Name="Sales_Person_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_PerfomaInvoice_Order">
+    <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="0..1" />
+    <End Type="DB_A3E8AF_luceousModel.PerfomaInvoice" Role="PerfomaInvoice" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Order">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="PerfomaInvoice">
+        <PropertyRef Name="OrderId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_PerfomaInvoiceItems_PerfomaInvoice">
+    <End Type="DB_A3E8AF_luceousModel.PerfomaInvoice" Role="PerfomaInvoice" Multiplicity="0..1" />
+    <End Type="DB_A3E8AF_luceousModel.PerfomaInvoiceItem" Role="PerfomaInvoiceItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="PerfomaInvoice">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="PerfomaInvoiceItem">
+        <PropertyRef Name="PerfomaInvoiceId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_PerfomaInvoiceItems_Product">
+    <End Type="DB_A3E8AF_luceousModel.Product" Role="Product" Multiplicity="0..1" />
+    <End Type="DB_A3E8AF_luceousModel.PerfomaInvoiceItem" Role="PerfomaInvoiceItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Product">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="PerfomaInvoiceItem">
+        <PropertyRef Name="ProductId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="CommercialInvoice">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="OrderId" Type="Int32" />
+    <Property Name="CommercialInvoiceReferece" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoice_Order" FromRole="CommercialInvoice" ToRole="Order" />
+    <NavigationProperty Name="CommercialInvoiceItems" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_CommercialInvoice" FromRole="CommercialInvoice" ToRole="CommercialInvoiceItem" />
+  </EntityType>
+  <EntityType Name="CommercialInvoiceItem">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" />
+    <Property Name="CommercialInvoiceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProductId" Type="Int32" />
+    <Property Name="RMB_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
+    <Property Name="Dollar_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
+    <NavigationProperty Name="CommercialInvoice" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_CommercialInvoice" FromRole="CommercialInvoiceItem" ToRole="CommercialInvoice" />
+    <NavigationProperty Name="Product" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_Product" FromRole="CommercialInvoiceItem" ToRole="Product" />
+  </EntityType>
+  <Association Name="FK_CommercialInvoice_Order">
+    <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="0..1" />
+    <End Type="DB_A3E8AF_luceousModel.CommercialInvoice" Role="CommercialInvoice" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Order">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="CommercialInvoice">
+        <PropertyRef Name="OrderId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CommercialInvoiceItems_CommercialInvoice">
+    <End Type="DB_A3E8AF_luceousModel.CommercialInvoice" Role="CommercialInvoice" Multiplicity="1" />
+    <End Type="DB_A3E8AF_luceousModel.CommercialInvoiceItem" Role="CommercialInvoiceItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="CommercialInvoice">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="CommercialInvoiceItem">
+        <PropertyRef Name="CommercialInvoiceId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CommercialInvoiceItems_Product">
+    <End Type="DB_A3E8AF_luceousModel.Product" Role="Product" Multiplicity="0..1" />
+    <End Type="DB_A3E8AF_luceousModel.CommercialInvoiceItem" Role="CommercialInvoiceItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Product">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="CommercialInvoiceItem">
+        <PropertyRef Name="ProductId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="OrderLineItem">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="OrderId" Type="Int32" />
+    <Property Name="ProductId" Type="Int32" />
+    <Property Name="DollarPurchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="RMBPurchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="DollarSalesPrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="RMBSalesPrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="Quantity" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order" FromRole="OrderLineItem" ToRole="Order" />
+    <NavigationProperty Name="Product" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Product" FromRole="OrderLineItem" ToRole="Product" />
+  </EntityType>
+  <Association Name="FK_OrderLineItem_Order">
+    <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="0..1" />
+    <End Type="DB_A3E8AF_luceousModel.OrderLineItem" Role="OrderLineItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Order">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="OrderLineItem">
+        <PropertyRef Name="OrderId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OrderLineItem_Product">
+    <End Type="DB_A3E8AF_luceousModel.Product" Role="Product" Multiplicity="0..1" />
+    <End Type="DB_A3E8AF_luceousModel.OrderLineItem" Role="OrderLineItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Product">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="OrderLineItem">
+        <PropertyRef Name="ProductId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema>
