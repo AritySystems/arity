@@ -35,11 +35,9 @@ namespace AritySystems.Models
         [Display(Name = "Address")]
         public string Address { get; set; }
 
-        [Required]
         [Display(Name = "GSTIN")]
         public string GSTIN { get; set; }
 
-        [Required]
         [Display(Name = "IECode")]
         public string IECCode { get; set; }
 
