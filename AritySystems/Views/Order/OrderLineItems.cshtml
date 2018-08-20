@@ -103,7 +103,6 @@
             alert("Order Line Item information saved successfully");
         });
         $("#btnSubmit").click(function () {
-            debugger;
             $("#btnSubmit").prop('disabled', true);
             var data =[];
             $('#tblOrderItemList tbody tr').each(function (i, el) {
@@ -180,15 +179,16 @@
                     { "data": "Sales_Price_rmb" },
                     { "data": "quantity" },
                     {
-                        "data": "quantity",
+                        "data": "UpdatedQuantity",
                         "render": function (data, type, full) {
-                            return '<input type="text" id="txtQuantity" value="' + data + '"/>'
+                            return '<input type="number" id="txtQuantity" value="' + data + '"/>'
                         }
                     },
                     {
                         "data": "Suppliers",
                         "render": function (data, type, row) {
                             ddl = '<select id="jsonSupplierList">';
+                            debugger;
                             $.each(data, function (i, item) {
                                 ddl += '<option id="' + item.Text + '">' + item.Value + '<option>';
                             });
