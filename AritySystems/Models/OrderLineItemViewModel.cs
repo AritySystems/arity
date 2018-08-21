@@ -27,7 +27,7 @@ namespace AritySystems.Models
         public decimal Purchase_Price_rmb { get; set; }
         public decimal Sales_Price_rmb { get; set; }
         public decimal quantity { get; set; }
-
+        public decimal UpdatedQuantity { get; set; }
         public List<SelectListItem> Suppliers { get; set; }
         public string CreatedDate { get; set; }
         public string ModifiedDate { get; set; }

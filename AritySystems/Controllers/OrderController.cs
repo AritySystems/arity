@@ -126,9 +126,9 @@ namespace AritySystems.Controllers
                                      Orders = o,
                                      Products = n
                                  }
-                                 ).ToList();
+                                ).ToList();
 
-                    var newModel = model.Select(_ => new
+                    var newModel = model.Select(_ => new OrderLineItemViewModel
                     {
                         Id = _.OrderLineItem.Id,
                         //OrderId = m.OrderId ?? 0,
@@ -140,11 +140,11 @@ namespace AritySystems.Controllers
                         Purchase_Price_rmb = _.OrderLineItem.RMBPurchasePrice,
                         Sales_Price_rmb = _.OrderLineItem.RMBSalesPrice,
                         quantity = _.OrderLineItem.Quantity,
+                        UpdatedQuantity = UpdatedQuantity(_.OrderLineItem.Id),
                         //CreatedDate = m.CreatedDate.ToString(),
                         //ModifiedDate = m.ModifiedDate ?? DateTime.MinValue,
                         Suppliers = GetProductSuppliers(_.OrderLineItem.ProductId ?? 0).ToList()
                     }).ToList();
-
                     return Json(new { data = newModel }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -154,6 +154,22 @@ namespace AritySystems.Controllers
             }
         }
 
+        public decimal UpdatedQuantity(int orderLineItemId)
+        {
+            ArityEntities dbContext = new ArityEntities();
+            decimal newUpdated = 0;
+            var updated = (from b in dbContext.OrderLineItem_Supplier_Mapping
+                           where b.OrderLineItemId == orderLineItemId
+                           select b.Quantity).ToList().Sum();
+            var actual = (from a in dbContext.OrderLineItems
+                          where a.Id == orderLineItemId
+                          select a.Quantity).FirstOrDefault();
+            if (actual >= updated)
+                newUpdated = actual - updated;
+            else
+                newUpdated = 0;
+            return newUpdated;
+        }
 
         /// <summary>
         /// Supplier Order List items
@@ -171,7 +187,7 @@ namespace AritySystems.Controllers
                                  join b in db.OrderLineItem_Supplier_Mapping on a.OrderSupplierMapId equals b.Id
                                  join c in db.OrderLineItems on b.OrderLineItemId equals c.Id
                                  join d in db.Orders on c.OrderId equals d.Id
-                                 where c.OrderId == OrderId //&& c.Quantity > 0
+                                 where c.OrderId == OrderId && a.Quantity > 0
                                  select new SupplierOrderLineItemModel
                                  {
                                      Id = a.Id,
@@ -219,13 +235,10 @@ namespace AritySystems.Controllers
                             if (oldQuantity >= quantity)
                             {
                                 newQuantity = oldQuantity - quantity;
-                                //db.SaveChanges();
                             }
                             if (newQuantity >= 0)
                             {
-                                OrderLineItem remainData = db.OrderLineItems.Where(x => x.Id == orderItemId).FirstOrDefault();
-                                remainData.Quantity = newQuantity;
-                                //db.SaveChanges();
+                                ViewBag.updatedQuantity = newQuantity;
                             }
 
                             OrderLineItem_Supplier_Mapping dataModel = new OrderLineItem_Supplier_Mapping();
@@ -257,6 +270,13 @@ namespace AritySystems.Controllers
             }
         }
 
+        //public decimal UpdatedOrderLineItemQuantity(int orderlineitemid)
+        //{
+        //    ArityEntities dbContext = new ArityEntities();
+        //    var mainQuantity = (from a in dbContext.OrderLineItems
+        //                        join b in dbContext.)
+        //    return mainQuantity;
+        //}
 
         /// <summary>
         /// Add supplier carton details
