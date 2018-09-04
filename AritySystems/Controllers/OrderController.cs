@@ -842,7 +842,7 @@ namespace AritySystems.Controllers
                              select new SelectListItem
                              {
                                  Text = u.Id.ToString(),
-                                 Value = u.FirstName + " " + u.LastName
+                                 Value = u.CompanyName
                              }).ToList();
 
             }
