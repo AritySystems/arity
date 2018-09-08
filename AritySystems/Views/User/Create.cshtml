@@ -25,7 +25,7 @@
     {
         <span class="label-danger label" style="font-size:95%;"> @TempData["ErrorMSG"]</span>
     }
-    <br/><br/>
+    <br /><br />
 </div>
 @using (Html.BeginForm("create", "user", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -47,13 +47,36 @@
                 @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
             </div>
         </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Prefix, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Prefix, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Prefix, "", new { @class = "text-danger" })
+        @if (ViewBag.userType != null && ViewBag.userType == 5)
+        {
+            <div class="form-group">
+                @Html.Label("Prefix", "Prefix", htmlAttributes: new { @class = "control-label col-md-2", @id = "prefixLabel" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Prefix, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Prefix, "", new { @class = "text-danger" })
+                </div>
             </div>
-        </div>
+        }
+        @if (ViewBag.userType != null && ViewBag.userType == 1)
+        {
+            <div class="form-group">
+                @Html.Label("Prefix", "Shipping Mark", htmlAttributes: new { @class = "control-label col-md-2", @id = "prefixLabel" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Prefix, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Prefix, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        @if (ViewBag.userId == null || ViewBag.userId == 0)
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.Prefix, htmlAttributes: new { @class = "control-label col-md-2", @id = "prefixLabel" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Prefix, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Prefix, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
         <div class="form-group">
             @Html.LabelFor(model => model.EmailId, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -133,3 +156,4 @@
         </div>
     </div>
 }
+

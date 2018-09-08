@@ -33,10 +33,10 @@ namespace AritySystems.Controllers
                     supplierIds = !string.IsNullOrWhiteSpace(product.Suppliers) ? Array.ConvertAll(product.Suppliers.Split(','), int.Parse) : null;
                 }
                 ViewBag.productList = product == null ? new MultiSelectList(dataContext.Products.Where(x => x.Parent_Id == 0 && x.IsActive == true).ToList(), "Id", "English_Name") : new MultiSelectList(dataContext.Products.Where(x => x.Parent_Id == 0).ToList(), "Id", "English_Name", parentIds);
-                var suppliers = dataContext.Users.Where(x => x.UserType == 5 && x.IsActive == true).Select(s => new
+                var suppliers = dataContext.Users.Where(x => x.UserType == 5 && x.IsActive == true && x.CompanyName != "").Select(s => new
                 {
                     Id = s.Id,
-                    SupplierName = s.FirstName + " " + s.LastName
+                    SupplierName = s.CompanyName
                 }).ToList();
                 ViewBag.supplierList = product == null || supplierIds == null || supplierIds.Count() == 0 ? new MultiSelectList(suppliers, "Id", "SupplierName") : new MultiSelectList(suppliers, "Id", "SupplierName", supplierIds);
 

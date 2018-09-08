@@ -18,7 +18,7 @@ namespace AritySystems.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        [Display(Name = "Shipping Mark")]
+        [Display(Name = "Shipping Mark/Prefix ")]
         public string Prefix { get; set; }
 
         [Required]
@@ -27,7 +27,6 @@ namespace AritySystems.Models
         public string EmailId { get; set; }
 
         [Required]
-        [RegularExpression("^[0-9]*$", ErrorMessage = "Contact Number must be Numeric")]
         [Display(Name = "Contact Number")]
         public string PhoneNumber { get; set; }
 
