@@ -320,6 +320,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\chosen-sprite.png" />
     <Content Include="Content\chosen.min.css" />
+    <Content Include="Content\Shipping_img.jpg" />
     <Content Include="Data\ArityDB.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>ArityDB.edmx</DependentUpon>
@@ -396,6 +397,8 @@
     <Content Include="Views\Order\SuppliersOrder.cshtml" />
     <Content Include="Views\Order\AddSupplierCartonDetail.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Order\Account.cshtml" />
+    <Content Include="Views\Order\AddPayments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

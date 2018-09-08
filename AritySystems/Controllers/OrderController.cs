@@ -363,7 +363,10 @@ namespace AritySystems.Controllers
                                    Quantity = lst.Quantity,
                                    MOQ = lst.MOQ,
                                    Id = lst.Id,
-                                   ParentIds = lst.ParentIds
+                                   ParentIds = lst.ParentIds,
+                                   BOM =lst.BOM,
+                                   CBM = lst.CBM,
+                                   Weight = lst.Weight
                                }).ToList();
             return Json(new { data = productList }, JsonRequestBehavior.AllowGet);
         }
@@ -967,6 +970,19 @@ namespace AritySystems.Controllers
                 dbContext.SaveChanges();
             }
             return Json("", JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult Account()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult AddPayments(int? id)
+        {
+            var dbContext = new ArityEntities();
+            ViewBag.OrderCI = new SelectList(dbContext.CommercialInvoices.Where(_=>_.OrderId == id).ToList(),"Id", "CommercialInvoiceReferece");
+            return View();
         }
     }
 }

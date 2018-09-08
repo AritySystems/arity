@@ -1,0 +1,139 @@
+﻿@{
+    ViewBag.Title = "Account";
+    var userType = (Session["UserType"] != null) ? (int)Session["UserType"] : 0;
+}
+
+<style>
+    .child-heading {
+        padding: 2% 0 2% 6%;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-style: italic;
+    }
+
+    .alert-warning, .alert-success, .alert-danger {
+        padding: 0 6px 0 6px;
+    }
+</style>
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fa fa-shopping-cart"></i> Accounts</h1>
+    </div>
+    <div class="row">
+        @if (Session["UserType"] != null && (int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Customer)
+        {
+            <div class="text-right" style="margin-bottom:10px;">
+                <button class="btn btn-primary"><i class="fa fa-money"></i> Add Payment</button>
+            </div>
+        }
+        <table id="example" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th style="width:10%"></th>
+                    <th style="width:10%"></th>
+                    <th style="width:35%">Shipping Mark</th>
+                    <th style="width:15%">Order Date</th>
+                    <th style="width:13%">Total Payment(<i class="fa fa-usd"></i>)</th>
+                    <th style="width:13%">Total Payment(<i class="fa fa-jpy"></i>)</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(".nav #liAccounts").addClass("active");
+        function format(d) {
+            var html = '<div class="child-heading">All payments information of ' + d.CreatedDate + '</div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;    border: 1px solid #eee;margin-bottom: 2%;"><tr><th>Name</th><th>Amount</th><th>Payment date</th><th>Status</th></tr>';
+            html += '<tr>' +
+        '<td>Merchant 2</td>' +
+        '<td>$5000.00</td>' +
+        '<td>05/13/2018</td>' +
+        '<td><label class="alert-warning">Pending</label></td>' +
+    '</tr>' +
+        '<tr>' +
+            '<td>Customer 1</td>' +
+            '<td>$1000.00</td>' +
+            '<td>05/12/2018</td>' +
+            '<td><label class="alert-warning">Pending</label></td>' +
+        '</tr>' +
+        '<tr>' +
+            '<td>Customer 1</td>' +
+            '<td>$15,000.00</td>' +
+            '<td>05/07/2018</td>' +
+            '<td><label class="alert-success">Complete</label></td>' +
+        '</tr>';
+            html += '</table>';
+            return html;
+        }
+
+        $(document).ready(function () {
+            var table = $('#example').DataTable({
+                "ajax": "@Url.Action("GetOrderList","Order")",
+                "columns": [
+                    {
+                        "className": '',
+                        "orderable": false,
+                        "data": null,
+                        'render': function (data, type, full, meta) {
+                            return '<a href="/Order/addpayments/' + data.Id + '"><button class="btn btn-primary"><i class="fa fa-plus"></i> Add Payment</button></a>';
+                        }
+                    },
+                    {
+                        "className": 'details-control',
+                        "orderable": false,
+                        "data": null,
+                        'render': function (data, type, full, meta) {
+                            return '<button class="btn btn-success"><i class="fa fa-plus-circle"></i> Payments</button>';
+                        }
+                    },
+                    { "data": "Prefix" },
+                    { "data": "CreatedDate" },
+                    { "data": "TotalItem" },
+                    {
+                        "className": '',
+                        "orderable": false,
+                        "data": null,
+                        'render': function (data, type, full, meta) {
+                            if(@userType == 3)
+                                return '<i class="fa fa-jpy"></i> ' + data.RmbSalesTotal;
+                            else if(@userType == 4)
+                                return '<i class="fa fa-jpy"></i> ' + data.RmbPurchaseTotal;
+                            else
+                                return '<i class="fa fa-jpy"></i> ' + data.RmbPurchaseTotal;
+                        }
+                    }
+                ],
+                "order": [[1, 'asc']]
+            });
+
+            // Add event listener for opening and closing details
+            $('#example tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    tr.removeClass('shown');
+                    row.child.hide();
+                    tr.find(".details-control").find(".btn").html("<i class='fa fa-plus-circle'></i> Payment");
+                }
+                else {
+                    // Open this row
+                    row.child(format(row.data())).show();
+                    tr.find(".details-control").find(".btn").html("<i class='fa fa-minus-circle'></i> Payment");
+                    tr.addClass('shown');
+                }
+            });
+            if(@userType == 1)
+            {
+                table.column(6).visible(false);
+            }
+        });
+    </script>
+}
+
+
+
+
