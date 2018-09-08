@@ -23,8 +23,8 @@ namespace AritySystems.Data
         public System.DateTime CreatedDate { get; set; }
         public Nullable<int> OrderLineItem { get; set; }
     
-        public virtual User User { get; set; }
-        public virtual OrderLineItem_Supplier_Mapping OrderLineItem_Supplier_Mapping { get; set; }
         public virtual OrderLineItem OrderLineItem1 { get; set; }
+        public virtual OrderLineItem_Supplier_Mapping OrderLineItem_Supplier_Mapping { get; set; }
+        public virtual User User { get; set; }
     }
 }
