@@ -74,12 +74,12 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="OrderLineItemId" Type="int" Nullable="false" />
           <Property Name="SupplierId" Type="int" />
           <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="OrderId" Type="int" />
         </EntityType>
         <EntityType Name="Payment">
           <Key>
@@ -151,6 +151,7 @@
           <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="OrderLineItem" Type="int" />
         </EntityType>
         <EntityType Name="SupplierCartoon">
           <Key>
@@ -288,6 +289,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_OrderId_Supplier_Mapping">
+          <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
+          <End Role="OrderLineItem_Supplier_Mapping" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="OrderLineItem_Supplier_Mapping">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_OrderLineItem_Order">
           <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
           <End Role="OrderLineItem" Type="Self.OrderLineItem" Multiplicity="*" />
@@ -309,18 +322,6 @@
             </Principal>
             <Dependent Role="OrderLineItem">
               <PropertyRef Name="ProductId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem">
-          <End Role="OrderLineItem" Type="Self.OrderLineItem" Multiplicity="1" />
-          <End Role="OrderLineItem_Supplier_Mapping" Type="Self.OrderLineItem_Supplier_Mapping" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="OrderLineItem">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="OrderLineItem_Supplier_Mapping">
-              <PropertyRef Name="OrderLineItemId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -393,6 +394,18 @@
             </Principal>
             <Dependent Role="PerfomaInvoiceItems">
               <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Supplier_Assigned_LineItem">
+          <End Role="OrderLineItem" Type="Self.OrderLineItem" Multiplicity="0..1" />
+          <End Role="Supplier_Assigned_OrderLineItem" Type="Self.Supplier_Assigned_OrderLineItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrderLineItem">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Supplier_Assigned_OrderLineItem">
+              <PropertyRef Name="OrderLineItem" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -475,6 +488,10 @@
             <End Role="User" EntitySet="User" />
             <End Role="Order" EntitySet="Order" />
           </AssociationSet>
+          <AssociationSet Name="FK_OrderId_Supplier_Mapping" Association="Self.FK_OrderId_Supplier_Mapping">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="OrderLineItem_Supplier_Mapping" EntitySet="OrderLineItem_Supplier_Mapping" />
+          </AssociationSet>
           <AssociationSet Name="FK_OrderLineItem_Order" Association="Self.FK_OrderLineItem_Order">
             <End Role="Order" EntitySet="Order" />
             <End Role="OrderLineItem" EntitySet="OrderLineItem" />
@@ -482,10 +499,6 @@
           <AssociationSet Name="FK_OrderLineItem_Product" Association="Self.FK_OrderLineItem_Product">
             <End Role="Product" EntitySet="Product" />
             <End Role="OrderLineItem" EntitySet="OrderLineItem" />
-          </AssociationSet>
-          <AssociationSet Name="FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" Association="Self.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem">
-            <End Role="OrderLineItem" EntitySet="OrderLineItem" />
-            <End Role="OrderLineItem_Supplier_Mapping" EntitySet="OrderLineItem_Supplier_Mapping" />
           </AssociationSet>
           <AssociationSet Name="FK_OrderLineItem_Supplier_Mapping_User" Association="Self.FK_OrderLineItem_Supplier_Mapping_User">
             <End Role="User" EntitySet="User" />
@@ -510,6 +523,10 @@
           <AssociationSet Name="FK_PerfomaInvoiceItems_Product" Association="Self.FK_PerfomaInvoiceItems_Product">
             <End Role="Product" EntitySet="Product" />
             <End Role="PerfomaInvoiceItems" EntitySet="PerfomaInvoiceItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Supplier_Assigned_LineItem" Association="Self.FK_Supplier_Assigned_LineItem">
+            <End Role="OrderLineItem" EntitySet="OrderLineItem" />
+            <End Role="Supplier_Assigned_OrderLineItem" EntitySet="Supplier_Assigned_OrderLineItem" />
           </AssociationSet>
           <AssociationSet Name="FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping" Association="Self.FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping">
             <End Role="OrderLineItem_Supplier_Mapping" EntitySet="OrderLineItem_Supplier_Mapping" />
@@ -551,6 +568,7 @@
           <Property Name="TermsandCondition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Accounts" Relationship="DB_A3E8AF_luceousModel.FK_Account_Order" FromRole="Order" ToRole="Account" />
           <NavigationProperty Name="OrderLineItems" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order" FromRole="Order" ToRole="OrderLineItem" />
+          <NavigationProperty Name="OrderLineItem_Supplier_Mapping" Relationship="DB_A3E8AF_luceousModel.FK_OrderId_Supplier_Mapping" FromRole="Order" ToRole="OrderLineItem_Supplier_Mapping" />
         </EntityType>
         <EntityType Name="Payment">
           <Key>
@@ -607,6 +625,8 @@
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="User" Relationship="Self.FK_Supplier_Assigned_OrderLineItem_User" FromRole="Supplier_Assigned_OrderLineItem" ToRole="User" />
           <NavigationProperty Name="OrderLineItem_Supplier_Mapping" Relationship="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping" FromRole="Supplier_Assigned_OrderLineItem" ToRole="OrderLineItem_Supplier_Mapping" />
+          <Property Name="OrderLineItem" Type="Int32" />
+          <NavigationProperty Name="OrderLineItem1" Relationship="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_LineItem" FromRole="Supplier_Assigned_OrderLineItem" ToRole="OrderLineItem" />
         </EntityType>
         <EntityType Name="SupplierCartoon">
           <Key>
@@ -803,6 +823,14 @@
           </AssociationSet>
           <AssociationSet Name="FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping" Association="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping">
             <End Role="OrderLineItem_Supplier_Mapping" EntitySet="OrderLineItem_Supplier_Mapping" />
+            <End Role="Supplier_Assigned_OrderLineItem" EntitySet="Supplier_Assigned_OrderLineItem" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderId_Supplier_Mapping" Association="DB_A3E8AF_luceousModel.FK_OrderId_Supplier_Mapping">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="OrderLineItem_Supplier_Mapping" EntitySet="OrderLineItem_Supplier_Mapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Supplier_Assigned_LineItem" Association="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_LineItem">
+            <End Role="OrderLineItem" EntitySet="OrderLineItems" />
             <End Role="Supplier_Assigned_OrderLineItem" EntitySet="Supplier_Assigned_OrderLineItem" />
           </AssociationSet>
         </EntityContainer>
@@ -1010,6 +1038,7 @@
           <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order" FromRole="OrderLineItem" ToRole="Order" />
           <NavigationProperty Name="Product" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Product" FromRole="OrderLineItem" ToRole="Product" />
           <NavigationProperty Name="OrderLineItem_Supplier_Mapping" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" FromRole="OrderLineItem" ToRole="OrderLineItem_Supplier_Mapping" />
+          <NavigationProperty Name="Supplier_Assigned_OrderLineItem" Relationship="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_LineItem" FromRole="OrderLineItem" ToRole="Supplier_Assigned_OrderLineItem" />
         </EntityType>
         <Association Name="FK_OrderLineItem_Order">
           <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="0..1" />
@@ -1048,6 +1077,8 @@
           <NavigationProperty Name="OrderLineItem" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" FromRole="OrderLineItem_Supplier_Mapping" ToRole="OrderLineItem" />
           <NavigationProperty Name="User" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Supplier_Mapping_User" FromRole="OrderLineItem_Supplier_Mapping" ToRole="User" />
           <NavigationProperty Name="Supplier_Assigned_OrderLineItem" Relationship="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping" FromRole="OrderLineItem_Supplier_Mapping" ToRole="Supplier_Assigned_OrderLineItem" />
+          <Property Name="OrderId" Type="Int32" />
+          <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_OrderId_Supplier_Mapping" FromRole="OrderLineItem_Supplier_Mapping" ToRole="Order" />
         </EntityType>
         <Association Name="FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem">
           <End Type="DB_A3E8AF_luceousModel.OrderLineItem" Role="OrderLineItem" Multiplicity="1" />
@@ -1082,6 +1113,30 @@
             </Principal>
             <Dependent Role="Supplier_Assigned_OrderLineItem">
               <PropertyRef Name="OrderSupplierMapId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderId_Supplier_Mapping">
+          <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.OrderLineItem_Supplier_Mapping" Role="OrderLineItem_Supplier_Mapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="OrderLineItem_Supplier_Mapping">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Supplier_Assigned_LineItem">
+          <End Type="DB_A3E8AF_luceousModel.OrderLineItem" Role="OrderLineItem" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.Supplier_Assigned_OrderLineItem" Role="Supplier_Assigned_OrderLineItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrderLineItem">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Supplier_Assigned_OrderLineItem">
+              <PropertyRef Name="OrderLineItem" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1150,6 +1205,7 @@
           <EntitySetMapping Name="Supplier_Assigned_OrderLineItem">
             <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.Supplier_Assigned_OrderLineItem">
               <MappingFragment StoreEntitySet="Supplier_Assigned_OrderLineItem">
+                <ScalarProperty Name="OrderLineItem" ColumnName="OrderLineItem" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="SupplierId" ColumnName="SupplierId" />
                 <ScalarProperty Name="OrderSupplierMapId" ColumnName="OrderSupplierMapId" />
@@ -1295,12 +1351,12 @@
           <EntitySetMapping Name="OrderLineItem_Supplier_Mapping">
             <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.OrderLineItem_Supplier_Mapping">
               <MappingFragment StoreEntitySet="OrderLineItem_Supplier_Mapping">
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
                 <ScalarProperty Name="SupplierId" ColumnName="SupplierId" />
-                <ScalarProperty Name="OrderLineItemId" ColumnName="OrderLineItemId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

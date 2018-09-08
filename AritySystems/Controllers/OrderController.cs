@@ -234,7 +234,8 @@ namespace AritySystems.Controllers
                             //OrderLineItem ActualQuantity = db.OrderLineItems.Where(x => x.Id == orderItemId).FirstOrDefault();
                             if (oldQuantity >= quantity)
                             {
-                                newQuantity = oldQuantity - quantity;
+                                var updated = UpdatedQuantity(orderItemId);
+                                newQuantity = updated - quantity;
                             }
                             if (newQuantity >= 0)
                             {
@@ -521,6 +522,8 @@ namespace AritySystems.Controllers
                           join orderlineitem in objDb.OrderLineItems.ToList() on order.Id equals orderlineitem.OrderId
                           join supplierorder in objDb.OrderLineItem_Supplier_Mapping.ToList() on orderlineitem.Id equals supplierorder.OrderLineItemId
                           join supplieritem in objDb.Supplier_Assigned_OrderLineItem.ToList() on supplierorder.Id equals supplieritem.OrderSupplierMapId
+                          where supplieritem.SupplierId == loggedInId
+
                           select new
                           {
                               SupplierOrderId = orderlineitem.OrderId,
@@ -532,9 +535,47 @@ namespace AritySystems.Controllers
                               RmbSalesTotal = orderlineitem.RMBSalesPrice,
                               Status = supplieritem.Status
                           }).ToList();
+            //var ordersdata = (from order in objDb.Orders.ToList()
+            //              join orderlineitem in objDb.OrderLineItems.ToList() on order.Id equals orderlineitem.OrderId
+            //              select new
+            //              {
+            //                  order,
+            //                  orderlineitem
+            //              }).ToList();
+            //var orders = ordersdata.Select(_ => new
+            //{
+            //    SupplierOrderId = _.orderlineitem.OrderId,
+            //    Prefix = _.order.Prefix,
+            //    OrderId = _.order.Id,
+            //    CreatedOn = SupplierAssigneddataforSupplierOrders(_.orderlineitem.Id,loggedInId).CreatedOn,
+            //    Quantity = SupplierAssigneddataforSupplierOrders(_.orderlineitem.Id, loggedInId).Quantity,
+            //    RmbSalesTotal = _.orderlineitem.RMBSalesPrice,
+            //    Status = SupplierAssigneddataforSupplierOrders(_.orderlineitem.Id, loggedInId).Status,
+            //});
+
             return Json(new { data = orders }, JsonRequestBehavior.AllowGet);
         }
 
+        public SupplierHelper SupplierAssigneddataforSupplierOrders(int orderlineitemid,int loggeduser)
+        {
+            var objDb = new ArityEntities();
+            var data = (from supplierorder in objDb.OrderLineItem_Supplier_Mapping.ToList()
+                        join supplieritem in objDb.Supplier_Assigned_OrderLineItem.ToList() on supplierorder.Id equals supplieritem.OrderSupplierMapId
+                        where supplierorder.OrderLineItemId == orderlineitemid && supplieritem.SupplierId == loggeduser
+                        select new SupplierHelper
+                        {
+                            CreatedOn = supplieritem.CreatedDate.ToString("MM/dd/yyyy h:m tt"),
+                            Quantity = supplieritem.Quantity,
+                            Status = supplieritem.Status
+                        }).FirstOrDefault();
+            return data;
+        }
+        public class SupplierHelper
+        {
+            public decimal Quantity { get; set; }
+            public string CreatedOn { get; set; }
+            public int Status { get; set; }
+        }
         // [Route("AddSupplierCartonDetail/{orderId}")]
         public ActionResult AddSupplierCartonDetail(int orderId)
         {

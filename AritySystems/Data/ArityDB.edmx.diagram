@@ -38,6 +38,8 @@
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Supplier_Mapping_Supplier_Assigned_OrderLineItem" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Supplier_Mapping_User" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_OrderId_Supplier_Mapping" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_LineItem" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

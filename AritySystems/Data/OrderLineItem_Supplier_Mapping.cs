@@ -26,10 +26,12 @@ namespace AritySystems.Data
         public int Id { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public Nullable<int> OrderId { get; set; }
     
         public virtual OrderLineItem OrderLineItem { get; set; }
         public virtual User User { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Supplier_Assigned_OrderLineItem> Supplier_Assigned_OrderLineItem { get; set; }
+        public virtual Order Order { get; set; }
     }
 }

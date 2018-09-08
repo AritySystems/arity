@@ -127,9 +127,11 @@ namespace AritySystems.Controllers
             if (id > 0)
             {
                 user = dataContext.Users.Where(x => x.Id == id).FirstOrDefault();
-
+                
                 if (user != null)
                 {
+                    ViewBag.userId = user.Id;
+                    ViewBag.userType = user.UserType;
                     userModel = ConvertDTOtoModel(user);
                 }
             }
@@ -139,10 +141,14 @@ namespace AritySystems.Controllers
         [HttpPost]
         public ActionResult Create(UserModel user, HttpPostedFileBase logo)
         {
-            var data = dataContext.Users.Where(x => x.EmailId == user.EmailId).FirstOrDefault();
-            if(data != null && data.Id != user.Id)
+            var data = dataContext.Users.Where(x => x.EmailId == user.EmailId || x.Prefix == user.Prefix).FirstOrDefault();
+
+            if (data != null && data.Id != user.Id)
             {
-                TempData["ErrorMSG"] = "Same Email Exist, Please choose another one";
+                if (data.EmailId == user.EmailId)
+                    TempData["ErrorMSG"] = "Same Email Exist, Please choose another one";
+                else if (data.Prefix == user.Prefix)
+                    TempData["ErrorMSG"] = "Same Prefix/Shipping Mark Exist, Please choose another one";
                 return View(user);
             }
 

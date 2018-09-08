@@ -50,5 +50,14 @@ namespace AritySystems.Models
         public int Parent_Id { get; set; }
 
         public System.DateTime CreatedDate { get; set; }
+
+        [Display(Name = "BOM")]
+        public decimal BOM { get; set; }
+
+        [Display(Name = "Cubic Meter")]
+        public decimal Cubic_Meter { get; set; }
+
+        [Display(Name = "Weight")]
+        public decimal Weight { get; set; }
     }
 }
