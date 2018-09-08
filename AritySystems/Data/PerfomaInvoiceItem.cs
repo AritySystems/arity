@@ -19,6 +19,8 @@ namespace AritySystems.Data
         public Nullable<int> ProductId { get; set; }
         public Nullable<decimal> RMB_ProductPrice { get; set; }
         public Nullable<decimal> Dollar_ProductPrice { get; set; }
+        public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public Nullable<System.DateTime> CreatedDate { get; set; }
     
         public virtual PerfomaInvoice PerfomaInvoice { get; set; }
         public virtual Product Product { get; set; }

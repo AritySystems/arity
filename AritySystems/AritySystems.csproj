@@ -239,6 +239,9 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Data\Account.cs">
+      <DependentUpon>ArityDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\ArityDB.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

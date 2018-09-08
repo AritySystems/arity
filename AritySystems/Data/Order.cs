@@ -20,6 +20,7 @@ namespace AritySystems.Data
             this.Payments = new HashSet<Payment>();
             this.PerfomaInvoices = new HashSet<PerfomaInvoice>();
             this.CommercialInvoices = new HashSet<CommercialInvoice>();
+            this.Accounts = new HashSet<Account>();
             this.OrderLineItems = new HashSet<OrderLineItem>();
         }
     
@@ -33,6 +34,7 @@ namespace AritySystems.Data
         public int Internal_status { get; set; }
         public Nullable<int> Sales_Person_Id { get; set; }
         public Nullable<decimal> Commission { get; set; }
+        public string TermsandCondition { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Payment> Payments { get; set; }
@@ -43,6 +45,8 @@ namespace AritySystems.Data
         public virtual ICollection<PerfomaInvoice> PerfomaInvoices { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommercialInvoice> CommercialInvoices { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Account> Accounts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderLineItem> OrderLineItems { get; set; }
     }

@@ -11,8 +11,7 @@ namespace AritySystems.Data
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-
+    
     public partial class Product
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -38,11 +37,10 @@ namespace AritySystems.Data
         public string Suppliers { get; set; }
         public string ParentIds { get; set; }
         public Nullable<decimal> MOQ { get; set; }
-        [NotMapped]
-        public int[] ParentIdsArray { get; set; }
-        [NotMapped]
-        public int[] SuppliersArray { get; set; }
-
+        public Nullable<decimal> BOM { get; set; }
+        public Nullable<decimal> CBM { get; set; }
+        public Nullable<decimal> Weight { get; set; }
+    
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PerfomaInvoiceItem> PerfomaInvoiceItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
