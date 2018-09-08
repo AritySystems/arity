@@ -1,6 +1,6 @@
 ﻿@using AritySystems.Common;
 @model AritySystems.Models.ProductDetails
-    ViewBag.Title = "Create";
+ @{   ViewBag.Title = "Create";
 }
 <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
@@ -112,7 +112,7 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script type="text/javascript">
-
+        $(".nav #liProduct").addClass("active");
         //var j = jQuery.noConflict();
         //j(function () {
         //    j('#mySkills').multiselect({

@@ -34,7 +34,7 @@
         </div>
         @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
         {
-            <div class="col-md-2 col-md-offset-5" style="text-align:right;"><button class="btn btn-success" onclick="location.href='@Url.Action("orderlist", "order")';"><i class="fa fa-print"></i> Genrate PI</button></div>}
+            <div class="col-md-2 col-md-offset-5" style="text-align:right;"><button class="btn btn-success" onclick="location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';"><i class="fa fa-print"></i> Genrate PI</button></div>}
         <div class="col-md-1 @((userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase || userType == (int)AritySystems.Common.EnumHelpers.UserType.Sales) && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved ? "":"col-md-offset-7") "><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
         <hr class="col-md-12" style="margin-bottom:25px;" />
         <div class="col-md-12" style="margin-bottom:50px;">

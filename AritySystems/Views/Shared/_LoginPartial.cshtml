@@ -7,17 +7,17 @@
         @Html.AntiForgeryToken()
 
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="javascript:"><i class="fa fa-bell"></i> Notification</a></li>
+            <li id="liHome"><a href="@((Session["UserType"] != null && (int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Admin) ? "/order/orders":(Session["UserType"] != null && (int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Supplier) ? "/order/suppliersorder":"/order/orderlist")"><i class="fa fa-home"></i> Home</a></li>
             @if (Session["UserType"] != null && (int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
             {
-                <li><a href="@Url.Action("orders","order")">Order</a></li>
-                <li><a href="@Url.Action("list","product")">Product</a></li>
-                <li><a href="@Url.Action("list","user")">User</a></li>
+                <li id="liOrders"><a href="@Url.Action("orders","order")">Order</a></li>
+                <li id="liProduct"><a href="@Url.Action("list","product")">Product</a></li>
+                <li id="liUser"><a href="@Url.Action("list","user")">User</a></li>
             }
             <li>
                 <a>Hello @User.Identity.GetUserName().ToString() </a>
             </li>
-            <li><a href="javascript:document.getElementById('logoutForm').submit()">Logout</a></li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-out"></i> Logout</a></li>
         </ul>
     }
 }
