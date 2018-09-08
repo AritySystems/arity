@@ -18,14 +18,19 @@ namespace AritySystems.Data
         public CommercialInvoice()
         {
             this.CommercialInvoiceItems = new HashSet<CommercialInvoiceItem>();
+            this.Accounts = new HashSet<Account>();
         }
     
         public int Id { get; set; }
         public Nullable<int> OrderId { get; set; }
         public string CommercialInvoiceReferece { get; set; }
+        public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public Nullable<System.DateTime> CreatedDate { get; set; }
     
         public virtual Order Order { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommercialInvoiceItem> CommercialInvoiceItems { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Account> Accounts { get; set; }
     }
 }

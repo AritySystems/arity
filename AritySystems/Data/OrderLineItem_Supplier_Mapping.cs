@@ -17,20 +17,17 @@ namespace AritySystems.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public OrderLineItem_Supplier_Mapping()
         {
-            this.OrderLineItem_Supplier_Mapping1 = new HashSet<OrderLineItem_Supplier_Mapping>();
             this.Supplier_Assigned_OrderLineItem = new HashSet<Supplier_Assigned_OrderLineItem>();
         }
     
-        public Nullable<int> OrderLineItemId { get; set; }
+        public int OrderLineItemId { get; set; }
         public Nullable<int> SupplierId { get; set; }
         public decimal Quantity { get; set; }
         public int Id { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrderLineItem_Supplier_Mapping> OrderLineItem_Supplier_Mapping1 { get; set; }
-        public virtual OrderLineItem_Supplier_Mapping OrderLineItem_Supplier_Mapping2 { get; set; }
+        public virtual OrderLineItem OrderLineItem { get; set; }
         public virtual User User { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Supplier_Assigned_OrderLineItem> Supplier_Assigned_OrderLineItem { get; set; }
