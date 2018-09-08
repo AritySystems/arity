@@ -17,6 +17,8 @@ namespace AritySystems.Data
         public int Id { get; set; }
         public Nullable<int> UserId { get; set; }
         public string Type { get; set; }
+        public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public Nullable<System.DateTime> CreatedDate { get; set; }
     
         public virtual User User { get; set; }
     }

@@ -14,6 +14,12 @@ namespace AritySystems.Data
     
     public partial class OrderLineItem
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public OrderLineItem()
+        {
+            this.OrderLineItem_Supplier_Mapping = new HashSet<OrderLineItem_Supplier_Mapping>();
+        }
+    
         public int Id { get; set; }
         public Nullable<int> OrderId { get; set; }
         public Nullable<int> ProductId { get; set; }
@@ -27,5 +33,7 @@ namespace AritySystems.Data
     
         public virtual Order Order { get; set; }
         public virtual Product Product { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrderLineItem_Supplier_Mapping> OrderLineItem_Supplier_Mapping { get; set; }
     }
 }
