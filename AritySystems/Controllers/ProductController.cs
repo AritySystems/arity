@@ -84,6 +84,9 @@ namespace AritySystems.Controllers
                 existingProduct.ParentIds = productParentIds;
                 existingProduct.Suppliers = suppliers;
                 existingProduct.IsActive = true;
+                existingProduct.BOM = product.BOM;
+                existingProduct.Weight = product.Weight;
+                existingProduct.CBM = product.Cubic_Meter;
             }
             else
             {

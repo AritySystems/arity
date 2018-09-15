@@ -32,8 +32,9 @@ namespace AritySystems.Controllers
                 // We do not want to use any existing identity information  
                 EnsureLoggedOut();
                 // Store the originating URL so we can attach it to a form field  
-                returnURL = ReturnUrl;
-                return View(returnURL);
+                LoginModel objLogin = new LoginModel();
+                objLogin.ReturnURL = ReturnUrl;
+                return View(objLogin);
             }
             catch
             {
@@ -99,6 +100,8 @@ namespace AritySystems.Controllers
                         Session["Username"] = userInfo.EmailId;
                         Session["UserType"] = userInfo.UserType;
                         Session["UserId"] = userInfo.Id;
+                        if (!string.IsNullOrEmpty(entity.ReturnURL))
+                            return RedirectToAction(entity.ReturnURL);
                         if (userInfo.UserType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
                             return RedirectToAction("orders", "order");
                         else if (userInfo.UserType == (int)AritySystems.Common.EnumHelpers.UserType.Supplier)

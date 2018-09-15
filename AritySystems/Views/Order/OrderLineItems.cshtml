@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Order Details";
     var userType = (Session["UserType"] != null) ? (int)Session["UserType"] : 0;
+    var exporter = Model.ExporterId != null ? Model.ExporterId : 0;
 }
 <style>
     .borderless td, .borderless th {
@@ -34,7 +35,7 @@
         </div>
         @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
         {
-            <div class="col-md-2 col-md-offset-5" style="text-align:right;"><button class="btn btn-success" onclick="location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';"><i class="fa fa-print"></i> Genrate PI</button></div>}
+            <div class="col-md-2 col-md-offset-5" style="text-align:right;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PI</button></div>}
         <div class="col-md-1 @((userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase || userType == (int)AritySystems.Common.EnumHelpers.UserType.Sales) && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved ? "":"col-md-offset-7") "><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
         <hr class="col-md-12" style="margin-bottom:25px;" />
         <div class="col-md-12" style="margin-bottom:50px;">
@@ -61,12 +62,12 @@
             <div>
                 @if (Model != null && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Draft && userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase)
                 {
-                    <button class="btn btn-primary" id="btnPurchasePriceSave">Save & Update Price</button>
+                    <button class="btn btn-primary" id="btnPurchasePriceSave">Update Price</button>
                     <button class="btn btn-success" id="btnPurchasePriceUpdated">Notify Sales team to update Sales Price</button>
                 }
                 else if (Model != null && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.RedyForSales && userType == (int)AritySystems.Common.EnumHelpers.UserType.Sales)
                 {
-                    <button class="btn btn-primary" id="btnSalesPriceSave">Save & Update Price</button>
+                    <button class="btn btn-primary" id="btnSalesPriceSave">Update Price</button>
                     <button class="btn btn-success" id="btnSalesPriceUpdated">Notify Admin to approve Order</button>
                 }
                 else if (Model != null && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved && userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase)
@@ -189,7 +190,6 @@
                         "data": "Suppliers",
                         "render": function (data, type, row) {
                             ddl = '<select id="jsonSupplierList">';
-                            debugger;
                             $.each(data, function (i, item) {
                                 ddl += '<option id="' + item.Text + '">' + item.Value + '<option>';
                             });

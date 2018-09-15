@@ -185,7 +185,7 @@ namespace AritySystems.Controllers
                 {
                     var model = (from b in db.OrderLineItem_Supplier_Mapping
                                  join c in db.Orders on b.OrderId equals c.Id
-                                // join d in db.Orders on c.OrderId equals d.Id
+                                 // join d in db.Orders on c.OrderId equals d.Id
                                  where b.OrderId == OrderId && b.Quantity > 0
                                  select new SupplierOrderLineItemModel
                                  {
@@ -257,10 +257,11 @@ namespace AritySystems.Controllers
                                 id = dataModel.Id;
                                 db.OrderLineItem_Supplier_Mapping.Add(dataModel);
                             }
-                            else {
+                            else
+                            {
                                 dataModeldata.ModifiedDate = DateTime.Now;
                                 id = dataModeldata.Id;
-                                dataModeldata.Quantity = db.OrderLineItems.Where(x => x.OrderId == orderId).Select(x => x.Quantity).Sum(); 
+                                dataModeldata.Quantity = db.OrderLineItems.Where(x => x.OrderId == orderId).Select(x => x.Quantity).Sum();
                             }
                             db.SaveChanges();
 
@@ -402,6 +403,7 @@ namespace AritySystems.Controllers
             items.Add(product);
             items.AddRange(GetChildProducts(id));
             items.ForEach(_ => _.MOQ = qty);
+            items.Where(_ => _.ParentIds != null && !string.IsNullOrEmpty(_.ParentIds)).ToList().ForEach(_ => { _.MOQ = product.BOM != null ? (_.MOQ * product.BOM ?? 0) : _.MOQ; });
             var productList = (from lst in items
                                select new Product
                                {
@@ -445,7 +447,7 @@ namespace AritySystems.Controllers
                     }
                     if (lineItem.Any())
                     {
-                        var order = objDb.Orders.Add(new Order() { CustomerId = userDetails.Id, CreatedDate = DateTime.Now, Prefix = userDetails.Prefix, Status = (int)AritySystems.Common.EnumHelpers.OrderStatus.Draft, Internal_status = (int)AritySystems.Common.EnumHelpers.OrderStatus.Draft });
+                        var order = objDb.Orders.Add(new Order() { CustomerId = userDetails.Id, CreatedDate = DateTime.Now, Prefix = userDetails.Prefix, Status = (int)AritySystems.Common.EnumHelpers.OrderStatus.Draft, Internal_status = (int)AritySystems.Common.EnumHelpers.OrderStatus.Draft,TermsandCondition= "Above prices are based on X - Guzhen and in USD ,Payment terms :  50 % Advance balance Before Delivery ,Delivery period : 15 days after received Advance ,Bank Details for remittance: 	" });
                         foreach (var item in lineItem.Where(_ => _.Value > 0))
                         {
                             var prodcut = objDb.Products.Where(_ => _.Id == item.Key).FirstOrDefault();
@@ -549,7 +551,7 @@ namespace AritySystems.Controllers
             }
         }
 
-       
+
         //public SupplierHelper SupplierAssigneddataforSupplierOrders(int orderlineitemid, int loggeduser)
         //{
         //    var objDb = new ArityEntities();
@@ -570,7 +572,7 @@ namespace AritySystems.Controllers
         //    public string CreatedOn { get; set; }
         //    public int Status { get; set; }
         //}
-        
+
 
         public ActionResult GeneratePerfomaInvoice(int? id)
         {
@@ -725,7 +727,7 @@ namespace AritySystems.Controllers
                 IStyle headingLineItemStyle = workbook.Styles.Add("headingLineItemStyle");
                 headingLineItemStyle.Font.Size = 15;
                 headingLineItemStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
-                
+
                 headingLineItemStyle.Font.Bold = true;
 
                 worksheet.AutofitRow(11);
@@ -914,13 +916,14 @@ namespace AritySystems.Controllers
                               RmbSalesTotal = supplieritem.OrderLineItem1.RMBSalesPrice,
                               Status = supplieritem.Status
                           }).ToList();
-            var final = orders.GroupBy(x => x.OrderId).Select(x => new {
+            var final = orders.GroupBy(x => x.OrderId).Select(x => new
+            {
                 SupplierOrderId = x.Key,
-                Prefix = x.Select(p=>p.Prefix).FirstOrDefault(),
-                CreatedOn = x.Select(p=>p.CreatedOn).FirstOrDefault(),
-                Quantity = x.Select(p=>p.OrderQuantity).FirstOrDefault(),
+                Prefix = x.Select(p => p.Prefix).FirstOrDefault(),
+                CreatedOn = x.Select(p => p.CreatedOn).FirstOrDefault(),
+                Quantity = x.Select(p => p.OrderQuantity).FirstOrDefault(),
                 RmbSalesTotal = x.Sum(p => p.Quantity * p.RmbSalesTotal),
-                Status = x.Select(p=>p.Status).FirstOrDefault()
+                Status = x.Select(p => p.Status).FirstOrDefault()
             }).ToList();
 
             return Json(new { data = final }, JsonRequestBehavior.AllowGet);
@@ -1117,8 +1120,8 @@ namespace AritySystems.Controllers
                                 CIId = _.Id,
                                 ShippingMark = order.Prefix,
                                 CI = com.CommercialInvoiceReferece,
-                                DollerPrice = _.Dollar_Price.HasValue ? Math.Round(Convert.ToDouble(_.Dollar_Price.Value),2) : 0.00,
-                                RMBPrice = _.RMB_Price.HasValue ? Math.Round(Convert.ToDouble(_.RMB_Price.Value),2): 0.00,
+                                DollerPrice = _.Dollar_Price.HasValue ? Math.Round(Convert.ToDouble(_.Dollar_Price.Value), 2) : 0.00,
+                                RMBPrice = _.RMB_Price.HasValue ? Math.Round(Convert.ToDouble(_.RMB_Price.Value), 2) : 0.00,
                                 Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy h:mm") : null
                             }).ToList();
             return Json(new { data = ammounts }, JsonRequestBehavior.AllowGet);
@@ -1133,7 +1136,7 @@ namespace AritySystems.Controllers
                                 Id = order.Id,
                                 ShippingMark = order.Prefix,
                                 CreatedDate = order.CreatedDate.ToString("MM/dd/yyyy h:mm"),
-                                TotalDollerPrice = order.Accounts.Sum(_=>_.Dollar_Price),
+                                TotalDollerPrice = order.Accounts.Sum(_ => _.Dollar_Price),
                                 TotalRMBPrice = order.Accounts.Sum(_ => _.RMB_Price)
                             }).ToList();
             return Json(new { data = ammounts }, JsonRequestBehavior.AllowGet);

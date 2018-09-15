@@ -87,7 +87,7 @@
     });
     $("#btnPlaceOrder").on("click", function (e) {
         var isClikable = false;
-        
+
         $("table").find(".spn-error").remove();
         $("input").css("border-color", "");
         $(".qty-check").each(function () {
@@ -131,7 +131,7 @@
             if (response.data != null) {
                 $.each(response.data, function (e, data) {
                     if ($(".tr_" + data.Id).length <= 0) {
-                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_" + data.Id + "'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + ((data.ParentIds != null && data.ParentIds != '') ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' class='qty-check' data-moq='" + ((data.ParentIds != null && data.ParentIds != '') ? data.BOM : data.Quantity) + "' type='number' value='" + data.MOQ + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal' data-CBM='" + data.CBM + "' data-Weight='" + data.Weight+"'>$" + (data.Dollar_Price * data.MOQ) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
+                        $("#lstProducts").append("<tr id='tr_" + window.productCounter + "' class='tr_" + data.Id + "'><td><input type='hidden' name='productId_" + window.productCounter + "' value='" + data.Id + "'/><span class='" + ((data.ParentIds != null && data.ParentIds != '') ? "child-product" : "") + "'> " + data.English_Name + "</span></td><td><input style='text-align:center;' onkeyup='qtyTouched(this);' class='qty-check' data-moq='" + data.Quantity + "' type='number' value='" + data.MOQ + "' name='qty_" + window.productCounter + "' /></td><td><input type='hidden' value='" + data.Dollar_Price + "' id='spnPrice_" + window.productCounter + "'/>$" + data.Dollar_Price + "</td><td><span id='total_" + window.productCounter + "' class='itemTotal' data-CBM='" + data.CBM + "' data-Weight='" + data.Weight + "' data-qty='" + data.MOQ+"'>$" + (data.Dollar_Price * data.MOQ) + "</span></td><td align='center'><i class='fa fa-remove' style='color:red;cursor:pointer;' onclick='removeItem(" + window.productCounter + ")'></i></td></tr>")
                         window.productCounter = window.productCounter + 1;
                     }
                 });
@@ -171,7 +171,7 @@
                 CountTotal();
                 CountCBMandWeight();
             });
-           
+
         }
         return true;
     }
@@ -193,13 +193,13 @@
     }
 
     function CountCBMandWeight() {
-        var totalWeight = 0;
-        var totalCBM = 0;
-        $(".itemTotal").each(function () {
-            totalCBM = totalCBM + parseFloat($(this).attr("data-CBM"));
-            totalWeight = totalWeight + parseFloat($(this).attr("data-Weight"));
-        });
-        $("#expectedCBM").html(isNaN(totalCBM) ? 0 : totalCBM);
-        $("#expectedWeight").html(isNaN(totalWeight) ? 0 : totalWeight);
+            var totalWeight = 0;
+            var totalCBM = 0;
+            $(".itemTotal").each(function () {
+                totalCBM = totalCBM + (isNaN(parseFloat($(this).attr("data-CBM"))) ? 0 : (parseFloat($(this).attr("data-CBM")) * parseFloat($(this).attr("data-qty"))));
+                totalWeight = totalWeight + (isNaN(parseFloat($(this).attr("data-Weight"))) ? 0 : (parseFloat($(this).attr("data-Weight")) * parseFloat($(this).attr("data-qty"))));
+            });
+            $("#expectedCBM").html(isNaN(totalCBM) ? 0 : totalCBM);
+            $("#expectedWeight").html(isNaN(totalWeight) ? 0 : totalWeight);
     }
 </script>

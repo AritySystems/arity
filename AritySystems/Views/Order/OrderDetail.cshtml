@@ -4,6 +4,7 @@
     ViewBag.Title = "Order Detail";
     var itemCounter = 0;
     var userType = (Session["UserType"] != null) ? (int)Session["UserType"] : 0;
+    var exporter = Model.ExporterId != null ? Model.ExporterId : 0;
 }
 
 <div class="container">
@@ -55,7 +56,7 @@
                                 <td>@Html.TextAreaFor(_ => _.TermsandCondition, new { @cals = "10", @rows = "5", @class = "form-control" }) <span style="display:block;font-style:italic;font-size:10px;">Note: Please add tearms and condition in order to put ','(comma) when one line is over and second is started. </span> </td>
                             </tr>
                             <tr>
-                                <td colspan="3" align="center"><button type="button" id="btnSaveTearmsCondition"> Update Details</button></td>
+                                <td colspan="3" align="center"><button type="button" class="btn btn-primary" id="btnSaveTearmsCondition"> Update Details</button></td>
                             </tr>
                         </table>
                     </div>
@@ -65,7 +66,14 @@
                 <h4>Order Line Items</h4>
             </div>
         </div>
-        <div class="col-md-1 col-md-offset-3"><button class="btn btn-primary" onclick="location.href='@(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin? Url.Action("orders","order") :Url.Action("orderlist","order"))';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+        <div class="col-md-4" style="text-align:right">
+            @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
+            {
+                <div  style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please select exporter to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PI</button></div>}
+                <div  style="display:inline-block;">
+                    <button class="btn btn-primary" onclick=" location.href='@(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin? Url.Action("orders","order") :Url.Action("orderlist","order"))';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
+                </div>
+            </div>
     </div>
     <div class="row">
         <hr class="col-md-12" style="margin-bottom:25px;" />
@@ -186,7 +194,7 @@
         });
         $("#btnSaveTearmsCondition").on("click", function () {
              $.ajax({
-                url: "@Url.Action("UpdateTearmsAndCondition", "Order")",
+                url: "@Url.Action("TermsandCondition", "Order")",
                 method: "POST",
                  data: { id: @Model.Id, Tearms: $("#TermsandCondition").val()  },
                 dataType: "json"
