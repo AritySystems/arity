@@ -588,7 +588,7 @@ namespace AritySystems.Controllers
                            where order.Id == id && exporterDetail.UserType == 6
                            select new PerformaInvoice()
                            {
-                               ExporterName = exporterDetail.FirstName + " " + exporterDetail.LastName,
+                               ExporterName = exporterDetail.CompanyName,
                                ExporterAddress = exporterDetail.Address,
                                ExporterPhone = exporterDetail.PhoneNumber,
                                CustomerCompanyName = user.CompanyName,
@@ -642,11 +642,25 @@ namespace AritySystems.Controllers
                 worksheet.Range["A1"].Text = perfoma.ExporterName;
                 worksheet.Range["$A$1:$F$1"].Merge();
 
+                IStyle headingStyle = workbook.Styles.Add("HeadingStyle");
+                headingStyle.Font.Bold = true;
+                headingStyle.Font.Size = 20;
+                headingStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                worksheet.Range["$A$1:$F$1"].CellStyle = headingStyle;
+
                 worksheet.Range["A2"].Text = perfoma.ExporterAddress;
                 worksheet.Range["$A$2:$F$2"].Merge();
 
+                IStyle exporterAdress = workbook.Styles.Add("exporterAdress");
+                exporterAdress.Font.Size = 15;
+                exporterAdress.Font.Bold = true;
+                exporterAdress.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                worksheet.Range["$A$2:$F$2"].CellStyle = exporterAdress;
+
                 worksheet.Range["A3"].Text = perfoma.ExporterPhone;
                 worksheet.Range["$A$3:$F$3"].Merge();
+
+                worksheet.Range["$A$3:$F$3"].CellStyle = exporterAdress;
 
                 worksheet.Range["A4"].Text = string.Empty;
                 worksheet.Range["$A$4:$F$4"].Merge();
@@ -654,15 +668,26 @@ namespace AritySystems.Controllers
                 worksheet.Range["A5"].Text = "PERFORMA INVOICE";
                 worksheet.Range["$A$5:$F$5"].Merge();
 
-                worksheet.Range["A6"].Text = "Customer Co. name";
+                IStyle CustomTextStyle = workbook.Styles.Add("CustomTextStyle");
+                CustomTextStyle.Font.Size = 25;
+                CustomTextStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                CustomTextStyle.Font.Bold = true;
+                worksheet.Range["$A$5:$F$5"].CellStyle = CustomTextStyle;
+
+                worksheet.Range["A6"].Text = perfoma.CustomerCompanyName;
                 worksheet.Range["$A$6:$B$6"].Merge();
+
+                IStyle CustomTextCustomerStyle = workbook.Styles.Add("CustomTextCustomerStyle");
+                CustomTextCustomerStyle.Font.Size = 15;
+                CustomTextCustomerStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
+                worksheet.Range["$A$6:$B$6"].CellStyle = CustomTextCustomerStyle;
 
                 worksheet.Range["C6"].Text = "Pi No.";
 
                 worksheet.Range["D6"].Text = perfoma.PINo;
                 worksheet.Range["$D$6:$F$6"].Merge();
 
-                worksheet.Range["A7"].Text = "Customer Add";
+                worksheet.Range["A7"].Text = perfoma.CustomerAddress;
                 worksheet.Range["$A$7:$B$7"].Merge();
 
                 worksheet.Range["C7"].Text = "Date";
@@ -670,7 +695,7 @@ namespace AritySystems.Controllers
                 worksheet.Range["D7"].Text = perfoma.OrderDate.ToString();
                 worksheet.Range["$D$7:$F$7"].Merge();
 
-                worksheet.Range["A8"].Text = "GST Number";
+                worksheet.Range["A8"].Text = perfoma.CustomerGST;
                 worksheet.Range["$A$8:$B$8"].Merge();
 
                 worksheet.Range["C8"].Text = "IEC code";
@@ -689,10 +714,27 @@ namespace AritySystems.Controllers
                 worksheet.Range["A9"].Text = string.Empty;
                 worksheet.Range["$A$9:$B$9"].Merge();
 
-                worksheet.Range["C9"].Text = "Contact No.";
+                worksheet.Range["C10"].Text = "Contact No.";
 
-                worksheet.Range["D9"].Text = perfoma.CustomerCompanyName;
+                worksheet.Range["D10"].Text = perfoma.CustomerPhone;
                 worksheet.Range["$D$9:$F$9"].Merge();
+
+                IStyle headingLineItemStyle = workbook.Styles.Add("headingLineItemStyle");
+                headingLineItemStyle.Font.Size = 15;
+                headingLineItemStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
+                
+                headingLineItemStyle.Font.Bold = true;
+
+                worksheet.AutofitRow(11);
+
+                worksheet.AutofitColumn(1);
+                worksheet.AutofitColumn(2);
+                worksheet.AutofitColumn(3);
+                worksheet.AutofitColumn(4);
+                worksheet.AutofitColumn(5);
+                worksheet.AutofitColumn(6);
+                worksheet.AutofitColumn(7);
+                worksheet.AutofitColumn(8);
 
                 worksheet.Range["A11"].Text = "Sr.No.";
                 worksheet.Range["B11"].Text = "Perticulates";
@@ -702,6 +744,18 @@ namespace AritySystems.Controllers
                 worksheet.Range["F11"].Text = "Total USD";
                 worksheet.Range["G11"].Text = "Total RMB";
                 worksheet.Range["H11"].Text = "RMB";
+
+
+                worksheet.Range["A11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["B11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["C11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["D11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["E11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["F11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["G11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["H11"].CellStyle = headingLineItemStyle;
+
+
                 int i = 1;
                 int rownum = 12;
                 foreach (var item in perfoma.ProductList)
@@ -729,11 +783,17 @@ namespace AritySystems.Controllers
 
                 rownum += 10;
 
-                worksheet.Range["A" + rownum + ""].Text = "Total"; //totalItems.ToString();
+                worksheet.Range["A" + rownum + ""].Text = "Total";
                 worksheet.Range["$A$" + rownum + ":$E$" + rownum].Merge();
 
                 worksheet.Range["F" + rownum + ""].Text = "$" + totalItems.ToString();
                 worksheet.Range["G" + rownum + ""].Text = "¥" + totalRMB.ToString();
+
+                headingStyle.Font.Size = 17;
+                worksheet.Range["F" + rownum + ""].CellStyle = headingStyle;
+
+                headingStyle.Font.Size = 17;
+                worksheet.Range["G" + rownum + ""].CellStyle = headingStyle;
 
                 rownum += 2;
 
@@ -741,19 +801,19 @@ namespace AritySystems.Controllers
                 worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
 
                 rownum += 1;
-                worksheet.Range["A" + rownum + ""].Text = "Based On , FOB, X work, CNF, CIF";
+                worksheet.Range["A" + rownum + ""].Text = "(1)  Based On , FOB, X work, CNF, CIF";
                 worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
 
                 rownum += 1;
-                worksheet.Range["A" + rownum + ""].Text = "Payment terms - advance.. Balance.. LC TT ";
+                worksheet.Range["A" + rownum + ""].Text = "(2)  Payment terms - advance.. Balance.. LC TT ";
                 worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
 
                 rownum += 1;
-                worksheet.Range["A" + rownum + ""].Text = "Delivery period- … days after receipt/confirmation of ...";
+                worksheet.Range["A" + rownum + ""].Text = "(3)  Delivery period- … days after receipt/confirmation of ...";
                 worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
 
                 rownum += 1;
-                worksheet.Range["A" + rownum + ""].Text = "(4)   Bank Details for remittance:  TT and LC both always show according to selection of exporter";
+                worksheet.Range["A" + rownum + ""].Text = "(4)  Bank Details for remittance:  TT and LC both always show according to selection of exporter";
                 worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
 
                 PerfomaInvoice perfomaInvoice = new PerfomaInvoice()

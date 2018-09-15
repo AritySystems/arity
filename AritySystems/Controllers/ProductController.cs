@@ -63,9 +63,9 @@ namespace AritySystems.Controllers
                 productParentIds = string.Join(",", product.ParentIdsArray);
                 parent = 1;
             }
-            if (product.Suppliers != null)
+            if (product.SuppliersArray != null)
             {
-                suppliers = string.Join(",", product.Suppliers);
+                suppliers = string.Join(",", product.SuppliersArray);
             }
 
             ArityEntities dataContext = new ArityEntities();
@@ -213,6 +213,9 @@ namespace AritySystems.Controllers
                 Quantity = product.Quantity,
                 RMB_Price = product.RMB_Price,
                 Unit = getEnumValue(product.Unit),
+                BOM = product.BOM?? 0 ,
+                Cubic_Meter = product.CBM?? 0,
+                Weight = product.Weight?? 0
             };
         }
 
@@ -233,7 +236,10 @@ namespace AritySystems.Controllers
                 ParentIds = product.ParentIds,
                 CreatedDate = product.CreatedDate,
                 IsActive = product.IsActive,
-                Parent_Id = product.Parent_Id
+                Parent_Id = product.Parent_Id,
+                BOM = product.BOM,
+                CBM = product.Cubic_Meter,
+                Weight = product.Weight
             };
         }
 
