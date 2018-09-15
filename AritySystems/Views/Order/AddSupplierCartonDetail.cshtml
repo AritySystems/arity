@@ -51,12 +51,12 @@
                     @Html.TextBox("OrderId", 0, new { @type = "hidden", @class = "form-control" })
                     <div class="form-group">
                         <label class="">Order Line Items</label>
-                        @Html.DropDownList("SupplierOrderMapId", ViewBag.OrderLineItems as SelectList, "-- Select OrderLineItems--", new { @class = "form-control" })
+                        @Html.DropDownList("SupplierOrderMapId", ViewBag.OrderLineItems as SelectList, "-- Select OrderLineItems--", new { id="supplierorderdd", @class = "form-control" })
                     </div>
 
                     <div class="form-group">
                         <label class="">Pieces Per Carton</label>
-                        @Html.TextBox("PcsPerCartoon", 0, new { @type = "number", @class = "form-control" })
+                        @Html.TextBox("PcsPerCartoon", 0, new { id ="pcspercarton", @type = "number", @class = "form-control" })
 
                     </div>
                     <div class="form-group">
@@ -126,7 +126,13 @@
                 ],
                 "supplierCartonDetail": [[1, 'asc']]
             });
+            $('#supplierorderdd').on('change', function () {
+                debugger
+                var myValue = $(this).val();
+               // var myText = $.trim($("#supplierorderdd :selected").val()); // Trim spaces and convert to lowercase for comparison
 
+                $("#pcspercarton").text();
+            });
         });
     </script>
 

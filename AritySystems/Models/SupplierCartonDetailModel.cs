@@ -24,6 +24,7 @@ namespace AritySystems.Models
     }
     public class SupplierOrderItemAdd
     {
+        public string OrderId { get; set; }
         public string OrderLineItemId { get; set; }
         public string OldQuantity { get; set; }
         public string NewQuantity { get; set; }

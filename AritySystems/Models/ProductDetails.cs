@@ -59,5 +59,6 @@ namespace AritySystems.Models
 
         [Display(Name = "Weight")]
         public decimal Weight { get; set; }
+
     }
 }

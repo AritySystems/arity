@@ -118,6 +118,7 @@
                 items["NewQuantity"] = newquantity,
                 items["supplierid"] = supplierid;
                 items["OrderLineItemId"] = orderLineItem;
+                items["OrderId"] = @Model.Id;
                 data.push(items);
             });
             var addData =JSON.stringify(data);
