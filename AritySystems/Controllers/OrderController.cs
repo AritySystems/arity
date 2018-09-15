@@ -367,7 +367,7 @@ namespace AritySystems.Controllers
                                    MOQ = lst.MOQ,
                                    Id = lst.Id,
                                    ParentIds = lst.ParentIds,
-                                   BOM =lst.BOM,
+                                   BOM = lst.BOM,
                                    CBM = lst.CBM,
                                    Weight = lst.Weight
                                }).ToList();
@@ -871,7 +871,7 @@ namespace AritySystems.Controllers
             ArityEntities dataContext = new ArityEntities();
             List<SelectListItem> suppliers = new List<SelectListItem>();
             var suppliersCsv = (from data in dataContext.Products
-                                where data.Id == productId && data.Suppliers != null 
+                                where data.Id == productId && data.Suppliers != null
                                 select new
                                 {
                                     Id = data.Id,
@@ -1024,8 +1024,77 @@ namespace AritySystems.Controllers
         public ActionResult AddPayments(int? id)
         {
             var dbContext = new ArityEntities();
-            ViewBag.OrderCI = new SelectList(dbContext.CommercialInvoices.Where(_=>_.OrderId == id).ToList(),"Id", "CommercialInvoiceReferece");
+            ViewBag.OrderID = id ?? 0;
+            ViewBag.OrderCI = new SelectList(dbContext.CommercialInvoices.Where(_ => _.OrderId == id).ToList(), "Id", "CommercialInvoiceReferece");
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult AddPaymentForOrder(int id, int ciId, decimal dAmmount, decimal rAmmount)
+        {
+            var dbContext = new ArityEntities();
+            try
+            {
+                dbContext.Accounts.Add(new Data.Account() { CommercialId = ciId, CreatedDate = DateTime.Now, OrderId = id, Dollar_Price = dAmmount, RMB_Price = rAmmount });
+                dbContext.SaveChanges();
+            }
+            catch
+            {
+                throw;
+            }
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult OrderPaidAmmounts(int id)
+        {
+            var dbContext = new ArityEntities();
+            var ammounts = (from _ in dbContext.Accounts.ToList()
+                            join com in dbContext.CommercialInvoices on _.CommercialId equals com.Id
+                            join order in dbContext.Orders on _.OrderId equals order.Id
+                            join user in dbContext.Users on order.User.Id equals user.Id
+                            where _.OrderId == id
+                            select new
+                            {
+                                CIId = _.Id,
+                                ShippingMark = order.Prefix,
+                                CI = com.CommercialInvoiceReferece,
+                                DollerPrice = _.Dollar_Price.HasValue ? Math.Round(Convert.ToDouble(_.Dollar_Price.Value),2) : 0.00,
+                                RMBPrice = _.RMB_Price.HasValue ? Math.Round(Convert.ToDouble(_.RMB_Price.Value),2): 0.00,
+                                Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy h:mm") : null
+                            }).ToList();
+            return Json(new { data = ammounts }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetOrderOrderListForAmmount()
+        {
+            var dbContext = new ArityEntities();
+            var ammounts = (from order in dbContext.Orders.ToList()
+                            select new
+                            {
+                                Id = order.Id,
+                                ShippingMark = order.Prefix,
+                                CreatedDate = order.CreatedDate.ToString("MM/dd/yyyy h:mm"),
+                                TotalDollerPrice = order.Accounts.Sum(_=>_.Dollar_Price),
+                                TotalRMBPrice = order.Accounts.Sum(_ => _.RMB_Price)
+                            }).ToList();
+            return Json(new { data = ammounts }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult RemovePayment(int id)
+        {
+            var dbContext = new ArityEntities();
+            dbContext.Accounts.Remove(dbContext.Accounts.FirstOrDefault(_ => _.Id == id));
+            dbContext.SaveChanges();
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult TermsandCondition(int id, string Tearms)
+        {
+            var dbContext = new ArityEntities();
+            var order = dbContext.Orders.FirstOrDefault(_ => _.Id == id);
+            order.TermsandCondition = Tearms;
+            dbContext.SaveChanges();
+            return Json("", JsonRequestBehavior.AllowGet);
         }
     }
 }

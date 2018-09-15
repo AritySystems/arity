@@ -42,35 +42,45 @@
     </div>
 </div>
 @section Scripts {
-    <script>
+<script>
         $(".nav #liAccounts").addClass("active");
         function format(d) {
-            var html = '<div class="child-heading">All payments information of ' + d.CreatedDate + '</div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;    border: 1px solid #eee;margin-bottom: 2%;"><tr><th>Name</th><th>Amount</th><th>Payment date</th><th>Status</th></tr>';
-            html += '<tr>' +
-        '<td>Merchant 2</td>' +
-        '<td>$5000.00</td>' +
-        '<td>05/13/2018</td>' +
-        '<td><label class="alert-warning">Pending</label></td>' +
-    '</tr>' +
-        '<tr>' +
-            '<td>Customer 1</td>' +
-            '<td>$1000.00</td>' +
-            '<td>05/12/2018</td>' +
-            '<td><label class="alert-warning">Pending</label></td>' +
-        '</tr>' +
-        '<tr>' +
-            '<td>Customer 1</td>' +
-            '<td>$15,000.00</td>' +
-            '<td>05/07/2018</td>' +
-            '<td><label class="alert-success">Complete</label></td>' +
-        '</tr>';
+            var html = '<div class="child-heading">All payments information</div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;    border: 1px solid #eee;margin-bottom: 2%;"><tr><th>CI</th><th>Doller Ammount</th><th>RMB Ammount</th><th>Date</th></tr>';
+             $.ajax({
+                        url: "@Url.Action("OrderPaidAmmounts", "Order")",
+                        method: "POST",
+                 data: { id: d.Id },
+                        async:false,
+                        dataType: "json"
+                    }).done(function (response) {
+                        if (response.data != null) {
+                            if (response.data.length <= 0) {
+                                html += '<tr>' +
+                                    '<td colspan="4" align="center">No records found</td>' +
+                                    '</tr>';
+                            }
+                            else {
+                                $(response.data).each(function (i, data) {
+                                    html += '<tr>' +
+                                        '<td>' + data.CI + '</td>' +
+                                        '<td><i class="fa fa-usd"></i>  ' + data.DollerPrice + '</td>' +
+                                        '<td><i class="fa fa-jpy"></i> ' + data.RMBPrice + '</td>' +
+                                        '<td>' + data.Date + '</td>' +
+                                        '</tr>';
+                                });
+                            }
+                           
+                        }
+                    }).fail(function (jqXHR, textStatus) {
+                        console.log("Request failed: " + textStatus);
+                });
             html += '</table>';
             return html;
         }
 
         $(document).ready(function () {
             var table = $('#example').DataTable({
-                "ajax": "@Url.Action("GetOrderList","Order")",
+                "ajax": "@Url.Action("GetOrderOrderListForAmmount","Order")",
                 "columns": [
                     {
                         "className": '',
@@ -88,24 +98,12 @@
                             return '<button class="btn btn-success"><i class="fa fa-plus-circle"></i> Payments</button>';
                         }
                     },
-                    { "data": "Prefix" },
+                    { "data": "ShippingMark" },
                     { "data": "CreatedDate" },
-                    { "data": "TotalItem" },
-                    {
-                        "className": '',
-                        "orderable": false,
-                        "data": null,
-                        'render': function (data, type, full, meta) {
-                            if(@userType == 3)
-                                return '<i class="fa fa-jpy"></i> ' + data.RmbSalesTotal;
-                            else if(@userType == 4)
-                                return '<i class="fa fa-jpy"></i> ' + data.RmbPurchaseTotal;
-                            else
-                                return '<i class="fa fa-jpy"></i> ' + data.RmbPurchaseTotal;
-                        }
-                    }
+                    { "data": "TotalDollerPrice" },
+                    { "data": "TotalRMBPrice" }
                 ],
-                "order": [[1, 'asc']]
+                "order": [[3, 'desc']]
             });
 
             // Add event listener for opening and closing details
@@ -131,7 +129,7 @@
                 table.column(6).visible(false);
             }
         });
-    </script>
+</script>
 }
 
 
