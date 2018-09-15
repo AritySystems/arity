@@ -1,0 +1,95 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>NORTHSTAR</title>
+    <style>
+        .btn {
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: normal;
+            text-align: center;
+            vertical-align: middle;
+            touch-action: manipulation;
+            cursor: pointer;
+            background-image: none;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            border-radius: 4px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 0px;
+            font-size: 16px;
+        }
+
+        .btn-success {
+            color: #fff;
+            background-color: #5cb85c;
+            border-color: #4cae4c;
+        }
+
+        .btn a {
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .btn:hover {
+            color: #fff;
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        }
+        body, html {
+        height:100%;
+
+        }
+        /*body {
+            background: url('../../Content/Shipping_img.jpg') no-repeat;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }*/
+
+        #backgroundImage {
+            z-index: 1;
+        }
+
+            #backgroundImage:before {
+                content: "";
+                position: absolute;
+                z-index: -1;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-image: url('../../Content/Shipping_img.jpg');
+                background-repeat: no-repeat;
+                background-size: cover;
+                opacity: 0.4;
+                filter: alpha(opacity=40);
+                height: 100%;
+                width: 100%;
+            }
+    </style>
+</head>
+<body>
+    <div id="backgroundImage">
+        <div style="text-align: right;">
+        <button class="btn btn-success" onclick="location.href = '/user/login';">Go To Login</button>
+        </div>
+    </div>
+</body>
+</html>

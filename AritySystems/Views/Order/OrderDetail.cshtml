@@ -11,7 +11,7 @@
         <h1><i class="fa fa-shopping-cart"></i> @(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin ? "Order Details" : "Your Order Details")</h1>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-8">
             @if (userType != (int)AritySystems.Common.EnumHelpers.UserType.Customer)
             {
                 <div class="col-md-12">
@@ -37,15 +37,37 @@
                     <b>Order Profit:  <i class="fa fa-jpy"></i>@(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBSalesPrice)) - Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice))) </b>
                 </div>
                 <div class="col-md-12">
-                    <div style="display:block;margin:10px 0 10px;"> <b>Assign Sales Person:  @Html.DropDownListFor(_ => _.Sales_Person_Id, ViewBag.SalesPersonList as SelectList, "-- Select Sales Person --", new { @class = "form-control" })</b></div>
-                    <div style="display:block;margin:10px 0 10px;"> <b>Assign Exporter:  @Html.DropDownListFor(_ => _.ExporterId, ViewBag.ExporterList as SelectList, "-- Select Exporter --",new { @class="form-control"})</b></div>
+                    <div style="display:block;margin:10px 0 10px;">
+                        <table class="no-border" style="width:100%">
+                            <tr>
+                                <td><b>Assign Sales Person</b></td>
+                                <td>:</td>
+                                <td> @Html.DropDownListFor(_ => _.Sales_Person_Id, ViewBag.SalesPersonList as SelectList, "-- Select Sales Person --", new { @class = "form-control" })</td>
+                            </tr>
+                            <tr>
+                                <td><b>Assign Exporter</b></td>
+                                <td>:</td>
+                                <td>  @Html.DropDownListFor(_ => _.ExporterId, ViewBag.ExporterList as SelectList, "-- Select Exporter --", new { @class = "form-control" })</td>
+                            </tr>
+                            <tr>
+                                <td><b>Tearms & Condition</b></td>
+                                <td>:</td>
+                                <td>@Html.TextAreaFor(_ => _.TermsandCondition, new { @cals = "10", @rows = "5", @class = "form-control" }) <span style="display:block;font-style:italic;font-size:10px;">Note: Please add tearms and condition in order to put ','(comma) when one line is over and second is started. </span> </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" align="center"><button type="button" id="btnSaveTearmsCondition"> Update Details</button></td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             }
             <div class="col-md-12" style="margin:25px 0px 10px 0;">
                 <h4>Order Line Items</h4>
             </div>
         </div>
-        <div class="col-md-1 col-md-offset-5"><button class="btn btn-primary" onclick="location.href='@(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin? Url.Action("orders","order") :Url.Action("orderlist","order"))';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+        <div class="col-md-1 col-md-offset-3"><button class="btn btn-primary" onclick="location.href='@(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin? Url.Action("orders","order") :Url.Action("orderlist","order"))';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+    </div>
+    <div class="row">
         <hr class="col-md-12" style="margin-bottom:25px;" />
         <div class="col-md-12" style="margin-bottom:50px;">
             <table class="tab-content table-striped" style="width:100%">
@@ -161,6 +183,18 @@
         });
         $("#btnreject").on("click", function () {
             updateStatus(@((int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Rejected));
+        });
+        $("#btnSaveTearmsCondition").on("click", function () {
+             $.ajax({
+                url: "@Url.Action("UpdateTearmsAndCondition", "Order")",
+                method: "POST",
+                 data: { id: @Model.Id, Tearms: $("#TermsandCondition").val()  },
+                dataType: "json"
+             }).done(function (response) {
+                 alert("Tearms and condition updated.");
+            }).fail(function (jqXHR, textStatus) {
+                console.log("Request failed: " + textStatus);
+            });
         });
         function updateStatus(status) {
             $.ajax({

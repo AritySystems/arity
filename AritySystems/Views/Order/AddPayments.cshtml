@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewBag.Title = "Add Payments";
+    int orderid = ViewBag.OrderID;
+}
+<style>
+    .error {
+    color:red;
+    }
+</style>
+<div class="container">
+    <div class="page-header">
+        <h2><i class="fa fa-money"></i> Add Payments</h2>
+    </div>
+    <div class="row">
+        <div class="row">
+            <div class="col-md-5 col-md-offset-5">
+                @if (TempData["Success"] != null)
+                {
+                    <span class="label-success label lable-style" style="font-size:17px;"> <i class="fa fa-check-square-o"></i> @TempData["Success"]</span>
+                }
+                else if (TempData["Error"] != null)
+                {
+                    <span class="label-danger label lable-style" style="font-size:17px;"> <i class="fa fa-question-circle-o"></i> @TempData["Error"]</span>
+                }
+            </div>
+            <div class="col-md-8 ammount-section" style="margin-bottom:20px;">
+                <div class="form-group">
+                    <label class="">Select Order CI</label>
+                    @Html.DropDownList("CIId", ViewBag.OrderCI as SelectList, "-- Select CI--", new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class=""><i class="fa fa-usd"></i> Ammount</label>
+                    @Html.TextBox("DollerAmmount", 0, new { @type = "number", @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class=""><i class="fa fa-jpy"></i> Ammount</label>
+                    @Html.TextBox("RMBAmmount", 0, new { @type = "number", @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" id="btnAddPayment"> <i class="fa fa-plus"></i> Add Payment</button>
+                </div>
+            </div>
+            <div class="col-md-1 col-md-offset-3"><button class="btn btn-primary" onclick="location.href='@Url.Action("account","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+        </div>
+        <div class="row">
+            <h3 style="display:block;">Received Amounts</h3>
+            <hr style="display:block;"/>
+            <table id="ammounts" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="width:15%">Shipping Mark</th>
+                        <th style="width:15%">CI</th>
+                        <th style="width:10%">Ammount (<i class="fa fa-usd"></i>)</th>
+                        <th style="width:10%">Ammount (<i class="fa fa-jpy"></i>)</th>
+                        <th style="width:10%">Payment Date</th>
+                        <th style="width:10%;text-align:center" align="center"></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var table = $('#ammounts').DataTable({
+                "ajax": "/order/orderPaidAmmounts/@orderid",
+                "columns": [
+                    { "data": "ShippingMark" },
+                    { "data": "CI" },
+                    { "data": "DollerPrice" },
+                    { "data": "RMBPrice" },
+                    { "data": "Date" },
+                    {
+                        "className": '',
+                        "orderable": false,
+                        "data": null,
+                        'render': function (data, type, full, meta) {
+                            return '<button onclick="RemoveAmmount(' + data.CIId+');" class="btn btn-danger"><i class="fa fa-remove"></i></button></a>';
+                        }
+                    }
+                ],
+                "order": [[4, 'desc']]
+            });
+            $("#btnAddPayment").on("click", function () {
+                var isSubmit = true;
+                $(".error").remove();
+                $(".ammount-section input").each(function () {
+                    if ($(this).val() == null || $(this).val() == 0) {
+                        $(this).after("<span class='error'>Please enter ammount</span>");
+                        isSubmit = false;
+                    }
+                });
+                if ($("#CIId :selected").val() == null || $("#CIId :selected").val() == "") {
+                    $("#CIId").after("<span class='error'>Please select CI</span>");
+                    isSubmit = false;
+                }
+                if (isSubmit) {
+
+                    $.ajax({
+                        url: "@Url.Action("AddPaymentForOrder","Order")",
+                        method: "POST",
+                        data: { id: @orderid, ciId: $("#CIId").val(), dAmmount: parseFloat($("#DollerAmmount").val()), rAmmount: parseFloat($("#RMBAmmount").val()) },
+                        dataType: "json"
+                    }).done(function (response) {
+                        if (response != null) {
+                            table.ajax.reload();
+                        }
+                    }).fail(function (jqXHR, textStatus) {
+                        console.log("Request failed: " + textStatus);
+                    });
+                }
+
+            });
+        });
+
+        function RemoveAmmount(id) {
+            if (confirm("Are you sure want to remove this payment?")) {
+                $.ajax({
+                    url: "@Url.Action("RemovePayment","Order")",
+                    method: "GET",
+                    data: { id: id },
+                    dataType: "json"
+                }).done(function (response) {
+                    if (response != null) {
+                        location.reload();
+                    }
+                }).fail(function (jqXHR, textStatus) {
+                    console.log("Request failed: " + textStatus);
+                });
+            }
+        }
+    </script>
+}
+
+

@@ -22,7 +22,7 @@ namespace AritySystems
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "User", action = "Login", id = UrlParameter.Optional }
+                defaults: new { controller = "home", action = "index", id = UrlParameter.Optional }
             );
             
         }
