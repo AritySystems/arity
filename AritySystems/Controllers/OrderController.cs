@@ -893,7 +893,9 @@ namespace AritySystems.Controllers
                 PerfomaInvoice perfomaInvoice = new PerfomaInvoice()
                 {
                     OrderId = id,
-                    PerfomaInvoiceReferece = perfoma.PINo
+                    PerfomaInvoiceReferece = perfoma.PINo,
+                    CreatedDate = DateTime.Now,
+                    ModifiedDate = DateTime.Now
                 };
 
                 dbContext.PerfomaInvoices.Add(perfomaInvoice);
@@ -907,7 +909,9 @@ namespace AritySystems.Controllers
                         PerfomaInvoiceId = perfomaId,
                         ProductId = item.ProductId,
                         Dollar_ProductPrice = item.UnitPrice,
-                        RMB_ProductPrice = item.RMBUnitPrice
+                        RMB_ProductPrice = item.RMBUnitPrice,
+                        CreatedDate = DateTime.Now,
+                        ModifiedDate = DateTime.Now
 
                     };
 
@@ -1071,5 +1075,549 @@ namespace AritySystems.Controllers
             }
             return Json("", JsonRequestBehavior.AllowGet);
         }
+
+        #region CommercialInvoie
+
+        public ActionResult GenerateCommmercialInvoice(int? id)
+        {
+            ArityEntities dbContext = new ArityEntities();
+            List<PerfomaProductList> productList = new List<PerfomaProductList>();
+            int asIntegers = 0;
+            List<string> commercialList = dbContext.CommercialInvoices.Where(x => x.OrderId == id).Select(x => x.CommercialInvoiceReferece).ToList();
+            if (commercialList != null && commercialList.Count > 0)
+            {
+                List<string> maxPerfoma = commercialList.Select(x => x.Replace("CI", "")).ToList();
+                asIntegers = maxPerfoma.Select(s => int.Parse(s)).ToArray().Max();
+            }
+            var commercial = (from order in dbContext.Orders
+                           join user in dbContext.Users on order.CustomerId equals user.Id
+                           join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
+                           join product in dbContext.Products on lineItem.ProductId equals product.Id
+                           join exporterDetail in dbContext.Users on order.ExporterId equals exporterDetail.Id
+                           where order.Id == id && exporterDetail.UserType == 6
+                           select new PerformaInvoice()
+                           {
+                               ExporterName = exporterDetail.CompanyName,
+                               ExporterAddress = exporterDetail.Address,
+                               ExporterPhone = exporterDetail.PhoneNumber,
+                               CustomerCompanyName = user.CompanyName,
+                               CustomerAddress = user.Address,
+                               CustomerGST = user.GSTIN,
+                               PINo = "CI" + (asIntegers + 1),
+                               OrderDate = order.CreatedDate,
+                               IECCode = user.IECCode,
+                               CustomerName = user.FirstName + " " + user.LastName,
+                               CustomerPhone = user.PhoneNumber
+                           }).FirstOrDefault();
+
+            productList = (from order in dbContext.Orders
+                           join user in dbContext.Users on order.CustomerId equals user.Id
+                           join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
+                           join product in dbContext.Products on lineItem.ProductId equals product.Id
+                           where order.Id == id
+                           select new
+                           {
+                               l = lineItem,
+                               p = product
+                           }).AsEnumerable().Select(x => new PerfomaProductList()
+                           {
+                               Partiular = x.p.English_Name,
+                               Quantity = x.l.Quantity,
+                               Unit = getEnumValue(Convert.ToInt32(x.p.Unit)),
+                               UnitPrice = x.l.DollarSalesPrice,
+                               TotalUSD = x.l.Quantity * x.l.DollarSalesPrice,
+                               ProductId = x.p.Id,
+                               RMBUnitPrice = x.l.RMBSalesPrice,
+                               TotalRMB = x.l.Quantity * x.l.RMBSalesPrice
+
+                           }).ToList();
+
+            commercial.ProductList = productList;
+
+
+            //Create an instance of ExcelEngine.
+            using (ExcelEngine excelEngine = new ExcelEngine())
+            {
+                //Set the default application version as Excel 2016.
+                excelEngine.Excel.DefaultVersion = ExcelVersion.Excel2016;
+
+                //Create a workbook with a worksheet.
+                IWorkbook workbook = excelEngine.Excel.Workbooks.Create(1);
+
+                //Access first worksheet from the workbook instance.
+                IWorksheet worksheet = workbook.Worksheets[0];
+
+                //Insert sample text into cell “A1”.
+                worksheet.Range["A1"].Text = commercial.ExporterName;
+                worksheet.Range["$A$1:$F$1"].Merge();
+
+                IStyle headingStyle = workbook.Styles.Add("HeadingStyle");
+                headingStyle.Font.Bold = true;
+                headingStyle.Font.Size = 20;
+                headingStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                worksheet.Range["$A$1:$F$1"].CellStyle = headingStyle;
+
+                worksheet.Range["A2"].Text = commercial.ExporterAddress;
+                worksheet.Range["$A$2:$F$2"].Merge();
+
+                IStyle exporterAdress = workbook.Styles.Add("exporterAdress");
+                exporterAdress.Font.Size = 15;
+                exporterAdress.Font.Bold = true;
+                exporterAdress.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                worksheet.Range["$A$2:$F$2"].CellStyle = exporterAdress;
+
+                worksheet.Range["A3"].Text = commercial.ExporterPhone;
+                worksheet.Range["$A$3:$F$3"].Merge();
+
+                worksheet.Range["$A$3:$F$3"].CellStyle = exporterAdress;
+
+                worksheet.Range["A4"].Text = string.Empty;
+                worksheet.Range["$A$4:$F$4"].Merge();
+
+                worksheet.Range["A5"].Text = "Commercial Invoice";
+                worksheet.Range["$A$5:$F$5"].Merge();
+
+                IStyle CustomTextStyle = workbook.Styles.Add("CustomTextStyle");
+                CustomTextStyle.Font.Size = 25;
+                CustomTextStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                CustomTextStyle.Font.Bold = true;
+                worksheet.Range["$A$5:$F$5"].CellStyle = CustomTextStyle;
+
+                worksheet.Range["A6"].Text = commercial.CustomerCompanyName;
+                worksheet.Range["$A$6:$B$6"].Merge();
+
+                IStyle CustomTextCustomerStyle = workbook.Styles.Add("CustomTextCustomerStyle");
+                CustomTextCustomerStyle.Font.Size = 15;
+                CustomTextCustomerStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
+                worksheet.Range["$A$6:$B$6"].CellStyle = CustomTextCustomerStyle;
+
+                worksheet.Range["C6"].Text = "Inv No.";
+
+                worksheet.Range["D6"].Text = commercial.PINo;
+                worksheet.Range["$D$6:$F$6"].Merge();
+
+                worksheet.Range["A7"].Text = commercial.CustomerAddress;
+                worksheet.Range["$A$7:$B$7"].Merge();
+
+                worksheet.Range["C7"].Text = "Date";
+
+                worksheet.Range["D7"].Text = commercial.OrderDate.ToString();
+                worksheet.Range["$D$7:$F$7"].Merge();
+
+                worksheet.Range["A8"].Text = commercial.CustomerGST;
+                worksheet.Range["$A$8:$B$8"].Merge();
+
+                worksheet.Range["C8"].Text = "IEC code";
+
+                worksheet.Range["D8"].Text = commercial.IECCode;
+                worksheet.Range["$D$8:$F$8"].Merge();
+
+                worksheet.Range["A9"].Text = string.Empty;
+                worksheet.Range["$A$9:$B$9"].Merge();
+
+                worksheet.Range["C9"].Text = "Name";
+
+                worksheet.Range["D9"].Text = commercial.CustomerName;
+                worksheet.Range["$D$9:$F$9"].Merge();
+
+                worksheet.Range["A9"].Text = string.Empty;
+                worksheet.Range["$A$9:$B$9"].Merge();
+
+                worksheet.Range["C10"].Text = "Contact No.";
+
+                worksheet.Range["D10"].Text = commercial.CustomerPhone;
+                worksheet.Range["$D$9:$F$9"].Merge();
+
+                IStyle headingLineItemStyle = workbook.Styles.Add("headingLineItemStyle");
+                headingLineItemStyle.Font.Size = 15;
+                headingLineItemStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
+
+                headingLineItemStyle.Font.Bold = true;
+
+                worksheet.AutofitRow(11);
+
+                worksheet.AutofitColumn(1);
+                worksheet.AutofitColumn(2);
+                worksheet.AutofitColumn(3);
+                worksheet.AutofitColumn(4);
+                worksheet.AutofitColumn(5);
+                worksheet.AutofitColumn(6);
+                worksheet.AutofitColumn(7);
+                worksheet.AutofitColumn(8);
+
+                worksheet.Range["A11"].Text = "Sr.No.";
+                worksheet.Range["B11"].Text = "Perticulates";
+                worksheet.Range["C11"].Text = "UP USD";
+                worksheet.Range["D11"].Text = "Unit";
+                worksheet.Range["E11"].Text = "Qty";
+                worksheet.Range["F11"].Text = "Total USD";
+                worksheet.Range["G11"].Text = "Total RMB";
+                worksheet.Range["H11"].Text = "RMB";
+
+
+                worksheet.Range["A11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["B11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["C11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["D11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["E11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["F11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["G11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["H11"].CellStyle = headingLineItemStyle;
+
+
+                int i = 1;
+                int rownum = 12;
+                foreach (var item in commercial.ProductList)
+                {
+                    worksheet.Range["A" + rownum + ""].Text = i.ToString();
+                    worksheet.Range["B" + rownum + ""].Text = item.Partiular;
+                    worksheet.Range["C" + rownum + ""].Text = item.UnitPrice.ToString();
+                    worksheet.Range["D" + rownum + ""].Text = item.Unit.ToString();
+                    worksheet.Range["E" + rownum + ""].Text = item.Quantity.ToString();
+                    worksheet.Range["F" + rownum + ""].Text = (item.UnitPrice * item.Quantity).ToString();
+                    worksheet.Range["G" + rownum + ""].Text = item.TotalRMB.ToString();
+                    worksheet.Range["H" + rownum + ""].Text = item.RMBUnitPrice.ToString();
+                    i++;
+                    rownum++;
+                }
+
+                decimal totalItems = 0;
+                decimal totalRMB = 0;
+
+                foreach (var item in productList)
+                {
+                    totalItems += item.TotalUSD;
+                    totalRMB += item.TotalRMB;
+                }
+
+                rownum += 10;
+
+                worksheet.Range["A" + rownum + ""].Text = "Total Rd Off";
+                worksheet.Range["$A$" + rownum + ":$E$" + rownum].Merge();
+
+                worksheet.Range["F" + rownum + ""].Text = "$" + totalItems.ToString();
+                worksheet.Range["G" + rownum + ""].Text = "¥" + totalRMB.ToString();
+
+                headingStyle.Font.Size = 17;
+                worksheet.Range["F" + rownum + ""].CellStyle = headingStyle;
+
+                headingStyle.Font.Size = 17;
+                worksheet.Range["G" + rownum + ""].CellStyle = headingStyle;
+
+                rownum += 2;
+
+                worksheet.Range["A" + rownum + ""].Text = "For, Exporter co. Name";
+                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+
+                PerfomaInvoice perfomaInvoice = new PerfomaInvoice()
+                {
+                    OrderId = id,
+                    PerfomaInvoiceReferece = commercial.PINo,
+                    CreatedDate = DateTime.Now,
+                    ModifiedDate = DateTime.Now
+                };
+
+                dbContext.PerfomaInvoices.Add(perfomaInvoice);
+                dbContext.SaveChanges();
+                int perfomaId = perfomaInvoice.Id;
+
+                foreach (var item in productList)
+                {
+                    PerfomaInvoiceItem perfomaInvoiceItem = new PerfomaInvoiceItem()
+                    {
+                        PerfomaInvoiceId = perfomaId,
+                        ProductId = item.ProductId,
+                        Dollar_ProductPrice = item.UnitPrice,
+                        RMB_ProductPrice = item.RMBUnitPrice,
+                        CreatedDate = DateTime.Now,
+                        ModifiedDate = DateTime.Now
+
+                    };
+
+                    dbContext.PerfomaInvoiceItems.Add(perfomaInvoiceItem);
+                }
+
+                dbContext.SaveChanges();
+
+                //Save the workbook to disk in xlsx format.
+                workbook.SaveAs(@"/Content/PerfomaInvoice/" + perfomaInvoice.OrderId + commercial.PINo + ".xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
+            }
+
+            return View();
+        }
+
+        #endregion
+
+        #region PackingList
+
+        public ActionResult GeneratePackingList(int? id)
+        {
+            ArityEntities dbContext = new ArityEntities();
+            List<PerfomaProductList> productList = new List<PerfomaProductList>();
+            int asIntegers = 0;
+            List<string> commercialList = dbContext.CommercialInvoices.Where(x => x.OrderId == id).Select(x => x.CommercialInvoiceReferece).ToList();
+            if (commercialList != null && commercialList.Count > 0)
+            {
+                List<string> maxPerfoma = commercialList.Select(x => x.Replace("CI", "")).ToList();
+                asIntegers = maxPerfoma.Select(s => int.Parse(s)).ToArray().Max();
+            }
+            var commercial = (from order in dbContext.Orders
+                              join user in dbContext.Users on order.CustomerId equals user.Id
+                              join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
+                              join product in dbContext.Products on lineItem.ProductId equals product.Id
+                              join exporterDetail in dbContext.Users on order.ExporterId equals exporterDetail.Id
+                              where order.Id == id && exporterDetail.UserType == 6
+                              select new PerformaInvoice()
+                              {
+                                  ExporterName = exporterDetail.CompanyName,
+                                  ExporterAddress = exporterDetail.Address,
+                                  ExporterPhone = exporterDetail.PhoneNumber,
+                                  CustomerCompanyName = user.CompanyName,
+                                  CustomerAddress = user.Address,
+                                  CustomerGST = user.GSTIN,
+                                  PINo = "CI" + (asIntegers + 1),
+                                  OrderDate = order.CreatedDate,
+                                  IECCode = user.IECCode,
+                                  CustomerName = user.FirstName + " " + user.LastName,
+                                  CustomerPhone = user.PhoneNumber
+                              }).FirstOrDefault();
+
+            productList = (from order in dbContext.Orders
+                           join user in dbContext.Users on order.CustomerId equals user.Id
+                           join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
+                           join product in dbContext.Products on lineItem.ProductId equals product.Id
+                           where order.Id == id
+                           select new
+                           {
+                               l = lineItem,
+                               p = product
+                           }).AsEnumerable().Select(x => new PerfomaProductList()
+                           {
+                               Partiular = x.p.English_Name,
+                               Quantity = x.l.Quantity,
+                               Unit = getEnumValue(Convert.ToInt32(x.p.Unit)),
+                               UnitPrice = x.l.DollarSalesPrice,
+                               TotalUSD = x.l.Quantity * x.l.DollarSalesPrice,
+                               ProductId = x.p.Id,
+                               RMBUnitPrice = x.l.RMBSalesPrice,
+                               TotalRMB = x.l.Quantity * x.l.RMBSalesPrice
+
+                           }).ToList();
+
+            commercial.ProductList = productList;
+
+
+            //Create an instance of ExcelEngine.
+            using (ExcelEngine excelEngine = new ExcelEngine())
+            {
+                //Set the default application version as Excel 2016.
+                excelEngine.Excel.DefaultVersion = ExcelVersion.Excel2016;
+
+                //Create a workbook with a worksheet.
+                IWorkbook workbook = excelEngine.Excel.Workbooks.Create(1);
+
+                //Access first worksheet from the workbook instance.
+                IWorksheet worksheet = workbook.Worksheets[0];
+
+                //Insert sample text into cell “A1”.
+                worksheet.Range["A1"].Text = commercial.ExporterName;
+                worksheet.Range["$A$1:$F$1"].Merge();
+
+                IStyle headingStyle = workbook.Styles.Add("HeadingStyle");
+                headingStyle.Font.Bold = true;
+                headingStyle.Font.Size = 20;
+                headingStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                worksheet.Range["$A$1:$F$1"].CellStyle = headingStyle;
+
+                worksheet.Range["A2"].Text = commercial.ExporterAddress;
+                worksheet.Range["$A$2:$F$2"].Merge();
+
+                IStyle exporterAdress = workbook.Styles.Add("exporterAdress");
+                exporterAdress.Font.Size = 15;
+                exporterAdress.Font.Bold = true;
+                exporterAdress.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                worksheet.Range["$A$2:$F$2"].CellStyle = exporterAdress;
+
+                worksheet.Range["A3"].Text = commercial.ExporterPhone;
+                worksheet.Range["$A$3:$F$3"].Merge();
+
+                worksheet.Range["$A$3:$F$3"].CellStyle = exporterAdress;
+
+                worksheet.Range["A4"].Text = string.Empty;
+                worksheet.Range["$A$4:$F$4"].Merge();
+
+                worksheet.Range["A5"].Text = "Packing List";
+                worksheet.Range["$A$5:$F$5"].Merge();
+
+                IStyle CustomTextStyle = workbook.Styles.Add("CustomTextStyle");
+                CustomTextStyle.Font.Size = 25;
+                CustomTextStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                CustomTextStyle.Font.Bold = true;
+                worksheet.Range["$A$5:$F$5"].CellStyle = CustomTextStyle;
+
+                worksheet.Range["A6"].Text = commercial.CustomerCompanyName;
+                worksheet.Range["$A$6:$B$6"].Merge();
+
+                IStyle CustomTextCustomerStyle = workbook.Styles.Add("CustomTextCustomerStyle");
+                CustomTextCustomerStyle.Font.Size = 15;
+                CustomTextCustomerStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
+                worksheet.Range["$A$6:$B$6"].CellStyle = CustomTextCustomerStyle;
+
+                worksheet.Range["C6"].Text = "Inv No.";
+
+                worksheet.Range["D6"].Text = commercial.PINo;
+                worksheet.Range["$D$6:$F$6"].Merge();
+
+                worksheet.Range["A7"].Text = commercial.CustomerAddress;
+                worksheet.Range["$A$7:$B$7"].Merge();
+
+                worksheet.Range["C7"].Text = "Date";
+
+                worksheet.Range["D7"].Text = commercial.OrderDate.ToString();
+                worksheet.Range["$D$7:$F$7"].Merge();
+
+                worksheet.Range["A8"].Text = commercial.CustomerGST;
+                worksheet.Range["$A$8:$B$8"].Merge();
+
+                worksheet.Range["C8"].Text = "IEC code";
+
+                worksheet.Range["D8"].Text = commercial.IECCode;
+                worksheet.Range["$D$8:$F$8"].Merge();
+
+                worksheet.Range["A9"].Text = string.Empty;
+                worksheet.Range["$A$9:$B$9"].Merge();
+
+                worksheet.Range["C9"].Text = "Name";
+
+                worksheet.Range["D9"].Text = commercial.CustomerName;
+                worksheet.Range["$D$9:$F$9"].Merge();
+
+                worksheet.Range["A9"].Text = string.Empty;
+                worksheet.Range["$A$9:$B$9"].Merge();
+
+                worksheet.Range["C10"].Text = "Contact No.";
+
+                worksheet.Range["D10"].Text = commercial.CustomerPhone;
+                worksheet.Range["$D$9:$F$9"].Merge();
+
+                IStyle headingLineItemStyle = workbook.Styles.Add("headingLineItemStyle");
+                headingLineItemStyle.Font.Size = 15;
+                headingLineItemStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
+
+                headingLineItemStyle.Font.Bold = true;
+
+                worksheet.AutofitRow(11);
+
+                worksheet.AutofitColumn(1);
+                worksheet.AutofitColumn(2);
+                worksheet.AutofitColumn(3);
+                worksheet.AutofitColumn(4);
+                worksheet.AutofitColumn(5);
+                worksheet.AutofitColumn(6);
+                worksheet.AutofitColumn(7);
+                worksheet.AutofitColumn(8);
+
+                worksheet.Range["A11"].Text = "Sr.No.";
+                worksheet.Range["B11"].Text = "Perticulates";
+                worksheet.Range["C11"].Text = "UP USD";
+                worksheet.Range["D11"].Text = "Unit";
+                worksheet.Range["E11"].Text = "Qty";
+                worksheet.Range["F11"].Text = "Total USD";
+                worksheet.Range["G11"].Text = "Total RMB";
+                worksheet.Range["H11"].Text = "RMB";
+
+
+                worksheet.Range["A11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["B11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["C11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["D11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["E11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["F11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["G11"].CellStyle = headingLineItemStyle;
+                worksheet.Range["H11"].CellStyle = headingLineItemStyle;
+
+
+                int i = 1;
+                int rownum = 12;
+                foreach (var item in commercial.ProductList)
+                {
+                    worksheet.Range["A" + rownum + ""].Text = i.ToString();
+                    worksheet.Range["B" + rownum + ""].Text = item.Partiular;
+                    worksheet.Range["C" + rownum + ""].Text = item.UnitPrice.ToString();
+                    worksheet.Range["D" + rownum + ""].Text = item.Unit.ToString();
+                    worksheet.Range["E" + rownum + ""].Text = item.Quantity.ToString();
+                    worksheet.Range["F" + rownum + ""].Text = (item.UnitPrice * item.Quantity).ToString();
+                    worksheet.Range["G" + rownum + ""].Text = item.TotalRMB.ToString();
+                    worksheet.Range["H" + rownum + ""].Text = item.RMBUnitPrice.ToString();
+                    i++;
+                    rownum++;
+                }
+
+                decimal totalItems = 0;
+                decimal totalRMB = 0;
+
+                foreach (var item in productList)
+                {
+                    totalItems += item.TotalUSD;
+                    totalRMB += item.TotalRMB;
+                }
+
+                rownum += 10;
+
+                worksheet.Range["A" + rownum + ""].Text = "Total Rd Off";
+                worksheet.Range["$A$" + rownum + ":$E$" + rownum].Merge();
+
+                worksheet.Range["F" + rownum + ""].Text = "$" + totalItems.ToString();
+                worksheet.Range["G" + rownum + ""].Text = "¥" + totalRMB.ToString();
+
+                headingStyle.Font.Size = 17;
+                worksheet.Range["F" + rownum + ""].CellStyle = headingStyle;
+
+                headingStyle.Font.Size = 17;
+                worksheet.Range["G" + rownum + ""].CellStyle = headingStyle;
+
+                rownum += 2;
+
+                worksheet.Range["A" + rownum + ""].Text = "For, Exporter co. Name";
+                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+
+                PerfomaInvoice perfomaInvoice = new PerfomaInvoice()
+                {
+                    OrderId = id,
+                    PerfomaInvoiceReferece = commercial.PINo,
+                    CreatedDate = DateTime.Now,
+                    ModifiedDate = DateTime.Now
+                };
+
+                dbContext.PerfomaInvoices.Add(perfomaInvoice);
+                dbContext.SaveChanges();
+                int perfomaId = perfomaInvoice.Id;
+
+                foreach (var item in productList)
+                {
+                    PerfomaInvoiceItem perfomaInvoiceItem = new PerfomaInvoiceItem()
+                    {
+                        PerfomaInvoiceId = perfomaId,
+                        ProductId = item.ProductId,
+                        Dollar_ProductPrice = item.UnitPrice,
+                        RMB_ProductPrice = item.RMBUnitPrice,
+                        CreatedDate = DateTime.Now,
+                        ModifiedDate = DateTime.Now
+
+                    };
+
+                    dbContext.PerfomaInvoiceItems.Add(perfomaInvoiceItem);
+                }
+
+                dbContext.SaveChanges();
+
+                //Save the workbook to disk in xlsx format.
+                workbook.SaveAs(@"/Content/PerfomaInvoice/" + perfomaInvoice.OrderId + commercial.PINo + ".xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
+            }
+
+            return View();
+        }
+
+        #endregion
     }
 }
