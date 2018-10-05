@@ -12,7 +12,7 @@ using AritySystems.Models;
 
 namespace AritySystems.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     public class UserController : Controller
     {
 
@@ -29,8 +29,17 @@ namespace AritySystems.Controllers
             string returnURL = string.Empty;
             try
             {
+                if (Request.Cookies["UserType"] != null)
+                {
+                    var type = Convert.ToInt32(Request.Cookies["UserType"].Value);
+                    if (type == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
+                        return RedirectToAction("orders", "order");
+                    else if (type == (int)AritySystems.Common.EnumHelpers.UserType.Supplier)
+                        return RedirectToAction("suppliersorder", "order");
+                    return RedirectToAction("orderlist", "order");
+                }
                 // We do not want to use any existing identity information  
-                EnsureLoggedOut();
+                //EnsureLoggedOut();
                 // Store the originating URL so we can attach it to a form field  
                 LoginModel objLogin = new LoginModel();
                 objLogin.ReturnURL = ReturnUrl;
@@ -46,28 +55,33 @@ namespace AritySystems.Controllers
         private void EnsureLoggedOut()
         {
             // If the request is (still) marked as authenticated we send the user to the logout action  
-            if (Request.IsAuthenticated)
-                Logout();
+            // if (Request.IsAuthenticated)
+            Logout();
         }
 
         //POST: Logout  
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
         public ActionResult Logout()
         {
             try
             {
-                // First we clean the authentication ticket like always  
-                //required NameSpace: using System.Web.Security;  
-                FormsAuthentication.SignOut();
+                //// First we clean the authentication ticket like always  
+                ////required NameSpace: using System.Web.Security;  
+                //FormsAuthentication.SignOut();
 
-                // Second we clear the principal to ensure the user does not retain any authentication  
-                //required NameSpace: using System.Security.Principal;  
-                HttpContext.User = new GenericPrincipal(new GenericIdentity(string.Empty), null);
+                //// Second we clear the principal to ensure the user does not retain any authentication  
+                ////required NameSpace: using System.Security.Principal;  
+                //HttpContext.User = new GenericPrincipal(new GenericIdentity(string.Empty), null);
 
-                Session.Clear();
-                System.Web.HttpContext.Current.Session.RemoveAll();
-
+                //Session.Clear();
+                //System.Web.HttpContext.Current.Session.RemoveAll();
+                if (Request.Cookies["UserId"] != null)
+                    Response.Cookies["UserId"].Expires = DateTime.Now.AddDays(-1);
+                if (Request.Cookies["UserType"] != null)
+                    Response.Cookies["UserType"].Expires = DateTime.Now.AddDays(-1);
+                if (Request.Cookies["Username"] != null)
+                    Response.Cookies["Username"].Expires = DateTime.Now.AddDays(-1);
                 // Last we redirect to a controller/action that requires authentication to ensure a redirect takes place  
                 // this clears the Request.IsAuthenticated flag since this triggers a new request  
                 return RedirectToAction("Login", "User");
@@ -96,10 +110,22 @@ namespace AritySystems.Controllers
                     if (userInfo != null && userInfo.IsActive == true)
                     {
                         FormsAuthentication.SetAuthCookie(entity.Email, true);
-                        //Set A Unique name in session  
-                        Session["Username"] = userInfo.EmailId;
-                        Session["UserType"] = userInfo.UserType;
-                        Session["UserId"] = userInfo.Id;
+                        //Set A Unique name in cookie  
+                        var Username = new HttpCookie("Username");
+                        Username.Value = userInfo.EmailId;
+                        Username.Expires = DateTime.Now.AddDays(7d);
+                        var UserType = new HttpCookie("UserType");
+                        UserType.Value = userInfo.UserType.ToString();
+                        UserType.Expires = DateTime.Now.AddDays(7d);
+                        var UserId = new HttpCookie("UserId");
+                        UserId.Value = userInfo.Id.ToString();
+                        UserId.Expires = DateTime.Now.AddDays(7d);
+                        Response.Cookies.Add(Username);
+                        Response.Cookies.Add(UserType);
+                        Response.Cookies.Add(UserId);
+                        //Session["Username"] = userInfo.EmailId;
+                        //Session["UserType"] = userInfo.UserType;
+                        //Session["UserId"] = userInfo.Id;
                         if (!string.IsNullOrEmpty(entity.ReturnURL))
                             return RedirectToAction(entity.ReturnURL);
                         if (userInfo.UserType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
@@ -130,7 +156,7 @@ namespace AritySystems.Controllers
             if (id > 0)
             {
                 user = dataContext.Users.Where(x => x.Id == id).FirstOrDefault();
-                
+
                 if (user != null)
                 {
                     ViewBag.userId = user.Id;

@@ -6,10 +6,9 @@ using AritySystems.Data;
 using System.Collections.Generic;
 using Syncfusion.XlsIO;
 
-
 namespace AritySystems.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     public class OrderController : Controller
     {
 
@@ -39,9 +38,13 @@ namespace AritySystems.Controllers
         public JsonResult GetOrderList()
         {
             ArityEntities objDb = new ArityEntities();
-            int loggedInId = (int)Session["UserId"];
+            if (Request.Cookies["UserId"] == null)
+                return Json(new { data = "" }, JsonRequestBehavior.AllowGet);
+            int loggedInId = Convert.ToInt32(Request.Cookies["UserId"].Value);
+            int type = Convert.ToInt32(Request.Cookies["UserType"].Value);
+
             var orderItems = objDb.Orders.OrderByDescending(_ => _.CreatedDate).AsQueryable();
-            if (Session["UserType"] != null && ((int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Customer || (int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Supplier))
+            if (type == (int)AritySystems.Common.EnumHelpers.UserType.Customer || type == (int)AritySystems.Common.EnumHelpers.UserType.Supplier)
                 orderItems = orderItems.Where(_ => _.CustomerId == loggedInId).AsQueryable();
             var orderLst = (from order in orderItems.ToList()
                             select new
@@ -70,7 +73,7 @@ namespace AritySystems.Controllers
             ArityEntities objDb = new ArityEntities();
             var orders = objDb.Orders.Where(_ => _.Id == id).FirstOrDefault();
             ViewBag.Sales_Person_Id = orders != null && (orders.Sales_Person_Id ?? 0) > 0 ? new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Sales), "Id", "FullName", orders.Sales_Person_Id) : new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Sales), "Id", "FullName");
-            ViewBag.ExporterList = orders != null && (orders.ExporterId ?? 0) > 0 ? new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Exporter), "Id", "FullName", orders.ExporterId) : new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Exporter), "Id", "FullName");
+            ViewBag.ExporterList = orders != null && (orders.ExporterId ?? 0) > 0 ? new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Exporter), "Id", "CompanyName", orders.ExporterId) : new SelectList(GetUerList((int)Common.EnumHelpers.UserType.Exporter), "Id", "CompanyName");
             return View(orders);
         }
 
@@ -80,7 +83,8 @@ namespace AritySystems.Controllers
             return objDb.Users.Where(_ => (_.UserType ?? 0) == Usertype).Select(_ => new UserModel
             {
                 Id = _.Id,
-                FullName = _.FirstName + " " + _.LastName
+                FullName = _.FirstName + " " + _.LastName,
+                CompanyName = _.CompanyName
             }).ToList();
         }
 
@@ -433,7 +437,11 @@ namespace AritySystems.Controllers
             ArityEntities objDb = new ArityEntities();
             List<KeyValuePair<int, int>> lineItem = new List<KeyValuePair<int, int>>();
             ViewBag.Products = new SelectList(objDb.Products.Where(_ => _.Parent_Id == 0).ToList(), "Id", "English_Name");
-            int loggedInId = (int)Session["UserId"];
+            if (Request.Cookies["UserId"] == null)
+            {
+                Response.Redirect("/user/login");
+            }
+            int loggedInId = Convert.ToInt32(Request.Cookies["UserId"].Value);
             var userDetails = objDb.Users.Where(_ => _.Id == loggedInId).FirstOrDefault();
             if (fc != null)
             {
@@ -447,7 +455,7 @@ namespace AritySystems.Controllers
                     }
                     if (lineItem.Any())
                     {
-                        var order = objDb.Orders.Add(new Order() { CustomerId = userDetails.Id, CreatedDate = DateTime.Now, Prefix = userDetails.Prefix, Status = (int)AritySystems.Common.EnumHelpers.OrderStatus.Draft, Internal_status = (int)AritySystems.Common.EnumHelpers.OrderStatus.Draft,TermsandCondition= "Above prices are based on X - Guzhen and in USD ,Payment terms :  50 % Advance balance Before Delivery ,Delivery period : 15 days after received Advance ,Bank Details for remittance: 	" });
+                        var order = objDb.Orders.Add(new Order() { CustomerId = userDetails.Id, CreatedDate = DateTime.Now, Prefix = userDetails.Prefix, Status = (int)AritySystems.Common.EnumHelpers.OrderStatus.Draft, Internal_status = (int)AritySystems.Common.EnumHelpers.OrderStatus.Draft, TermsandCondition = "Above prices are based on X - Guzhen and in USD ,Payment terms :  50 % Advance balance Before Delivery ,Delivery period : 15 days after received Advance ,Bank Details for remittance: 	" });
                         foreach (var item in lineItem.Where(_ => _.Value > 0))
                         {
                             var prodcut = objDb.Products.Where(_ => _.Id == item.Key).FirstOrDefault();
@@ -903,7 +911,11 @@ namespace AritySystems.Controllers
         ///// <returns></returns>
         public JsonResult GetSupplierOrderList()
         {
-            var loggedInId = (int)Session["UserId"];
+            if (Request.Cookies["UserId"] == null)
+            {
+                Response.Redirect("/user/login");
+            }
+            var loggedInId = Convert.ToInt32(Request.Cookies["UserId"].Value);
             var objDb = new ArityEntities();
             var orders = (from supplierorder in objDb.OrderLineItem_Supplier_Mapping.ToList()
                           join supplieritem in objDb.Supplier_Assigned_OrderLineItem.ToList() on supplierorder.Id equals supplieritem.OrderSupplierMapId
@@ -1091,7 +1103,17 @@ namespace AritySystems.Controllers
         {
             var dbContext = new ArityEntities();
             ViewBag.OrderID = id ?? 0;
-            ViewBag.OrderCI = new SelectList(dbContext.CommercialInvoices.Where(_ => _.OrderId == id).ToList(), "Id", "CommercialInvoiceReferece");
+            var orderCIPI = dbContext.CommercialInvoices.Where(_ => _.OrderId == id).Select(_ => new OrderCIPIModel()
+            {
+                Id = _.Id,
+                Name = _.CommercialInvoiceReferece
+            }).ToList();
+            orderCIPI = orderCIPI.Union(dbContext.PerfomaInvoices.Where(_ => _.OrderId == id).Select(_ => new OrderCIPIModel()
+            {
+                Id = _.Id,
+                Name = _.PerfomaInvoiceReferece
+            }).ToList()).ToList();
+            ViewBag.OrderCI = new SelectList(orderCIPI, "Id", "Name");
             return View();
         }
 
@@ -1128,6 +1150,21 @@ namespace AritySystems.Controllers
                                 RMBPrice = _.RMB_Price.HasValue ? Math.Round(Convert.ToDouble(_.RMB_Price.Value), 2) : 0.00,
                                 Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy h:mm") : null
                             }).ToList();
+
+            ammounts = ammounts.Union((from _ in dbContext.Accounts.ToList()
+                                       join com in dbContext.PerfomaInvoices on _.CommercialId equals com.Id
+                                       join order in dbContext.Orders on _.OrderId equals order.Id
+                                       join user in dbContext.Users on order.User.Id equals user.Id
+                                       where _.OrderId == id
+                                       select new
+                                       {
+                                           CIId = _.Id,
+                                           ShippingMark = order.Prefix,
+                                           CI = com.PerfomaInvoiceReferece,
+                                           DollerPrice = _.Dollar_Price.HasValue ? Math.Round(Convert.ToDouble(_.Dollar_Price.Value), 2) : 0.00,
+                                           RMBPrice = _.RMB_Price.HasValue ? Math.Round(Convert.ToDouble(_.RMB_Price.Value), 2) : 0.00,
+                                           Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy h:mm") : null
+                                       }).ToList()).ToList();
             return Json(new { data = ammounts }, JsonRequestBehavior.AllowGet);
         }
 
@@ -1177,25 +1214,25 @@ namespace AritySystems.Controllers
                 asIntegers = maxPerfoma.Select(s => int.Parse(s)).ToArray().Max();
             }
             var commercial = (from order in dbContext.Orders
-                           join user in dbContext.Users on order.CustomerId equals user.Id
-                           join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
-                           join product in dbContext.Products on lineItem.ProductId equals product.Id
-                           join exporterDetail in dbContext.Users on order.ExporterId equals exporterDetail.Id
-                           where order.Id == id && exporterDetail.UserType == 6
-                           select new PerformaInvoice()
-                           {
-                               ExporterName = exporterDetail.CompanyName,
-                               ExporterAddress = exporterDetail.Address,
-                               ExporterPhone = exporterDetail.PhoneNumber,
-                               CustomerCompanyName = user.CompanyName,
-                               CustomerAddress = user.Address,
-                               CustomerGST = user.GSTIN,
-                               PINo = "CI" + (asIntegers + 1),
-                               OrderDate = order.CreatedDate,
-                               IECCode = user.IECCode,
-                               CustomerName = user.FirstName + " " + user.LastName,
-                               CustomerPhone = user.PhoneNumber
-                           }).FirstOrDefault();
+                              join user in dbContext.Users on order.CustomerId equals user.Id
+                              join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
+                              join product in dbContext.Products on lineItem.ProductId equals product.Id
+                              join exporterDetail in dbContext.Users on order.ExporterId equals exporterDetail.Id
+                              where order.Id == id && exporterDetail.UserType == 6
+                              select new PerformaInvoice()
+                              {
+                                  ExporterName = exporterDetail.CompanyName,
+                                  ExporterAddress = exporterDetail.Address,
+                                  ExporterPhone = exporterDetail.PhoneNumber,
+                                  CustomerCompanyName = user.CompanyName,
+                                  CustomerAddress = user.Address,
+                                  CustomerGST = user.GSTIN,
+                                  PINo = "CI" + (asIntegers + 1),
+                                  OrderDate = order.CreatedDate,
+                                  IECCode = user.IECCode,
+                                  CustomerName = user.FirstName + " " + user.LastName,
+                                  CustomerPhone = user.PhoneNumber
+                              }).FirstOrDefault();
 
             productList = (from order in dbContext.Orders
                            join user in dbContext.Users on order.CustomerId equals user.Id

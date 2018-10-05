@@ -1,6 +1,10 @@
 ﻿@{
     ViewBag.Title = "Account";
-    var userType = (Session["UserType"] != null) ? (int)Session["UserType"] : 0;
+    if (Request.Cookies["UserType"] == null)
+    {
+        Response.Redirect("/user/login");
+    }
+    var userType = Convert.ToInt32(Request.Cookies["UserType"].Value);
 }
 
 <style>
@@ -21,12 +25,7 @@
         <h1><i class="fa fa-shopping-cart"></i> Accounts</h1>
     </div>
     <div class="row">
-        @if (Session["UserType"] != null && (int)Session["UserType"] == (int)AritySystems.Common.EnumHelpers.UserType.Customer)
-        {
-            <div class="text-right" style="margin-bottom:10px;">
-                <button class="btn btn-primary"><i class="fa fa-money"></i> Add Payment</button>
-            </div>
-        }
+        
         <table id="example" class="display" style="width:100%">
             <thead>
                 <tr>

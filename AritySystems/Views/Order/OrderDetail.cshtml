@@ -3,7 +3,11 @@
 @{
     ViewBag.Title = "Order Detail";
     var itemCounter = 0;
-    var userType = (Session["UserType"] != null) ? (int)Session["UserType"] : 0;
+    if (Request.Cookies["UserType"] == null)
+    {
+        Response.Redirect("/user/login");
+    }
+    var userType = Convert.ToInt32(Request.Cookies["UserType"].Value);
     var exporter = Model.ExporterId != null ? Model.ExporterId : 0;
 }
 
@@ -69,11 +73,11 @@
         <div class="col-md-4" style="text-align:right">
             @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
             {
-                <div  style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please select exporter to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PI</button></div>}
-                <div  style="display:inline-block;">
-                    <button class="btn btn-primary" onclick=" location.href='@(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin? Url.Action("orders","order") :Url.Action("orderlist","order"))';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-                </div>
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please select exporter to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PI</button></div>}
+            <div style="display:inline-block;">
+                <button class="btn btn-primary" onclick=" location.href='@(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin? Url.Action("orders","order") :Url.Action("orderlist","order"))';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
             </div>
+        </div>
     </div>
     <div class="row">
         <hr class="col-md-12" style="margin-bottom:25px;" />

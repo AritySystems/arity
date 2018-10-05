@@ -2,7 +2,11 @@
 @model Order
 @{
     ViewBag.Title = "Order Details";
-    var userType = (Session["UserType"] != null) ? (int)Session["UserType"] : 0;
+    if (Request.Cookies["UserType"] == null)
+    {
+        Response.Redirect("/user/login");
+    }
+    var userType = Convert.ToInt32(Request.Cookies["UserType"].Value);
     var exporter = Model.ExporterId != null ? Model.ExporterId : 0;
 }
 <style>

@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace AritySystems.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     public class ProductController : Controller
     {
         public ActionResult Create(int? Id)
