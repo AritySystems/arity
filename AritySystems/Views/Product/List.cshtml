@@ -42,19 +42,43 @@
         function format(d) {
             if (d.ChildProducts.length <= 0)
                 return '<div class="child-heading">No Sub products found</div>';
-            var html = '<div class="child-heading">Sub Prodcuts of ' + d.English_Name + '</div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;border: 1px solid #eee;margin-bottom: 2%;"><tr><th>Chinese Name</th><th>English Name</th><th>MOQ</th><th>Dollar Price</th><th>RMB Price</th><th></th></tr>';
+            var html = '<div class="child-heading">Sub Prodcuts of ' + d.English_Name + '</div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;border: 1px solid #eee;margin-bottom: 2%;"><tr><th>Chinese Name</th><th>English Name</th><th>MOQ</th><th>Dollar Price</th><th>RMB Price</th><th>BOM</th><th></th><th></th></tr>';
             $.each(d.ChildProducts, function (index, data) {
                 html += '<tr><td>' + data.Chinese_Name + '</td>' +
                     '<td>' + data.English_Name + '</td>' +
                     '<td>' + data.Quantity + '</td>' +
                     '<td>' + data.Dollar_Price + '</td>' +
                     '<td>' + data.RMB_Price + '</td>' +
+                    '<td> <input type="text" id = "' + data.Id + '" value = ' + data.BOM + '>' + '</td>' +
+                    //'<td> <input type="button" value = Update BOM ' + data.BOM + '>' + '</td>' +
+                    '<td> <input type="button"  value = "Update BOM" class = "UBOM" id="updateBOM" onclick=updateBOM(' + d.Id + "," + data.Id + "," + $("#txtBOM").val() + ')>' + '</td > ' +
                     '<td><a href="/product/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a><a href="/product/Delete/' + data.Id + ' id = deleteProduct"><i style="color:red;" class="fa fa-times"></i></a></td>' +
                     '</tr>';
             });
             html += '</table>';
             return html;
         }
+
+        function updateBOM(parentId, childId, BOM) {
+            currId = '#' + childId
+            BOM = $(currId).val()
+               $.ajax({
+                url: "@Url.Action("UpdateBOM", "Product")",
+                type: "POST",
+                   data: '{ parentId:' + parentId + "," + "childId:" + childId + "," + "BOM:" + BOM + "}",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+            }).done(function (response)
+            {
+                alert('Data Updated SuccessFully')
+            }).fail(function (jqXHR, textStatus) {
+                alert('Error Occured, Please try Again Later')
+            });
+
+            alert(data);
+        }
+
+
 
         $(document).ready(function () {
             var table = $('#example').DataTable({
