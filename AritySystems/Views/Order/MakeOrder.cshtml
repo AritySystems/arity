@@ -122,6 +122,7 @@
     });
 
     $("#btnAddToCart").on("click", function () {
+        $(this).html("<i class='fa fa-spinner fa-pulse fa-fw'></i> Adding into Cart...")
         $.ajax({
             url: "@Url.Action("AddProductToCart","Order")",
             method: "POST",
@@ -135,14 +136,13 @@
                         window.productCounter = window.productCounter + 1;
                     }
                 });
+                $("#btnAddToCart").html("<i class='fa fa-check-circle'></i> Added");
                 CountTotal();
-                //var OrderTotal = 0;
-                //$(".itemTotal").each(function () {
-                //    OrderTotal = OrderTotal + parseInt($(this).text().replace('$', ''));
-                //});
-                //$(".order-total").html('$' + OrderTotal);
                 CountCBMandWeight();
                 $("#lineItem").show();
+                setTimeout(function () {
+                    $("#btnAddToCart").html("<i class='fa fa-cart-plus'></i> Add To Cart");
+                }, 1000);
             }
         }).fail(function (jqXHR, textStatus) {
             console.log("Request failed: " + textStatus);

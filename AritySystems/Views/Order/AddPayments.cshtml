@@ -5,7 +5,7 @@
 }
 <style>
     .error {
-    color:red;
+        color: red;
     }
 </style>
 <div class="container">
@@ -26,8 +26,17 @@
             </div>
             <div class="col-md-8 ammount-section" style="margin-bottom:20px;">
                 <div class="form-group">
-                    <label class="">Select Order CI</label>
-                    @Html.DropDownList("CIId", ViewBag.OrderCI as SelectList, "-- Select CI--", new { @class = "form-control" })
+                    <label class="">Select Order PI/CI/Supplier</label>
+                    @if (ViewBag.OrderCI != null)
+                    {
+                        <select id="CIId" class="form-control">
+                            <option value=""> -- Select PI/CI/Supplier --</option>
+                            @foreach (var item in (List<AritySystems.Models.OrderCIPIModel>)ViewBag.OrderCI)
+                            {
+                                <option value="@item.Id" data-type="@item.Type">@item.Name</option>
+                            }
+                        </select>
+                    }
                 </div>
                 <div class="form-group">
                     <label class=""><i class="fa fa-usd"></i> Ammount</label>
@@ -45,12 +54,12 @@
         </div>
         <div class="row">
             <h3 style="display:block;">Received Amounts</h3>
-            <hr style="display:block;"/>
+            <hr style="display:block;" />
             <table id="ammounts" class="display" style="width:100%">
                 <thead>
                     <tr>
                         <th style="width:15%">Shipping Mark</th>
-                        <th style="width:15%">CI</th>
+                        <th style="width:15%">PI / CI / Supplier</th>
                         <th style="width:10%">Ammount (<i class="fa fa-usd"></i>)</th>
                         <th style="width:10%">Ammount (<i class="fa fa-jpy"></i>)</th>
                         <th style="width:10%">Payment Date</th>
@@ -93,7 +102,7 @@
                     }
                 });
                 if ($("#CIId :selected").val() == null || $("#CIId :selected").val() == "") {
-                    $("#CIId").after("<span class='error'>Please select CI</span>");
+                    $("#CIId").after("<span class='error'>Please select PI/CI/Supplier</span>");
                     isSubmit = false;
                 }
                 if (isSubmit) {
@@ -101,7 +110,7 @@
                     $.ajax({
                         url: "@Url.Action("AddPaymentForOrder","Order")",
                         method: "POST",
-                        data: { id: @orderid, ciId: $("#CIId").val(), dAmmount: parseFloat($("#DollerAmmount").val()), rAmmount: parseFloat($("#RMBAmmount").val()) },
+                        data: { id: @orderid, ciId: $("#CIId").val(), dAmmount: parseFloat($("#DollerAmmount").val()), rAmmount: parseFloat($("#RMBAmmount").val()), type: $("#CIId option:selected").attr("data-type") },
                         dataType: "json"
                     }).done(function (response) {
                         if (response != null) {

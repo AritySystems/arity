@@ -407,7 +407,7 @@ namespace AritySystems.Controllers
             items.Add(product);
             items.AddRange(GetChildProducts(id));
             items.ForEach(_ => _.MOQ = qty);
-            items.Where(_ => _.ParentIds != null && !string.IsNullOrEmpty(_.ParentIds)).ToList().ForEach(_ => { _.MOQ = product.BOM != null ? (_.MOQ * product.BOM ?? 0) : _.MOQ; });
+            items.Where(_ => _.ParentIds != null && !string.IsNullOrEmpty(_.ParentIds)).ToList().ForEach(_ => { _.MOQ = (_.BOM != null && _.BOM > 0 ? _.MOQ * (_.BOM ?? 0) : _.MOQ); });
             var productList = (from lst in items
                                select new Product
                                {
@@ -880,15 +880,15 @@ namespace AritySystems.Controllers
 
             foreach (var data in suppliersCsv)
             {
-                var ids = data.suppliers!= null && !string.IsNullOrEmpty(data.suppliers) ? data.suppliers.Split(new[] { ',' })
+                var ids = data.suppliers != null && !string.IsNullOrEmpty(data.suppliers) ? data.suppliers.Split(new[] { ',' })
                               .Select(x => int.Parse(x))
                               .ToArray() : null;
-                suppliers = ids!= null ?(from u in dataContext.Users.ToList().Where(x => ids.Contains(x.Id) && x.UserType == (int)Common.EnumHelpers.UserType.Supplier)
-                             select new SelectListItem
-                             {
-                                 Text = u.Id.ToString(),
-                                 Value = u.CompanyName
-                             }).ToList() : suppliers;
+                suppliers = ids != null ? (from u in dataContext.Users.ToList().Where(x => ids.Contains(x.Id) && x.UserType == (int)Common.EnumHelpers.UserType.Supplier)
+                                           select new SelectListItem
+                                           {
+                                               Text = u.Id.ToString(),
+                                               Value = u.CompanyName
+                                           }).ToList() : suppliers;
 
             }
 
@@ -1053,7 +1053,8 @@ namespace AritySystems.Controllers
                                                Quantity = childProduct.Quantity,
                                                RMB_Price = childProduct.RMB_Price,
                                                Unit = getEnumValue(Convert.ToInt32(childProduct.Unit)),
-                                               ParentIds = childProduct.ParentIds
+                                               ParentIds = childProduct.ParentIds,
+                                               BOM = GetBOMForParent(parentId, childProduct.Id)
                                            }).FirstOrDefault();
 
 
@@ -1068,6 +1069,15 @@ namespace AritySystems.Controllers
             return childProductList;
         }
 
+        private decimal GetBOMForParent(int parentId, int childId)
+        {
+            ArityEntities dataContext = new ArityEntities();
+            var data = dataContext.BOM_Mapper.Where(x => x.ProductId == parentId && x.ChildId == childId).Select(x => x.BOM).FirstOrDefault();
+
+            data = data != null ? data : 0;
+
+            return data.Value;
+        }
         public JsonResult AssignSalesPersonToOrder(int id, int salesPerson)
         {
             var dbContext = new ArityEntities();
@@ -1102,27 +1112,48 @@ namespace AritySystems.Controllers
         {
             var dbContext = new ArityEntities();
             ViewBag.OrderID = id ?? 0;
-            var orderCIPI = dbContext.CommercialInvoices.Where(_ => _.OrderId == id).Select(_ => new OrderCIPIModel()
+            var orderCIPI = dbContext.PerfomaInvoices.Where(_ => _.OrderId == id).Select(_ => new OrderCIPIModel()
             {
                 Id = _.Id,
-                Name = _.CommercialInvoiceReferece
+                Name = _.PerfomaInvoiceReferece,
+                Type = "PI"
             }).ToList();
-            orderCIPI = orderCIPI.Union(dbContext.PerfomaInvoices.Where(_ => _.OrderId == id).Select(_ => new OrderCIPIModel()
+            orderCIPI = orderCIPI.Union(dbContext.CommercialInvoices.Where(_ => _.OrderId == id).Select(_ => new OrderCIPIModel()
             {
                 Id = _.Id,
-                Name = _.PerfomaInvoiceReferece
+                Name = _.CommercialInvoiceReferece,
+                Type = "Com"
             }).ToList()).ToList();
-            ViewBag.OrderCI = new SelectList(orderCIPI, "Id", "Name");
+            orderCIPI = orderCIPI.Union(
+                (from user in dbContext.Users.ToList()
+                 join supplier in dbContext.Supplier_Assigned_OrderLineItem on user.Id equals supplier.SupplierId
+                 where supplier.OrderSupplierMapId == id
+                 select new OrderCIPIModel()
+                 {
+                     Id = user.Id,
+                     Name = user.CompanyName,
+                     Type = "Supplier"
+                 }).ToList()).ToList();
+            ViewBag.OrderCI = orderCIPI;
             return View();
         }
 
         [HttpPost]
-        public ActionResult AddPaymentForOrder(int id, int ciId, decimal dAmmount, decimal rAmmount)
+        public ActionResult AddPaymentForOrder(int id, int ciId, decimal dAmmount, decimal rAmmount, string type)
         {
             var dbContext = new ArityEntities();
             try
             {
-                dbContext.Accounts.Add(new Data.Account() { CommercialId = ciId, CreatedDate = DateTime.Now, OrderId = id, Dollar_Price = dAmmount, RMB_Price = rAmmount });
+                dbContext.Accounts.Add(new Data.Account()
+                {
+                    CommercialId = type != null && type.Equals("Com") ? ciId : (int?)null,
+                    PerfomaId = type != null && type.Equals("PI") ? ciId : (int?)null,
+                    SupplierId = type != null && type.Equals("Supplier") ? ciId : (int?)null,
+                    CreatedDate = DateTime.Now,
+                    OrderId = id,
+                    Dollar_Price = dAmmount,
+                    RMB_Price = rAmmount
+                });
                 dbContext.SaveChanges();
             }
             catch
@@ -1135,31 +1166,31 @@ namespace AritySystems.Controllers
         public JsonResult OrderPaidAmmounts(int id)
         {
             var dbContext = new ArityEntities();
+
             var ammounts = (from _ in dbContext.Accounts.ToList()
-                            join com in dbContext.CommercialInvoices on _.CommercialId equals com.Id
+                            join com in dbContext.PerfomaInvoices on _.PerfomaId equals com.Id
                             join order in dbContext.Orders on _.OrderId equals order.Id
                             join user in dbContext.Users on order.User.Id equals user.Id
-                            where _.OrderId == id
+                            where _.OrderId == id && _.PerfomaId != null
                             select new
                             {
                                 CIId = _.Id,
                                 ShippingMark = order.Prefix,
-                                CI = com.CommercialInvoiceReferece,
+                                CI = com.PerfomaInvoiceReferece,
                                 DollerPrice = _.Dollar_Price.HasValue ? Math.Round(Convert.ToDouble(_.Dollar_Price.Value), 2) : 0.00,
                                 RMBPrice = _.RMB_Price.HasValue ? Math.Round(Convert.ToDouble(_.RMB_Price.Value), 2) : 0.00,
                                 Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy h:mm") : null
                             }).ToList();
-
             ammounts = ammounts.Union((from _ in dbContext.Accounts.ToList()
-                                       join com in dbContext.PerfomaInvoices on _.CommercialId equals com.Id
+                                       join com in dbContext.CommercialInvoices on _.CommercialId equals com.Id
                                        join order in dbContext.Orders on _.OrderId equals order.Id
                                        join user in dbContext.Users on order.User.Id equals user.Id
-                                       where _.OrderId == id
+                                       where _.OrderId == id && _.CommercialId != null
                                        select new
                                        {
                                            CIId = _.Id,
                                            ShippingMark = order.Prefix,
-                                           CI = com.PerfomaInvoiceReferece,
+                                           CI = com.CommercialInvoiceReferece,
                                            DollerPrice = _.Dollar_Price.HasValue ? Math.Round(Convert.ToDouble(_.Dollar_Price.Value), 2) : 0.00,
                                            RMBPrice = _.RMB_Price.HasValue ? Math.Round(Convert.ToDouble(_.RMB_Price.Value), 2) : 0.00,
                                            Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy h:mm") : null
