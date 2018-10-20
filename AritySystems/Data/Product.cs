@@ -20,6 +20,8 @@ namespace AritySystems.Data
             this.PerfomaInvoiceItems = new HashSet<PerfomaInvoiceItem>();
             this.CommercialInvoiceItems = new HashSet<CommercialInvoiceItem>();
             this.OrderLineItems = new HashSet<OrderLineItem>();
+            this.BOM_Mapper = new HashSet<BOM_Mapper>();
+            this.BOM_Mapper1 = new HashSet<BOM_Mapper>();
         }
     
         public int Id { get; set; }
@@ -47,5 +49,9 @@ namespace AritySystems.Data
         public virtual ICollection<CommercialInvoiceItem> CommercialInvoiceItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderLineItem> OrderLineItems { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOM_Mapper> BOM_Mapper { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOM_Mapper> BOM_Mapper1 { get; set; }
     }
 }
