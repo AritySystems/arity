@@ -13,26 +13,28 @@
     {
         @Html.AntiForgeryToken()
 
-        <ul class="nav navbar-nav navbar-right">
-            <li id="liHome"><a href="@((userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin) ? "/order/orders":(userType == (int)AritySystems.Common.EnumHelpers.UserType.Supplier) ? "/order/suppliersorder":"/order/orderlist")"><i class="fa fa-home"></i> Home</a></li>
-            @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
-            {
-                <li id="liOrders"><a href="@Url.Action("orders","order")">Order</a></li>
-                <li id="liProduct"><a href="@Url.Action("list","product")">Product</a></li>
-                <li id="liUser"><a href="@Url.Action("list","user")">User</a></li>
-                <li id="liAccounts"><a href="@Url.Action("account","order")">Accounts</a></li>
-            }
-            <li>
-                <a>Hello @User.Identity.GetUserName().ToString() </a>
-            </li>
-            <li><a href="/user/Logout"><i class="fa fa-sign-out"></i> Logout</a></li>
-        </ul>
+<ul class="nav navbar-nav navbar-right">
+    <li id="liHome"><a href="@((userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin) ? "/order/orders":(userType == (int)AritySystems.Common.EnumHelpers.UserType.Supplier) ? "/order/suppliersorder":"/order/orderlist")"><i class="fa fa-home"></i> Home</a></li>
+    @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
+    {
+        <li id="liOrders"><a href="@Url.Action("orders", "order")">Order</a></li>
+        <li id="liUser"><a href="@Url.Action("list", "user")">User</a></li>
+        <li id="liAccounts"><a href="@Url.Action("account", "order")">Accounts</a></li>
+    }
+    @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin || userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase || userType == (int)AritySystems.Common.EnumHelpers.UserType.Sales)
+    {
+        <li id="liProduct"><a href="@Url.Action("list","product")">Product</a></li>
+    }
+    <li>
+        <a>Hello @User.Identity.GetUserName().ToString() </a>
+    </li>
+    <li><a href="/user/Logout"><i class="fa fa-sign-out"></i> Logout</a></li>
+</ul>
     }
 }
 else
 {
     <ul class="nav navbar-nav navbar-right">
-        <li><a href="javascript:"><i class="fa fa-bell"></i> Notification</a></li>
         <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
         <li>@Html.ActionLink("Log in", "Login", "User", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
