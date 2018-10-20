@@ -17,6 +17,7 @@ namespace AritySystems.Data
         public int Id { get; set; }
         public Nullable<int> ProductId { get; set; }
         public Nullable<int> ChildId { get; set; }
+        public Nullable<decimal> BOM { get; set; }
     
         public virtual Product Product { get; set; }
         public virtual Product Product1 { get; set; }

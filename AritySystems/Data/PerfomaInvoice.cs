@@ -19,7 +19,6 @@ namespace AritySystems.Data
         {
             this.PerfomaInvoiceItems = new HashSet<PerfomaInvoiceItem>();
             this.Accounts = new HashSet<Account>();
-            this.Accounts1 = new HashSet<Account>();
         }
     
         public int Id { get; set; }
@@ -33,7 +32,5 @@ namespace AritySystems.Data
         public virtual ICollection<PerfomaInvoiceItem> PerfomaInvoiceItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Account> Accounts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Account> Accounts1 { get; set; }
     }
 }

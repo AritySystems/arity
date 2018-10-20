@@ -26,9 +26,6 @@
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_CommercialInvoice_Order" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_CommercialInvoice" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_Product" />
-        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.Account" Width="1.5" PointX="10.25" PointY="9" />
-        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Account_CommercialInvoice" />
-        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Account_Order" />
         <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.OrderLineItem" Width="1.5" PointX="10" PointY="13.125" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Product" />
@@ -40,10 +37,13 @@
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_OrderLineItem_OrderLineItem_Supplier_Mapping" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_OrderLineItem_User" />
         <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.BOM_Mapper" Width="1.5" PointX="6" PointY="22.25" />
-        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK__Account__Perfoma__719CDDE7" />
-        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK__Account__Supplie__72910220" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK__BOM_Mappe__Child__70A8B9AE" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK__BOM_Mappe__Produ__6FB49575" />
+        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.Account" Width="1.5" PointX="10.625" PointY="8.625" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK__Account__Perfoma__719CDDE7" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK__Account__Supplie__73852659" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Account_CommercialInvoice" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Account_Order" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

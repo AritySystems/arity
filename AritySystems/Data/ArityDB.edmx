@@ -26,6 +26,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ProductId" Type="int" />
           <Property Name="ChildId" Type="int" />
+          <Property Name="BOM" Type="decimal" Precision="18" Scale="0" />
         </EntityType>
         <EntityType Name="CommercialInvoice">
           <Key>
@@ -227,11 +228,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Account__Supplie__72910220">
-          <End Role="PerfomaInvoice" Type="Self.PerfomaInvoice" Multiplicity="0..1" />
+        <Association Name="FK__Account__Supplie__73852659">
+          <End Role="User" Type="Self.User" Multiplicity="0..1" />
           <End Role="Account" Type="Self.Account" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="PerfomaInvoice">
+            <Principal Role="User">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Account">
@@ -523,8 +524,8 @@
             <End Role="PerfomaInvoice" EntitySet="PerfomaInvoice" />
             <End Role="Account" EntitySet="Account" />
           </AssociationSet>
-          <AssociationSet Name="FK__Account__Supplie__72910220" Association="Self.FK__Account__Supplie__72910220">
-            <End Role="PerfomaInvoice" EntitySet="PerfomaInvoice" />
+          <AssociationSet Name="FK__Account__Supplie__73852659" Association="Self.FK__Account__Supplie__73852659">
+            <End Role="User" EntitySet="User" />
             <End Role="Account" EntitySet="Account" />
           </AssociationSet>
           <AssociationSet Name="FK__BOM_Mappe__Child__70A8B9AE" Association="Self.FK__BOM_Mappe__Child__70A8B9AE">
@@ -641,9 +642,9 @@
           <NavigationProperty Name="PerfomaInvoices" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoice_Order" FromRole="Order" ToRole="PerfomaInvoice" />
           <NavigationProperty Name="CommercialInvoices" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoice_Order" FromRole="Order" ToRole="CommercialInvoice" />
           <Property Name="TermsandCondition" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Accounts" Relationship="DB_A3E8AF_luceousModel.FK_Account_Order" FromRole="Order" ToRole="Account" />
           <NavigationProperty Name="OrderLineItems" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order" FromRole="Order" ToRole="OrderLineItem" />
           <NavigationProperty Name="OrderLineItem_Supplier_Mapping" Relationship="DB_A3E8AF_luceousModel.FK_OrderId_Supplier_Mapping" FromRole="Order" ToRole="OrderLineItem_Supplier_Mapping" />
+          <NavigationProperty Name="Accounts" Relationship="DB_A3E8AF_luceousModel.FK_Account_Order" FromRole="Order" ToRole="Account" />
         </EntityType>
         <EntityType Name="Payment">
           <Key>
@@ -735,6 +736,7 @@
           <Property Name="CountryCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="OrderLineItem_Supplier_Mapping" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Supplier_Mapping_User" FromRole="User" ToRole="OrderLineItem_Supplier_Mapping" />
           <NavigationProperty Name="Supplier_Assigned_OrderLineItem" Relationship="DB_A3E8AF_luceousModel.FK_Supplier_Assigned_OrderLineItem_User" FromRole="User" ToRole="Supplier_Assigned_OrderLineItem" />
+          <NavigationProperty Name="Accounts" Relationship="DB_A3E8AF_luceousModel.FK__Account__Supplie__73852659" FromRole="User" ToRole="Account" />
         </EntityType>
         <EntityType Name="UserType">
           <Key>
@@ -838,15 +840,6 @@
             <End Role="Product" EntitySet="Products" />
             <End Role="CommercialInvoiceItem" EntitySet="CommercialInvoiceItems" />
           </AssociationSet>
-          <EntitySet Name="Accounts" EntityType="DB_A3E8AF_luceousModel.Account" />
-          <AssociationSet Name="FK_Account_CommercialInvoice" Association="DB_A3E8AF_luceousModel.FK_Account_CommercialInvoice">
-            <End Role="CommercialInvoice" EntitySet="CommercialInvoices" />
-            <End Role="Account" EntitySet="Accounts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Account_Order" Association="DB_A3E8AF_luceousModel.FK_Account_Order">
-            <End Role="Order" EntitySet="Orders" />
-            <End Role="Account" EntitySet="Accounts" />
-          </AssociationSet>
           <EntitySet Name="OrderLineItems" EntityType="DB_A3E8AF_luceousModel.OrderLineItem" />
           <AssociationSet Name="FK_OrderLineItem_Order" Association="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order">
             <End Role="Order" EntitySet="Orders" />
@@ -879,14 +872,6 @@
             <End Role="Supplier_Assigned_OrderLineItem" EntitySet="Supplier_Assigned_OrderLineItem" />
           </AssociationSet>
           <EntitySet Name="BOM_Mapper" EntityType="DB_A3E8AF_luceousModel.BOM_Mapper" />
-          <AssociationSet Name="FK__Account__Perfoma__719CDDE7" Association="DB_A3E8AF_luceousModel.FK__Account__Perfoma__719CDDE7">
-            <End Role="PerfomaInvoice" EntitySet="PerfomaInvoices" />
-            <End Role="Account" EntitySet="Accounts" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Account__Supplie__72910220" Association="DB_A3E8AF_luceousModel.FK__Account__Supplie__72910220">
-            <End Role="PerfomaInvoice" EntitySet="PerfomaInvoices" />
-            <End Role="Account" EntitySet="Accounts" />
-          </AssociationSet>
           <AssociationSet Name="FK__BOM_Mappe__Child__70A8B9AE" Association="DB_A3E8AF_luceousModel.FK__BOM_Mappe__Child__70A8B9AE">
             <End Role="Product" EntitySet="Products" />
             <End Role="BOM_Mapper" EntitySet="BOM_Mapper" />
@@ -894,6 +879,23 @@
           <AssociationSet Name="FK__BOM_Mappe__Produ__6FB49575" Association="DB_A3E8AF_luceousModel.FK__BOM_Mappe__Produ__6FB49575">
             <End Role="Product" EntitySet="Products" />
             <End Role="BOM_Mapper" EntitySet="BOM_Mapper" />
+          </AssociationSet>
+          <EntitySet Name="Accounts" EntityType="DB_A3E8AF_luceousModel.Account" />
+          <AssociationSet Name="FK__Account__Perfoma__719CDDE7" Association="DB_A3E8AF_luceousModel.FK__Account__Perfoma__719CDDE7">
+            <End Role="PerfomaInvoice" EntitySet="PerfomaInvoices" />
+            <End Role="Account" EntitySet="Accounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Account__Supplie__73852659" Association="DB_A3E8AF_luceousModel.FK__Account__Supplie__73852659">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Account" EntitySet="Accounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Account_CommercialInvoice" Association="DB_A3E8AF_luceousModel.FK_Account_CommercialInvoice">
+            <End Role="CommercialInvoice" EntitySet="CommercialInvoices" />
+            <End Role="Account" EntitySet="Accounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Account_Order" Association="DB_A3E8AF_luceousModel.FK_Account_Order">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="Account" EntitySet="Accounts" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="PerfomaInvoice">
@@ -908,8 +910,7 @@
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Accounts" Relationship="DB_A3E8AF_luceousModel.FK__Account__Perfoma__719CDDE7" FromRole="PerfomaInvoice" ToRole="Account" />
-          <NavigationProperty Name="Accounts1" Relationship="DB_A3E8AF_luceousModel.FK__Account__Supplie__72910220" FromRole="PerfomaInvoice" ToRole="Account" />
-        </EntityType>
+          </EntityType>
         <EntityType Name="PerfomaInvoiceItem">
           <Key>
             <PropertyRef Name="Id" />
@@ -1044,48 +1045,6 @@
             </Principal>
             <Dependent Role="CommercialInvoiceItem">
               <PropertyRef Name="ProductId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="Account">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CommercialId" Type="Int32" />
-          <Property Name="OrderId" Type="Int32" />
-          <Property Name="Dollar_Price" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="RMB_Price" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="CommercialInvoice" Relationship="DB_A3E8AF_luceousModel.FK_Account_CommercialInvoice" FromRole="Account" ToRole="CommercialInvoice" />
-          <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_Account_Order" FromRole="Account" ToRole="Order" />
-          <Property Name="PerfomaId" Type="Int32" />
-          <Property Name="SupplierId" Type="Int32" />
-          <NavigationProperty Name="PerfomaInvoice" Relationship="DB_A3E8AF_luceousModel.FK__Account__Perfoma__719CDDE7" FromRole="Account" ToRole="PerfomaInvoice" />
-          <NavigationProperty Name="PerfomaInvoice1" Relationship="DB_A3E8AF_luceousModel.FK__Account__Supplie__72910220" FromRole="Account" ToRole="PerfomaInvoice" />
-        </EntityType>
-        <Association Name="FK_Account_CommercialInvoice">
-          <End Type="DB_A3E8AF_luceousModel.CommercialInvoice" Role="CommercialInvoice" Multiplicity="0..1" />
-          <End Type="DB_A3E8AF_luceousModel.Account" Role="Account" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CommercialInvoice">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Account">
-              <PropertyRef Name="CommercialId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Account_Order">
-          <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="0..1" />
-          <End Type="DB_A3E8AF_luceousModel.Account" Role="Account" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Order">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Account">
-              <PropertyRef Name="OrderId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1230,31 +1189,8 @@
           <Property Name="ChildId" Type="Int32" />
           <NavigationProperty Name="Product" Relationship="DB_A3E8AF_luceousModel.FK__BOM_Mappe__Child__70A8B9AE" FromRole="BOM_Mapper" ToRole="Product" />
           <NavigationProperty Name="Product1" Relationship="DB_A3E8AF_luceousModel.FK__BOM_Mappe__Produ__6FB49575" FromRole="BOM_Mapper" ToRole="Product" />
+          <Property Name="BOM" Type="Decimal" Precision="18" Scale="0" />
         </EntityType>
-        <Association Name="FK__Account__Perfoma__719CDDE7">
-          <End Type="DB_A3E8AF_luceousModel.PerfomaInvoice" Role="PerfomaInvoice" Multiplicity="0..1" />
-          <End Type="DB_A3E8AF_luceousModel.Account" Role="Account" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PerfomaInvoice">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Account">
-              <PropertyRef Name="PerfomaId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__Account__Supplie__72910220">
-          <End Type="DB_A3E8AF_luceousModel.PerfomaInvoice" Role="PerfomaInvoice" Multiplicity="0..1" />
-          <End Type="DB_A3E8AF_luceousModel.Account" Role="Account" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PerfomaInvoice">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Account">
-              <PropertyRef Name="SupplierId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK__BOM_Mappe__Child__70A8B9AE">
           <End Type="DB_A3E8AF_luceousModel.Product" Role="Product" Multiplicity="0..1" />
           <End Type="DB_A3E8AF_luceousModel.BOM_Mapper" Role="BOM_Mapper" Multiplicity="*" />
@@ -1276,6 +1212,72 @@
             </Principal>
             <Dependent Role="BOM_Mapper">
               <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CommercialId" Type="Int32" />
+          <Property Name="OrderId" Type="Int32" />
+          <Property Name="Dollar_Price" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="RMB_Price" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="PerfomaId" Type="Int32" />
+          <Property Name="SupplierId" Type="Int32" />
+          <NavigationProperty Name="PerfomaInvoice" Relationship="DB_A3E8AF_luceousModel.FK__Account__Perfoma__719CDDE7" FromRole="Account" ToRole="PerfomaInvoice" />
+          <NavigationProperty Name="User" Relationship="DB_A3E8AF_luceousModel.FK__Account__Supplie__73852659" FromRole="Account" ToRole="User" />
+          <NavigationProperty Name="CommercialInvoice" Relationship="DB_A3E8AF_luceousModel.FK_Account_CommercialInvoice" FromRole="Account" ToRole="CommercialInvoice" />
+          <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_Account_Order" FromRole="Account" ToRole="Order" />
+        </EntityType>
+        <Association Name="FK__Account__Perfoma__719CDDE7">
+          <End Type="DB_A3E8AF_luceousModel.PerfomaInvoice" Role="PerfomaInvoice" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.Account" Role="Account" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PerfomaInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Account">
+              <PropertyRef Name="PerfomaId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Account__Supplie__73852659">
+          <End Type="DB_A3E8AF_luceousModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.Account" Role="Account" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Account">
+              <PropertyRef Name="SupplierId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Account_CommercialInvoice">
+          <End Type="DB_A3E8AF_luceousModel.CommercialInvoice" Role="CommercialInvoice" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.Account" Role="Account" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommercialInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Account">
+              <PropertyRef Name="CommercialId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Account_Order">
+          <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.Account" Role="Account" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Account">
+              <PropertyRef Name="OrderId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1444,21 +1446,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Accounts">
-            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.Account">
-              <MappingFragment StoreEntitySet="Account">
-                <ScalarProperty Name="SupplierId" ColumnName="SupplierId" />
-                <ScalarProperty Name="PerfomaId" ColumnName="PerfomaId" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="RMB_Price" ColumnName="RMB_Price" />
-                <ScalarProperty Name="Dollar_Price" ColumnName="Dollar_Price" />
-                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
-                <ScalarProperty Name="CommercialId" ColumnName="CommercialId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="OrderLineItems">
             <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.OrderLineItem">
               <MappingFragment StoreEntitySet="OrderLineItem">
@@ -1504,8 +1491,24 @@
           <EntitySetMapping Name="BOM_Mapper">
             <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.BOM_Mapper">
               <MappingFragment StoreEntitySet="BOM_Mapper">
+                <ScalarProperty Name="BOM" ColumnName="BOM" />
                 <ScalarProperty Name="ChildId" ColumnName="ChildId" />
                 <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.Account">
+              <MappingFragment StoreEntitySet="Account">
+                <ScalarProperty Name="SupplierId" ColumnName="SupplierId" />
+                <ScalarProperty Name="PerfomaId" ColumnName="PerfomaId" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="RMB_Price" ColumnName="RMB_Price" />
+                <ScalarProperty Name="Dollar_Price" ColumnName="Dollar_Price" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="CommercialId" ColumnName="CommercialId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

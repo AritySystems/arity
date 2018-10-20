@@ -20,9 +20,9 @@ namespace AritySystems.Data
             this.Payments = new HashSet<Payment>();
             this.PerfomaInvoices = new HashSet<PerfomaInvoice>();
             this.CommercialInvoices = new HashSet<CommercialInvoice>();
-            this.Accounts = new HashSet<Account>();
             this.OrderLineItems = new HashSet<OrderLineItem>();
             this.OrderLineItem_Supplier_Mapping = new HashSet<OrderLineItem_Supplier_Mapping>();
+            this.Accounts = new HashSet<Account>();
         }
     
         public int Id { get; set; }
@@ -47,10 +47,10 @@ namespace AritySystems.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommercialInvoice> CommercialInvoices { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Account> Accounts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderLineItem> OrderLineItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderLineItem_Supplier_Mapping> OrderLineItem_Supplier_Mapping { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Account> Accounts { get; set; }
     }
 }
