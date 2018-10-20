@@ -880,16 +880,15 @@ namespace AritySystems.Controllers
 
             foreach (var data in suppliersCsv)
             {
-                var ids = data.suppliers.Split(new[] { ',' })
+                var ids = data.suppliers!= null && !string.IsNullOrEmpty(data.suppliers) ? data.suppliers.Split(new[] { ',' })
                               .Select(x => int.Parse(x))
-                              .ToArray();
-
-                suppliers = (from u in dataContext.Users.ToList().Where(x => ids.Contains(x.Id) && x.UserType == (int)Common.EnumHelpers.UserType.Supplier)
+                              .ToArray() : null;
+                suppliers = ids!= null ?(from u in dataContext.Users.ToList().Where(x => ids.Contains(x.Id) && x.UserType == (int)Common.EnumHelpers.UserType.Supplier)
                              select new SelectListItem
                              {
                                  Text = u.Id.ToString(),
                                  Value = u.CompanyName
-                             }).ToList();
+                             }).ToList() : suppliers;
 
             }
 
