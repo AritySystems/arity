@@ -18,6 +18,8 @@ namespace AritySystems.Controllers
     [AllowAnonymous]
     public class ProductController : Controller
     {
+        ArityEntities dataContext = new ArityEntities();
+
         public ActionResult Create(int? Id)
         {
             try
@@ -144,6 +146,33 @@ namespace AritySystems.Controllers
             return RedirectToAction("List");
         }
 
+        public ActionResult UpdateBOM(int parentId, int childId, decimal BOM)
+        {
+            BOM_Mapper data = new BOM_Mapper();
+            data = dataContext.BOM_Mapper.Where(x => x.ProductId == parentId && x.ChildId == childId).FirstOrDefault();
+
+            if (data != null)
+            {
+                data.BOM = BOM;
+            }
+
+            else
+            {
+                data = new BOM_Mapper()
+                {
+                    ProductId = parentId,
+                    ChildId = childId,
+                    BOM = BOM
+                };
+
+                dataContext.BOM_Mapper.Add(data);
+            }
+
+            dataContext.SaveChanges();
+
+            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+        }
+
         public string getEnumValue(int value)
         {
             Common.EnumHelpers.Units unitValue = (Common.EnumHelpers.Units)value;
@@ -176,7 +205,7 @@ namespace AritySystems.Controllers
                               .Select(x => int.Parse(x))
                               .ToArray();
 
-                var childProductDetails = (from childProduct in dataContext.Products.ToList().Where(x => ids.Contains(parentId) && x.Id == data.Id )
+                var childProductDetails = (from childProduct in dataContext.Products.ToList().Where(x => ids.Contains(parentId) && x.Id == data.Id)
                                            select new ProductDetails()
                                            {
                                                Id = childProduct.Id,
@@ -188,6 +217,7 @@ namespace AritySystems.Controllers
                                                Quantity = childProduct.Quantity,
                                                RMB_Price = childProduct.RMB_Price,
                                                Unit = getEnumValue(childProduct.Unit),
+                                               BOM = GetBOMForParent(parentId, childProduct.Id)
                                            }).FirstOrDefault();
 
 
@@ -216,9 +246,9 @@ namespace AritySystems.Controllers
                 Quantity = product.Quantity,
                 RMB_Price = product.RMB_Price,
                 Unit = getEnumValue(product.Unit),
-                BOM = product.BOM?? 0 ,
-                Cubic_Meter = product.CBM?? 0,
-                Weight = product.Weight?? 0
+                BOM = product.BOM ?? 0,
+                Cubic_Meter = product.CBM ?? 0,
+                Weight = product.Weight ?? 0
             };
         }
 
@@ -245,6 +275,17 @@ namespace AritySystems.Controllers
                 Weight = product.Weight
             };
         }
+
+
+        private decimal GetBOMForParent(int parentId, int childId)
+        {
+            var data = dataContext.BOM_Mapper.Where(x => x.ProductId == parentId && x.ChildId == childId).Select(x => x.BOM).FirstOrDefault();
+
+            data = data != null ? data : 0;
+
+            return data.Value;
+        }
+
 
     }
 }
