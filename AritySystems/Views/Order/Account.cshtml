@@ -25,7 +25,7 @@
         <h1><i class="fa fa-shopping-cart"></i> Accounts</h1>
     </div>
     <div class="row">
-        
+
         <table id="example" class="display" style="width:100%">
             <thead>
                 <tr>
@@ -41,7 +41,7 @@
     </div>
 </div>
 @section Scripts {
-<script>
+    <script>
         $(".nav #liAccounts").addClass("active");
         function format(d) {
             var html = '<div class="child-heading">All payments information</div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;    border: 1px solid #eee;margin-bottom: 2%;"><tr><th>CI</th><th>Doller Ammount</th><th>RMB Ammount</th><th>Date</th></tr>';
@@ -68,7 +68,7 @@
                                         '</tr>';
                                 });
                             }
-                           
+
                         }
                     }).fail(function (jqXHR, textStatus) {
                         console.log("Request failed: " + textStatus);
@@ -80,6 +80,15 @@
         $(document).ready(function () {
             var table = $('#example').DataTable({
                 "ajax": "@Url.Action("GetOrderOrderListForAmmount","Order")",
+                //aoColumns: [
+                //    null,
+                //    null,
+                //    null,
+
+                //    { sType: 'uk_date' },
+                //    null,
+                //    null
+                //],
                 "columns": [
                     {
                         "className": '',
@@ -102,7 +111,14 @@
                     { "data": "TotalDollerPrice" },
                     { "data": "TotalRMBPrice" }
                 ],
-                "order": [[3, 'desc']]
+                //columnDefs: [
+                //    { type: 'date-eu', targets: 3 }
+                //],
+                //columnDefs: [
+                //    { type: 'datetime-us-flex', targets: 3 }
+                //],
+                //"order": [[3, 'desc']],
+                //"columnDefs": [{ "targets": 3, "type": "date-eu" }]
             });
 
             // Add event listener for opening and closing details
@@ -128,7 +144,58 @@
                 table.column(6).visible(false);
             }
         });
-</script>
+        //jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+        //    "datetime-us-flex-pre": function (a) {
+        //        // If there's no slash, then it's not an actual date, so return zero for sorting
+        //        if (a.indexOf('/') === -1) {
+        //            return '0';
+        //        } else {
+        //            // Set optional items to zero
+        //            var hour = 0,
+        //                min = 0,
+        //                ap = 0;
+        //            // Execute match. Requires month, day, year. Can be mm/dd or m/d. Can be yy or yyyy
+        //            // Time is optional. am/pm is optional
+        //            // TODO - remove extra time column from array
+        //            var b = a.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})( (\d{1,2}):(\d{1,2}))? ?(am|pm|AM|PM|Am|Pm)?/),
+        //                month = b[1],
+        //                day = b[2],
+        //                year = b[3];
+        //            // If time exists then output hours and minutes
+        //            if (b[4] != undefined) {
+        //                hour = b[5];
+        //                min = b[6];
+        //            }
+        //            // if using am/pm then change the hour to 24 hour format for sorting
+        //            if (b[7] != undefined) {
+        //                ap = b[7];
+        //                if (hour == '12') hour = '0';
+        //                if (ap == 'pm') hour = parseInt(hour, 10) + 12;
+        //            }
+
+        //            // for 2 digit years, changes to 20__ if less than 70
+        //            if (year.length == 2) {
+        //                if (parseInt(year, 10) < 70) year = '20' + year;
+        //                else year = '19' + year;
+        //            }
+        //            // Converts single digits
+        //            if (month.length == 1) month = '0' + month;
+        //            if (day.length == 1) day = '0' + day;
+        //            if (hour.length == 1) hour = '0' + hour;
+        //            if (min.length == 1) min = '0' + min;
+        //            var tt = year + month + day + hour + min;
+
+        //            return tt;
+        //        }
+        //    },
+        //    "datetime-us-flex-asc": function (a, b) {
+        //        return a - b;
+        //    },
+        //    "datetime-us-flex-desc": function (a, b) {
+        //        return b - a;
+        //    }
+        //});
+    </script>
 }
 
 

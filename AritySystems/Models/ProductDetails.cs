@@ -41,7 +41,7 @@ namespace AritySystems.Models
         public bool IsActive { get; set; }
         public string Suppliers { get; set; }
 
-        [Display(Name ="Parent Products")]
+        [Display(Name = "Parent Products")]
         public string ParentIds { get; set; }
 
         public int[] ParentIdsArray { get; set; }
@@ -51,7 +51,7 @@ namespace AritySystems.Models
 
         public System.DateTime CreatedDate { get; set; }
 
-        [Display(Name = "BOM")]
+        [Display(Name = "Pack Size")]
         public decimal BOM { get; set; }
 
         [Display(Name = "Cubic Meter")]

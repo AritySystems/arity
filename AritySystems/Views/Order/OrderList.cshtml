@@ -71,11 +71,11 @@
                                         '<td>' + data.CI + '</td>' +
                                         '<td><i class="fa fa-usd"></i>  ' + data.DollerPrice + '</td>' +
                                         '<td><i class="fa fa-jpy"></i> ' + data.RMBPrice + '</td>' +
-                                        '<td>' + data.Date + '</td>' +
+                                        '<td>' + data.Date.ToString("MM/dd/yyyy") + '</td>' +
                                         '</tr>';
                                 });
                             }
-                           
+
                         }
                     }).fail(function (jqXHR, textStatus) {
                         console.log("Request failed: " + textStatus);

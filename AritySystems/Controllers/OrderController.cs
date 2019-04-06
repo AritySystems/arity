@@ -52,7 +52,7 @@ namespace AritySystems.Controllers
                                 Id = order.Id,
                                 Prefix = order.Prefix,
                                 InternalStatus = order.Internal_status,
-                                CreatedDate = order.CreatedDate.ToString("MM/dd/yyyy h:m tt"),
+                                CreatedDate = order.CreatedDate.ToString("MM/dd/yyyy"),
                                 Status = order.Status,
                                 TotalItem = order.OrderLineItems.Sum(_ => _.Quantity),
                                 DollerSalesTotal = order.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity)),
@@ -924,7 +924,7 @@ namespace AritySystems.Controllers
                               SupplierOrderId = supplierorder.OrderId,
                               Prefix = supplierorder.Order.Prefix,
                               OrderId = supplierorder.OrderId,
-                              CreatedOn = supplieritem.CreatedDate.ToString("MM/dd/yyyy h:m tt"),
+                              CreatedOn = supplieritem.CreatedDate.ToString("MM/dd/yyyy"),
                               Quantity = supplieritem.Quantity,
                               OrderQuantity = supplierorder.Quantity,
                               //DollerSalesTotal = 0,
@@ -1179,7 +1179,7 @@ namespace AritySystems.Controllers
                                 CI = com.PerfomaInvoiceReferece,
                                 DollerPrice = _.Dollar_Price.HasValue ? Math.Round(Convert.ToDouble(_.Dollar_Price.Value), 2) : 0.00,
                                 RMBPrice = _.RMB_Price.HasValue ? Math.Round(Convert.ToDouble(_.RMB_Price.Value), 2) : 0.00,
-                                Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy h:mm") : null
+                                Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy") : null
                             }).ToList();
             ammounts = ammounts.Union((from _ in dbContext.Accounts.ToList()
                                        join com in dbContext.CommercialInvoices on _.CommercialId equals com.Id
@@ -1193,7 +1193,7 @@ namespace AritySystems.Controllers
                                            CI = com.CommercialInvoiceReferece,
                                            DollerPrice = _.Dollar_Price.HasValue ? Math.Round(Convert.ToDouble(_.Dollar_Price.Value), 2) : 0.00,
                                            RMBPrice = _.RMB_Price.HasValue ? Math.Round(Convert.ToDouble(_.RMB_Price.Value), 2) : 0.00,
-                                           Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy h:mm") : null
+                                           Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy") : null
                                        }).ToList()).ToList();
             return Json(new { data = ammounts }, JsonRequestBehavior.AllowGet);
         }
@@ -1201,12 +1201,12 @@ namespace AritySystems.Controllers
         public JsonResult GetOrderOrderListForAmmount()
         {
             var dbContext = new ArityEntities();
-            var ammounts = (from order in dbContext.Orders.ToList()
+            var ammounts = (from order in dbContext.Orders.OrderByDescending(x => x.CreatedDate).ToList()
                             select new
                             {
                                 Id = order.Id,
                                 ShippingMark = order.Prefix,
-                                CreatedDate = order.CreatedDate.ToString("MM/dd/yyyy h:mm"),
+                                CreatedDate = order.CreatedDate.ToString("MM/dd/yyyy"),
                                 TotalDollerPrice = order.Accounts.Sum(_ => _.Dollar_Price),
                                 TotalRMBPrice = order.Accounts.Sum(_ => _.RMB_Price)
                             }).ToList();
