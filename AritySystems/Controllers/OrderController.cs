@@ -43,7 +43,7 @@ namespace AritySystems.Controllers
             int loggedInId = Convert.ToInt32(Request.Cookies["UserId"].Value);
             int type = Convert.ToInt32(Request.Cookies["UserType"].Value);
 
-            var orderItems = objDb.Orders.OrderByDescending(_ => _.CreatedDate).AsQueryable();
+            var orderItems = objDb.Orders.AsQueryable();
             if (type == (int)AritySystems.Common.EnumHelpers.UserType.Customer || type == (int)AritySystems.Common.EnumHelpers.UserType.Supplier)
                 orderItems = orderItems.Where(_ => _.CustomerId == loggedInId).AsQueryable();
             var orderLst = (from order in orderItems.ToList()
@@ -52,7 +52,7 @@ namespace AritySystems.Controllers
                                 Id = order.Id,
                                 Prefix = order.Prefix,
                                 InternalStatus = order.Internal_status,
-                                CreatedDate = order.CreatedDate.ToString("MM/dd/yyyy"),
+                                CreatedDate = order.CreatedDate.ToString("dd/MM/yyyy"),
                                 Status = order.Status,
                                 TotalItem = order.OrderLineItems.Sum(_ => _.Quantity),
                                 DollerSalesTotal = order.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity)),
@@ -705,7 +705,7 @@ namespace AritySystems.Controllers
 
                 worksheet.Range["C7"].Text = "Date";
 
-                worksheet.Range["D7"].Text = perfoma.OrderDate.ToString();
+                worksheet.Range["D7"].Text = perfoma.OrderDate.ToString("dd/MM/yyyy");
                 worksheet.Range["$D$7:$F$7"].Merge();
 
                 worksheet.Range["A8"].Text = perfoma.CustomerGST;
@@ -924,7 +924,7 @@ namespace AritySystems.Controllers
                               SupplierOrderId = supplierorder.OrderId,
                               Prefix = supplierorder.Order.Prefix,
                               OrderId = supplierorder.OrderId,
-                              CreatedOn = supplieritem.CreatedDate.ToString("MM/dd/yyyy"),
+                              CreatedOn = supplieritem.CreatedDate.ToString("dd/MM/yyyy"),
                               Quantity = supplieritem.Quantity,
                               OrderQuantity = supplierorder.Quantity,
                               //DollerSalesTotal = 0,
@@ -1179,7 +1179,7 @@ namespace AritySystems.Controllers
                                 CI = com.PerfomaInvoiceReferece,
                                 DollerPrice = _.Dollar_Price.HasValue ? Math.Round(Convert.ToDouble(_.Dollar_Price.Value), 2) : 0.00,
                                 RMBPrice = _.RMB_Price.HasValue ? Math.Round(Convert.ToDouble(_.RMB_Price.Value), 2) : 0.00,
-                                Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy") : null
+                                Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("dd/MM/yyyy") : null
                             }).ToList();
             ammounts = ammounts.Union((from _ in dbContext.Accounts.ToList()
                                        join com in dbContext.CommercialInvoices on _.CommercialId equals com.Id
@@ -1193,7 +1193,7 @@ namespace AritySystems.Controllers
                                            CI = com.CommercialInvoiceReferece,
                                            DollerPrice = _.Dollar_Price.HasValue ? Math.Round(Convert.ToDouble(_.Dollar_Price.Value), 2) : 0.00,
                                            RMBPrice = _.RMB_Price.HasValue ? Math.Round(Convert.ToDouble(_.RMB_Price.Value), 2) : 0.00,
-                                           Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("MM/dd/yyyy") : null
+                                           Date = _.CreatedDate.HasValue ? _.CreatedDate.Value.ToString("dd/MM/yyyy") : null
                                        }).ToList()).ToList();
             return Json(new { data = ammounts }, JsonRequestBehavior.AllowGet);
         }
@@ -1201,12 +1201,12 @@ namespace AritySystems.Controllers
         public JsonResult GetOrderOrderListForAmmount()
         {
             var dbContext = new ArityEntities();
-            var ammounts = (from order in dbContext.Orders.OrderByDescending(x => x.CreatedDate).ToList()
+            var ammounts = (from order in dbContext.Orders.ToList()
                             select new
                             {
                                 Id = order.Id,
                                 ShippingMark = order.Prefix,
-                                CreatedDate = order.CreatedDate.ToString("MM/dd/yyyy"),
+                                CreatedDate = order.CreatedDate.ToString("dd/MM/yyyy"),
                                 TotalDollerPrice = order.Accounts.Sum(_ => _.Dollar_Price),
                                 TotalRMBPrice = order.Accounts.Sum(_ => _.RMB_Price)
                             }).ToList();

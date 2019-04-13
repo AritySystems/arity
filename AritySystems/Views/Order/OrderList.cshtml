@@ -71,7 +71,7 @@
                                         '<td>' + data.CI + '</td>' +
                                         '<td><i class="fa fa-usd"></i>  ' + data.DollerPrice + '</td>' +
                                         '<td><i class="fa fa-jpy"></i> ' + data.RMBPrice + '</td>' +
-                                        '<td>' + data.Date.ToString("MM/dd/yyyy") + '</td>' +
+                                        '<td>' + data.Date.ToString("dd/MM/yyyy") + '</td>' +
                                         '</tr>';
                                 });
                             }
@@ -162,7 +162,10 @@
                         }
                     }
                 ],
-                "order": [[1, 'asc']]
+                columnDefs: [
+                    { type: 'date-eu', targets: 3 }
+                ],
+                "order": [[3, 'desc']]
             });
 
             // Add event listener for opening and closing details

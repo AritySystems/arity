@@ -124,7 +124,7 @@ namespace AritySystems.Controllers
                                    RMB_Price = product.RMB_Price,
                                    Unit = getEnumValue(Convert.ToInt32(product.Unit)),
                                    Description = product.Description,
-                                   ModifiedDate = product.ModifiedDate.GetValueOrDefault().ToString("MM/dd/yyyy"),
+                                   ModifiedDate = product.ModifiedDate.GetValueOrDefault().ToString("dd/MM/yyyy"),
                                    ChildProducts = GetChildProducts(product.Id)
                                }).ToList();
 

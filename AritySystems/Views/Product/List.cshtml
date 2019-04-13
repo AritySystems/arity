@@ -115,7 +115,10 @@
                             return '<a href="/product/create/' + data.Id + '"><i class="fa fa-pencil-square-o" style="color:green;margin-right:10px;vertical-align:inherit;"></i></a>'+(@userType ==2 ? '<a class="deleteUser" data-href="/product/Delete/' + data.Id + '" href="#"><i style="color:red;" class="fa fa-times"></i></a>':'')+'';
                         }
                     }],
-                "order": [[1, 'asc']]
+                columnDefs: [
+                    { type: 'date-eu', targets: 7 }
+                ],
+                "order": [[7, 'desc']]
             });
 
             // Add event listener for opening and closing details

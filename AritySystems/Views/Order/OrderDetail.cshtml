@@ -26,7 +26,7 @@
             <div class="col-md-12">
                 Order Status <span class="label label-primary" style="padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)Model.Status).ToString())</span>
             </div>
-            <div class="col-md-12">@Model.CreatedDate.ToString("MM/dd/yyyy") </div>
+            <div class="col-md-12">@Model.CreatedDate.ToString("dd/MM/yyyy") </div>
             <div class="col-md-12">
                 @Model.Prefix
             </div>
