@@ -16,7 +16,7 @@
         <h1><i class="fa fa-shopping-cart"></i> @(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin ? "Order Details" : "Your Order Details")</h1>
     </div>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-5">
             @if (userType != (int)AritySystems.Common.EnumHelpers.UserType.Customer)
             {
                 <div class="col-md-12">
@@ -31,15 +31,15 @@
                 @Model.Prefix
             </div>
             <div class="col-md-12">
-                <b>Order Total:  <i class="fa fa-usd"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarSalesPrice)) </b>
+                <b>Order Total:  <i class="fa fa-usd"></i>@Math.Round(Model.OrderLineItems.Sum(_ => (_.Quantity * _.DollarSalesPrice)), 2) </b>
             </div>
             @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
             {
                 <div class="col-md-12">
-                    <b>Order Total:  <i class="fa fa-jpy"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice)) </b>
+                    <b>Order Total:  <i class="fa fa-jpy"></i>@Math.Round(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice)), 2) </b>
                 </div>
                 <div class="col-md-12">
-                    <b>Order Profit:  <i class="fa fa-jpy"></i>@(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBSalesPrice)) - Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice))) </b>
+                    <b>Order Profit:  <i class="fa fa-jpy"></i>@Math.Round((Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBSalesPrice)) - Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice))), 2) </b>
                 </div>
                 <div class="col-md-12">
                     <div style="display:block;margin:10px 0 10px;">
@@ -70,13 +70,19 @@
                 <h4>Order Line Items</h4>
             </div>
         </div>
-        <div class="col-md-4" style="text-align:right">
-            @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
+        <div class="col-md-7" style="text-align:right">
+            @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved && userType != (int)AritySystems.Common.EnumHelpers.UserType.Customer)
             {
-                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please select exporter to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PI</button></div>}
-            <div style="display:inline-block;">
-                <button class="btn btn-primary" onclick=" location.href='@(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin? Url.Action("orders","order") :Url.Action("orderlist","order"))';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button>
-            </div>
+                <div style="display:inline-block;margin-bottom:5px;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please select exporter to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PI</button></div>
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please select exporter to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PL</button></div>
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please select exporter to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate CI</button></div>
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please select exporter to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate Shipping Mark</button></div>
+            }
+            @if (userType != (int)AritySystems.Common.EnumHelpers.UserType.Customer)
+            {
+                <div style="display:inline-block;"><button class="btn btn-primary" onclick=" location.href='@(Url.Action("OrderLineItems", "order", new { id = Model.Id }))';">Price Update</button></div>
+            }
+            <div style="display:inline-block;"><button class="btn btn-default" onclick=" location.href='@(userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin? Url.Action("orders","order") :Url.Action("orderlist","order"))';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
         </div>
     </div>
     <div class="row">
@@ -112,42 +118,42 @@
 
                         <td>@( itemCounter = itemCounter + 1)</td>
                         <td>@item.Product.English_Name</td>
-                        <td align="center">@item.Quantity</td>
+                        <td align="center">@Math.Round(item.Quantity, 0)</td>
                         @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
                         {
-                            <td align="right"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
-                            <td align="right"><i class="fa fa-usd"></i>@item.DollarSalesPrice</td>
-                            <td align="right"><i class="fa fa-jpy"></i>@item.RMBPurchasePrice</td>
-                            <td align="right"><i class="fa fa-jpy"></i>@item.RMBSalesPrice</td>
-                            <td align="right"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarPurchasePrice)</td>
-                            <td align="right"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarSalesPrice)</td>
-                            <td align="right"><i class="fa fa-jpy"></i>@(item.Quantity * item.RMBPurchasePrice)</td>
-                            <td align="right"><i class="fa fa-jpy"></i>@(item.Quantity * item.RMBSalesPrice)</td>}
+                            <td align="right"><i class="fa fa-usd"></i>@Math.Round(item.DollarPurchasePrice, 2)</td>
+                            <td align="right"><i class="fa fa-usd"></i>@Math.Round(item.DollarSalesPrice, 2)</td>
+                            <td align="right"><i class="fa fa-jpy"></i>@Math.Round(item.RMBPurchasePrice, 2)</td>
+                            <td align="right"><i class="fa fa-jpy"></i>@Math.Round(item.RMBSalesPrice, 2)</td>
+                            <td align="right"><i class="fa fa-usd"></i>@Math.Round((item.Quantity * item.DollarPurchasePrice), 2)</td>
+                            <td align="right"><i class="fa fa-usd"></i>@Math.Round((item.Quantity * item.DollarSalesPrice), 2)</td>
+                            <td align="right"><i class="fa fa-jpy"></i>@Math.Round((item.Quantity * item.RMBPurchasePrice), 2)</td>
+                            <td align="right"><i class="fa fa-jpy"></i>@Math.Round((item.Quantity * item.RMBSalesPrice), 2)</td>}
                         else
                         {
-                            <td align="right"><i class="fa fa-usd"></i>@item.DollarPurchasePrice</td>
-                            <td align="right"><i class="fa fa-usd"></i>@(item.Quantity * item.DollarPurchasePrice)</td>
+                            <td align="right"><i class="fa fa-usd"></i>@Math.Round(item.DollarPurchasePrice, 2)</td>
+                            <td align="right"><i class="fa fa-usd"></i>@Math.Round((item.Quantity * item.DollarPurchasePrice), 2)</td>
                         }
 
 
                     </tr>
                 }
-                <tr>
+                <tr style="background-color:#ccc;">
                     <td colspan="3" align="right"><b>Order Total :</b></td>
                     @if (userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
                     {
-                        <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => _.DollarPurchasePrice))</td>
-                        <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => _.DollarSalesPrice))</td>
-                        <td align="right"><i class="fa fa-jpy"></i>@(Model.OrderLineItems.Sum(_ => _.RMBPurchasePrice))</td>
-                        <td align="right"><i class="fa fa-jpy"></i>@(Model.OrderLineItems.Sum(_ => _.RMBSalesPrice))</td>
-                        <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => (_.DollarPurchasePrice * _.Quantity)))</td>
-                        <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity)))</td>
-                        <td align="right"><i class="fa fa-jpy"></i>@(Model.OrderLineItems.Sum(_ => (_.RMBPurchasePrice * _.Quantity)))</td>
-                        <td align="right"><i class="fa fa-jpy"></i>@(Model.OrderLineItems.Sum(_ => (_.RMBSalesPrice * _.Quantity)))</td>}
+                        <td align="right"><i class="fa fa-usd"></i>@Math.Round((Model.OrderLineItems.Sum(_ => _.DollarPurchasePrice)), 2)</td>
+                        <td align="right"><i class="fa fa-usd"></i>@Math.Round((Model.OrderLineItems.Sum(_ => _.DollarSalesPrice)), 2)</td>
+                        <td align="right"><i class="fa fa-jpy"></i>@Math.Round((Model.OrderLineItems.Sum(_ => _.RMBPurchasePrice)), 2)</td>
+                        <td align="right"><i class="fa fa-jpy"></i>@Math.Round((Model.OrderLineItems.Sum(_ => _.RMBSalesPrice)), 2)</td>
+                        <td align="right"><i class="fa fa-usd"></i>@Math.Round((Model.OrderLineItems.Sum(_ => (_.DollarPurchasePrice * _.Quantity))), 2)</td>
+                        <td align="right"><i class="fa fa-usd"></i>@Math.Round((Model.OrderLineItems.Sum(_ => (_.DollarSalesPrice * _.Quantity))), 2)</td>
+                        <td align="right"><i class="fa fa-jpy"></i>@Math.Round((Model.OrderLineItems.Sum(_ => (_.RMBPurchasePrice * _.Quantity))), 2)</td>
+                        <td align="right"><i class="fa fa-jpy"></i>@Math.Round((Model.OrderLineItems.Sum(_ => (_.RMBSalesPrice * _.Quantity))), 2)</td>}
                     else
                     {
-                        <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => _.DollarPurchasePrice))</td>
-                        <td align="right"><i class="fa fa-usd"></i>@(Model.OrderLineItems.Sum(_ => (_.DollarPurchasePrice * _.Quantity)))</td>
+                        <td align="right"><i class="fa fa-usd"></i>@Math.Round((Model.OrderLineItems.Sum(_ => _.DollarPurchasePrice)), 2)</td>
+                        <td align="right"><i class="fa fa-usd"></i>@Math.Round(Model.OrderLineItems.Sum(_ => (_.DollarPurchasePrice * _.Quantity)), 2)</td>
                     }
                 </tr>
             </table>

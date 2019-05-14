@@ -31,16 +31,23 @@
                 @Model.Prefix
             </div>
             <div class="col-md-12">
-                Order Total <b><i class="fa fa-jpy"></i>@Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice))</b>
+                Order Total <b><i class="fa fa-jpy"></i>@Math.Round(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice)),2)</b>
             </div>
             <div class="col-md-12" style="margin:25px 0px 10px 0;">
                 <h4>Order Line Items</h4>
             </div>
         </div>
-        @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
-        {
-            <div class="col-md-2 col-md-offset-5" style="text-align:right;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PI</button></div>}
-        <div class="col-md-1 @((userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase || userType == (int)AritySystems.Common.EnumHelpers.UserType.Sales) && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved ? "":"col-md-offset-7") "><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+        <div class="col-md-8 text-right">
+            @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
+            {
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PI</button></div>
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PL</button></div>
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate CI</button></div>
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate Shipping Mark</button></div>
+
+            }
+            <div style="display:inline-block;"><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+        </div>
         <hr class="col-md-12" style="margin-bottom:25px;" />
         <div class="col-md-12" style="margin-bottom:50px;">
             <table class="display" id="tblOrderItemList">
@@ -78,6 +85,13 @@
                 {
                     <button class="btn btn-success" id="btnSubmit">Submit</button>
                 }
+                @if (Model != null && userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
+                {
+                    <button class="btn btn-primary" id="btnPurchasePriceSave">Update Purchase Price</button>
+                    <button class="btn btn-success" id="btnPurchasePriceUpdated">Notify Sales team to update Sales Price</button>
+                    <button class="btn btn-primary" id="btnSalesPriceSave">Update Sales Price</button>
+                    <button class="btn btn-success" id="btnSalesPriceUpdated">Notify Admin to approve Order</button>
+                }
             </div>
         </div>
         @if (Model != null && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved && userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase)
@@ -93,7 +107,6 @@
                             <th>Order Prefix </th>
                             <th>Quantity</th>
                             <th>Status</th>
-
                         </tr>
                     </thead>
                 </table>
@@ -153,32 +166,32 @@
                     {
                         "data": null,
                         "render": function (data, type, full) {
-                            return '<input type="number" style="width:40%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="purchase-doller-price form-control" value="' + data.Purchase_Price_dollar + '"/> <span style="display:inline-block;padding-left:5px">per item</span>'
+                            return '<input type="number" style="width:90%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="purchase-doller-price form-control" value="' + data.Purchase_Price_dollar + '"/>  '
                         }
                     },
                     {
                         "data": null,
                         "render": function (data, type, full) {
-                            return '<input type="number" style="width:40%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="purchase-rmb-price form-control" value="' + data.Purchase_Price_rmb + '"/> <span style="display:inline-block;padding-left:5px">per item</span>'
+                            return '<input type="number" style="width:90%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="purchase-rmb-price form-control" value="' + data.Purchase_Price_rmb + '"/>  '
                         }
                     },
                     { "data": "Purchase_Price_dollar" },
                     {
                         "data": null,
                         "render": function (data, type, full) {
-                            return '<span data-item-id="' + data.Id + '" class="purchase-rmb-price">' + data.Purchase_Price_rmb + '</span>'
+                            return '<span data-item-id="' + data.Id + '" class="purchase-rmb-prices">' + data.Purchase_Price_rmb + '</span>'
                         }
                     },
                     {
                         "data": null,
                         "render": function (data, type, full) {
-                            return '<input type="number" style="width:40%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="sales-doller-price form-control" value="' + data.Sales_Price_dollar + '"/> <span style="display:inline-block;padding-left:5px">per item</span>'
+                            return '<input type="number" style="width:90%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="sales-doller-price form-control" value="' + data.Sales_Price_dollar + '"/>  '
                         }
                     },
                     {
                         "data": null,
                         "render": function (data, type, full) {
-                            return '<input type="number" style="width:40%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="sales-rmb-price form-control" value="' + data.Sales_Price_rmb + '"/> <span style="display:inline-block;padding-left:5px">per item</span>'
+                            return '<input type="number" style="width:90%;text-align:center;display:inline-block;" data-item-id="'+data.Id+'" class="sales-rmb-price form-control" value="' + data.Sales_Price_rmb + '"/>  '
                         }
                     },
                     { "data": "Sales_Price_dollar" },
@@ -206,7 +219,7 @@
                 "orderLineItems": [[1, 'asc']]
             });
             console.log(orderInternalStatus)
-            if(userType == 4)
+            if (userType == 4)
             {
                 tableItmes.column(1).visible(false);
 
@@ -214,7 +227,7 @@
                 tableItmes.column(6).visible(false);
                 tableItmes.column(7).visible(false);
                 tableItmes.column(8).visible(false);
-                if(orderInternalStatus ==1)
+                if (orderInternalStatus == 1)
                 {
                     tableItmes.column(3).visible(false);
                     tableItmes.column(4).visible(false);
@@ -222,7 +235,7 @@
                     tableItmes.column(10).visible(false);
                     tableItmes.column(11).visible(false);
                 }
-                else if(orderInternalStatus ==4)
+                else if(orderInternalStatus == 4)
                 {
                     tableItmes.column(1).visible(false);
                     tableItmes.column(2).visible(false);
@@ -238,7 +251,7 @@
                     tableItmes.column(11).visible(false);
                 }
             }
-            else if(userType == 3){
+            else if (userType == 3){
                 tableItmes.column(1).visible(false);
                 tableItmes.column(2).visible(false);
                 tableItmes.column(3).visible(false);
@@ -247,7 +260,7 @@
                 tableItmes.column(7).visible(false);
                 tableItmes.column(10).visible(false);
                 tableItmes.column(11).visible(false);
-                if(orderInternalStatus ==2)
+                if (orderInternalStatus == 2)
                 {
                     tableItmes.column(7).visible(false);
                     tableItmes.column(8).visible(false);
@@ -257,7 +270,7 @@
                     tableItmes.column(6).visible(false);
                 }
             }
-            else
+            else if (userType != 2)
             {
                 tableItmes.column(1).visible(false);
                 tableItmes.column(2).visible(false);
@@ -267,6 +280,12 @@
                 tableItmes.column(7).visible(false);
                 tableItmes.column(8).visible(false);
                 tableItmes.column(9).visible(false);
+                tableItmes.column(11).visible(false);
+            }
+            if (userType == 2) {
+                tableItmes.column(1).visible(false);
+                tableItmes.column(5).visible(false);
+                tableItmes.column(10).visible(false);
                 tableItmes.column(11).visible(false);
             }
 
