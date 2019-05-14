@@ -12,8 +12,8 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CommercialId" Type="int" />
           <Property Name="OrderId" Type="int" />
-          <Property Name="Dollar_Price" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="RMB_Price" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Dollar_Price" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="RMB_Price" Type="decimal" Precision="18" Scale="6" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="PerfomaId" Type="int" />
@@ -26,7 +26,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ProductId" Type="int" />
           <Property Name="ChildId" Type="int" />
-          <Property Name="BOM" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="BOM" Type="decimal" Precision="18" Scale="6" />
         </EntityType>
         <EntityType Name="CommercialInvoice">
           <Key>
@@ -45,8 +45,8 @@
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="CommercialInvoiceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ProductId" Type="int" />
-          <Property Name="RMB_ProductPrice" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="Dollar_ProductPrice" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="RMB_ProductPrice" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="Dollar_ProductPrice" Type="decimal" Precision="18" Scale="6" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" />
         </EntityType>
@@ -63,7 +63,7 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="Internal_status" Type="int" Nullable="false" />
           <Property Name="Sales_Person_Id" Type="int" />
-          <Property Name="Commission" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Commission" Type="decimal" Precision="18" Scale="6" />
           <Property Name="TermsandCondition" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="OrderLineItem">
@@ -73,11 +73,11 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="OrderId" Type="int" />
           <Property Name="ProductId" Type="int" />
-          <Property Name="DollarPurchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="RMBPurchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="DollarSalesPrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="RMBSalesPrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="DollarPurchasePrice" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="RMBPurchasePrice" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="DollarSalesPrice" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="RMBSalesPrice" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="6" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
@@ -86,7 +86,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="SupplierId" Type="int" />
-          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="6" Nullable="false" />
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
@@ -100,11 +100,11 @@
           <Property Name="OrderId" Type="int" />
           <Property Name="PaymentDate" Type="datetime" Nullable="false" />
           <Property Name="Status" Type="int" Nullable="false" />
-          <Property Name="DollarAmount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="RMBAmount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="DollarAmount" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="RMBAmount" Type="decimal" Precision="18" Scale="6" Nullable="false" />
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="PerfomaInvoice">
           <Key>
@@ -123,8 +123,8 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PerfomaInvoiceId" Type="int" />
           <Property Name="ProductId" Type="int" />
-          <Property Name="RMB_ProductPrice" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="Dollar_ProductPrice" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="RMB_ProductPrice" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="Dollar_ProductPrice" Type="decimal" Precision="18" Scale="6" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" />
         </EntityType>
@@ -135,9 +135,9 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Chinese_Name" Type="nvarchar" MaxLength="150" Nullable="false" />
           <Property Name="English_Name" Type="nvarchar" MaxLength="150" Nullable="false" />
-          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="Dollar_Price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="RMB_Price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="Dollar_Price" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="RMB_Price" Type="decimal" Precision="18" Scale="6" Nullable="false" />
           <Property Name="Unit" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Parent_Id" Type="int" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="500" />
@@ -146,10 +146,10 @@
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="Suppliers" Type="nvarchar(max)" />
           <Property Name="ParentIds" Type="nvarchar(max)" />
-          <Property Name="MOQ" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="BOM" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="CBM" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="Weight" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="MOQ" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="BOM" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="CBM" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="Weight" Type="decimal" Precision="18" Scale="6" />
         </EntityType>
         <EntityType Name="Supplier_Assigned_OrderLineItem">
           <Key>
@@ -159,7 +159,7 @@
           <Property Name="SupplierId" Type="int" />
           <Property Name="OrderSupplierMapId" Type="int" />
           <Property Name="Status" Type="int" Nullable="false" />
-          <Property Name="Quantity" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="6" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="OrderLineItem" Type="int" />
@@ -170,18 +170,24 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="SupplierAssignedMapId" Type="int" Nullable="false" />
-          <Property Name="PcsPerCartoon" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="PcsPerCartoon" Type="decimal" Precision="18" Scale="6" Nullable="false" />
           <Property Name="TotalCartoons" Type="int" Nullable="false" />
-          <Property Name="NetWeight" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="TotalNetWeight" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="GrossWeight" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="TotalGrossWeight" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="CartoonSize" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="CartoonBM" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="NetWeight" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="TotalNetWeight" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="GrossWeight" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="TotalGrossWeight" Type="decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="CartoonBM" Type="decimal" Precision="18" Scale="6" Nullable="false" />
           <Property Name="CartoonNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Status" Type="int" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="TotalPcs" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="CartoonLength" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="CartoonBreadth" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="CartoonHeight" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="CartoonPrefix" Type="nvarchar" MaxLength="50" />
+          <Property Name="CartoonMax" Type="int" />
+          <Property Name="CartoonSize" Type="decimal" Precision="18" Scale="6" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -200,8 +206,8 @@
           <Property Name="Password" Type="nvarchar" MaxLength="50" />
           <Property Name="CompanyName" Type="nvarchar" MaxLength="150" />
           <Property Name="Logo" Type="nvarchar" MaxLength="500" />
-          <Property Name="CreatedDate" Type="datetime" />
-          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="CreatedDate" Type="date" />
+          <Property Name="ModifiedDate" Type="date" />
           <Property Name="IsActive" Type="bit" />
           <Property Name="UserType" Type="int" />
           <Property Name="CountryCode" Type="nvarchar(max)" />
@@ -216,7 +222,7 @@
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" />
         </EntityType>
-        <Association Name="FK__Account__Perfoma__719CDDE7">
+        <Association Name="FK__Account__Perfoma__6383C8BA">
           <End Role="PerfomaInvoice" Type="Self.PerfomaInvoice" Multiplicity="0..1" />
           <End Role="Account" Type="Self.Account" Multiplicity="*" />
           <ReferentialConstraint>
@@ -228,7 +234,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Account__Supplie__73852659">
+        <Association Name="FK__Account__Supplie__6477ECF3">
           <End Role="User" Type="Self.User" Multiplicity="0..1" />
           <End Role="Account" Type="Self.Account" Multiplicity="*" />
           <ReferentialConstraint>
@@ -240,7 +246,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__BOM_Mappe__Child__70A8B9AE">
+        <Association Name="FK__BOM_Mappe__Child__6754599E">
           <End Role="Product" Type="Self.Product" Multiplicity="0..1" />
           <End Role="BOM_Mapper" Type="Self.BOM_Mapper" Multiplicity="*" />
           <ReferentialConstraint>
@@ -252,7 +258,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__BOM_Mappe__Produ__6FB49575">
+        <Association Name="FK__BOM_Mappe__Produ__68487DD7">
           <End Role="Product" Type="Self.Product" Multiplicity="0..1" />
           <End Role="BOM_Mapper" Type="Self.BOM_Mapper" Multiplicity="*" />
           <ReferentialConstraint>
@@ -520,19 +526,19 @@
           <EntitySet Name="SupplierCartoon" EntityType="Self.SupplierCartoon" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserType" EntityType="Self.UserType" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__Account__Perfoma__719CDDE7" Association="Self.FK__Account__Perfoma__719CDDE7">
+          <AssociationSet Name="FK__Account__Perfoma__6383C8BA" Association="Self.FK__Account__Perfoma__6383C8BA">
             <End Role="PerfomaInvoice" EntitySet="PerfomaInvoice" />
             <End Role="Account" EntitySet="Account" />
           </AssociationSet>
-          <AssociationSet Name="FK__Account__Supplie__73852659" Association="Self.FK__Account__Supplie__73852659">
+          <AssociationSet Name="FK__Account__Supplie__6477ECF3" Association="Self.FK__Account__Supplie__6477ECF3">
             <End Role="User" EntitySet="User" />
             <End Role="Account" EntitySet="Account" />
           </AssociationSet>
-          <AssociationSet Name="FK__BOM_Mappe__Child__70A8B9AE" Association="Self.FK__BOM_Mappe__Child__70A8B9AE">
+          <AssociationSet Name="FK__BOM_Mappe__Child__6754599E" Association="Self.FK__BOM_Mappe__Child__6754599E">
             <End Role="Product" EntitySet="Product" />
             <End Role="BOM_Mapper" EntitySet="BOM_Mapper" />
           </AssociationSet>
-          <AssociationSet Name="FK__BOM_Mappe__Produ__6FB49575" Association="Self.FK__BOM_Mappe__Produ__6FB49575">
+          <AssociationSet Name="FK__BOM_Mappe__Produ__68487DD7" Association="Self.FK__BOM_Mappe__Produ__68487DD7">
             <End Role="Product" EntitySet="Product" />
             <End Role="BOM_Mapper" EntitySet="BOM_Mapper" />
           </AssociationSet>
@@ -635,7 +641,7 @@
           <Property Name="Internal_status" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Payments" Relationship="Self.FK_Payment_Order" FromRole="Order" ToRole="Payment" />
           <Property Name="Sales_Person_Id" Type="Int32" />
-          <Property Name="Commission" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Commission" Type="Decimal" Precision="18" Scale="6" />
           <NavigationProperty Name="Order1" Relationship="DB_A3E8AF_luceousModel.FK_Order_Order" FromRole="Order" ToRole="Order1" />
           <NavigationProperty Name="Order2" Relationship="DB_A3E8AF_luceousModel.FK_Order_Order" FromRole="Order1" ToRole="Order" />
           <NavigationProperty Name="User" Relationship="DB_A3E8AF_luceousModel.FK_Order_User" FromRole="Order" ToRole="User" />
@@ -654,11 +660,11 @@
           <Property Name="OrderId" Type="Int32" />
           <Property Name="PaymentDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Status" Type="Int32" Nullable="false" />
-          <Property Name="DollarAmount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="RMBAmount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="DollarAmount" Type="Decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="RMBAmount" Type="Decimal" Precision="18" Scale="6" Nullable="false" />
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" Nullable="false" />
           <NavigationProperty Name="Order" Relationship="Self.FK_Payment_Order" FromRole="Payment" ToRole="Order" />
           <NavigationProperty Name="User" Relationship="Self.FK_Payment_User" FromRole="Payment" ToRole="User" />
         </EntityType>
@@ -669,9 +675,9 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Chinese_Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="English_Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="Dollar_Price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="RMB_Price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="Dollar_Price" Type="Decimal" Precision="18" Scale="6" Nullable="false" />
+          <Property Name="RMB_Price" Type="Decimal" Precision="18" Scale="6" Nullable="false" />
           <Property Name="Unit" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Parent_Id" Type="Int32" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
@@ -681,33 +687,14 @@
           <Property Name="Suppliers" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ParentIds" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="PerfomaInvoiceItems" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_Product" FromRole="Product" ToRole="PerfomaInvoiceItem" />
-          <Property Name="MOQ" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="MOQ" Type="Decimal" Precision="18" Scale="6" />
           <NavigationProperty Name="CommercialInvoiceItems" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_Product" FromRole="Product" ToRole="CommercialInvoiceItem" />
-          <Property Name="BOM" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="CBM" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="Weight" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="BOM" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="CBM" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="Weight" Type="Decimal" Precision="18" Scale="6" />
           <NavigationProperty Name="OrderLineItems" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Product" FromRole="Product" ToRole="OrderLineItem" />
           <NavigationProperty Name="BOM_Mapper" Relationship="DB_A3E8AF_luceousModel.FK__BOM_Mappe__Child__70A8B9AE" FromRole="Product" ToRole="BOM_Mapper" />
           <NavigationProperty Name="BOM_Mapper1" Relationship="DB_A3E8AF_luceousModel.FK__BOM_Mappe__Produ__6FB49575" FromRole="Product" ToRole="BOM_Mapper" />
-        </EntityType>
-        <EntityType Name="SupplierCartoon">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="SupplierAssignedMapId" Type="Int32" Nullable="false" />
-          <Property Name="PcsPerCartoon" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="TotalCartoons" Type="Int32" Nullable="false" />
-          <Property Name="NetWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="TotalNetWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="GrossWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="TotalGrossWeight" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="CartoonSize" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="CartoonBM" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="CartoonNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Status" Type="Int32" Nullable="false" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -726,8 +713,8 @@
           <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CompanyName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="Logo" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
-          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="0" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="0" />
           <Property Name="IsActive" Type="Boolean" />
           <Property Name="UserType" Type="Int32" />
           <NavigationProperty Name="Payments" Relationship="Self.FK_Payment_User" FromRole="User" ToRole="Payment" />
@@ -789,7 +776,6 @@
           <EntitySet Name="Orders" EntityType="Self.Order" />
           <EntitySet Name="Payments" EntityType="Self.Payment" />
           <EntitySet Name="Products" EntityType="Self.Product" />
-          <EntitySet Name="SupplierCartoons" EntityType="Self.SupplierCartoon" />
           <EntitySet Name="Users" EntityType="Self.User" />
           <EntitySet Name="UserTypes" EntityType="Self.UserType" />
           <AssociationSet Name="FK_Payment_Order" Association="Self.FK_Payment_Order">
@@ -897,6 +883,7 @@
             <End Role="Order" EntitySet="Orders" />
             <End Role="Account" EntitySet="Accounts" />
           </AssociationSet>
+          <EntitySet Name="SupplierCartoons" EntityType="DB_A3E8AF_luceousModel.SupplierCartoon" />
         </EntityContainer>
         <EntityType Name="PerfomaInvoice">
           <Key>
@@ -918,8 +905,8 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PerfomaInvoiceId" Type="Int32" />
           <Property Name="ProductId" Type="Int32" />
-          <Property Name="RMB_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="Dollar_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="RMB_ProductPrice" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="Dollar_ProductPrice" Type="Decimal" Precision="18" Scale="6" />
           <NavigationProperty Name="PerfomaInvoice" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_PerfomaInvoice" FromRole="PerfomaInvoiceItem" ToRole="PerfomaInvoice" />
           <NavigationProperty Name="Product" Relationship="DB_A3E8AF_luceousModel.FK_PerfomaInvoiceItems_Product" FromRole="PerfomaInvoiceItem" ToRole="Product" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
@@ -1005,8 +992,8 @@
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="CommercialInvoiceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ProductId" Type="Int32" />
-          <Property Name="RMB_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="Dollar_ProductPrice" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="RMB_ProductPrice" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="Dollar_ProductPrice" Type="Decimal" Precision="18" Scale="6" />
           <NavigationProperty Name="CommercialInvoice" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_CommercialInvoice" FromRole="CommercialInvoiceItem" ToRole="CommercialInvoice" />
           <NavigationProperty Name="Product" Relationship="DB_A3E8AF_luceousModel.FK_CommercialInvoiceItems_Product" FromRole="CommercialInvoiceItem" ToRole="Product" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
@@ -1055,11 +1042,11 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="OrderId" Type="Int32" />
           <Property Name="ProductId" Type="Int32" />
-          <Property Name="DollarPurchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <Property Name="RMBPurchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <Property Name="DollarSalesPrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <Property Name="RMBSalesPrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <Property Name="Quantity" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="DollarPurchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="RMBPurchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="DollarSalesPrice" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="RMBSalesPrice" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="Quantity" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order" FromRole="OrderLineItem" ToRole="Order" />
@@ -1095,7 +1082,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="SupplierId" Type="Int32" />
-          <Property Name="Quantity" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="Quantity" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
@@ -1112,7 +1099,7 @@
           <Property Name="SupplierId" Type="Int32" />
           <Property Name="OrderSupplierMapId" Type="Int32" />
           <Property Name="Status" Type="Int32" Nullable="false" />
-          <Property Name="Quantity" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="Quantity" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="OrderLineItem" Type="Int32" />
@@ -1189,7 +1176,7 @@
           <Property Name="ChildId" Type="Int32" />
           <NavigationProperty Name="Product" Relationship="DB_A3E8AF_luceousModel.FK__BOM_Mappe__Child__70A8B9AE" FromRole="BOM_Mapper" ToRole="Product" />
           <NavigationProperty Name="Product1" Relationship="DB_A3E8AF_luceousModel.FK__BOM_Mappe__Produ__6FB49575" FromRole="BOM_Mapper" ToRole="Product" />
-          <Property Name="BOM" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="BOM" Type="Decimal" Precision="18" Scale="6" />
         </EntityType>
         <Association Name="FK__BOM_Mappe__Child__70A8B9AE">
           <End Type="DB_A3E8AF_luceousModel.Product" Role="Product" Multiplicity="0..1" />
@@ -1222,8 +1209,8 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CommercialId" Type="Int32" />
           <Property Name="OrderId" Type="Int32" />
-          <Property Name="Dollar_Price" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="RMB_Price" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Dollar_Price" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="RMB_Price" Type="Decimal" Precision="18" Scale="6" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="PerfomaId" Type="Int32" />
@@ -1281,6 +1268,31 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="SupplierCartoon">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SupplierAssignedMapId" Type="Int32" Nullable="false" />
+          <Property Name="PcsPerCartoon" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="TotalCartoons" Type="Int32" Nullable="false" />
+          <Property Name="NetWeight" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="TotalNetWeight" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="GrossWeight" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="TotalGrossWeight" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="CartoonBM" Type="Decimal" Nullable="false" Precision="18" Scale="6" />
+          <Property Name="CartoonNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="TotalPcs" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="CartoonLength" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="CartoonBreadth" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="CartoonHeight" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="CartoonPrefix" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CartoonMax" Type="Int32" />
+          <Property Name="CartoonSize" Type="Decimal" Precision="18" Scale="6" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1340,26 +1352,6 @@
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SupplierCartoons">
-            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.SupplierCartoon">
-              <MappingFragment StoreEntitySet="SupplierCartoon">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="SupplierAssignedMapId" ColumnName="SupplierAssignedMapId" />
-                <ScalarProperty Name="PcsPerCartoon" ColumnName="PcsPerCartoon" />
-                <ScalarProperty Name="TotalCartoons" ColumnName="TotalCartoons" />
-                <ScalarProperty Name="NetWeight" ColumnName="NetWeight" />
-                <ScalarProperty Name="TotalNetWeight" ColumnName="TotalNetWeight" />
-                <ScalarProperty Name="GrossWeight" ColumnName="GrossWeight" />
-                <ScalarProperty Name="TotalGrossWeight" ColumnName="TotalGrossWeight" />
-                <ScalarProperty Name="CartoonSize" ColumnName="CartoonSize" />
-                <ScalarProperty Name="CartoonBM" ColumnName="CartoonBM" />
-                <ScalarProperty Name="CartoonNumber" ColumnName="CartoonNumber" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1509,6 +1501,32 @@
                 <ScalarProperty Name="Dollar_Price" ColumnName="Dollar_Price" />
                 <ScalarProperty Name="OrderId" ColumnName="OrderId" />
                 <ScalarProperty Name="CommercialId" ColumnName="CommercialId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SupplierCartoons">
+            <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.SupplierCartoon">
+              <MappingFragment StoreEntitySet="SupplierCartoon">
+                <ScalarProperty Name="CartoonSize" ColumnName="CartoonSize" />
+                <ScalarProperty Name="CartoonMax" ColumnName="CartoonMax" />
+                <ScalarProperty Name="CartoonPrefix" ColumnName="CartoonPrefix" />
+                <ScalarProperty Name="CartoonHeight" ColumnName="CartoonHeight" />
+                <ScalarProperty Name="CartoonBreadth" ColumnName="CartoonBreadth" />
+                <ScalarProperty Name="CartoonLength" ColumnName="CartoonLength" />
+                <ScalarProperty Name="TotalPcs" ColumnName="TotalPcs" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="CartoonNumber" ColumnName="CartoonNumber" />
+                <ScalarProperty Name="CartoonBM" ColumnName="CartoonBM" />
+                <ScalarProperty Name="TotalGrossWeight" ColumnName="TotalGrossWeight" />
+                <ScalarProperty Name="GrossWeight" ColumnName="GrossWeight" />
+                <ScalarProperty Name="TotalNetWeight" ColumnName="TotalNetWeight" />
+                <ScalarProperty Name="NetWeight" ColumnName="NetWeight" />
+                <ScalarProperty Name="TotalCartoons" ColumnName="TotalCartoons" />
+                <ScalarProperty Name="PcsPerCartoon" ColumnName="PcsPerCartoon" />
+                <ScalarProperty Name="SupplierAssignedMapId" ColumnName="SupplierAssignedMapId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

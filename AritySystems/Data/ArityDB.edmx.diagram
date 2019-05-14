@@ -8,7 +8,6 @@
         <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.Order" Width="1.5" PointX="3.75" PointY="4" IsExpanded="true" />
         <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.Payment" Width="1.5" PointX="6" PointY="5.625" IsExpanded="true" />
         <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.Product" Width="1.5" PointX="3.75" PointY="20.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.SupplierCartoon" Width="1.5" PointX="7.75" PointY="10" IsExpanded="true" />
         <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.User" Width="1.5" PointX="0.75" PointY="8.75" IsExpanded="true" />
         <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.UserType" Width="1.5" PointX="3" PointY="16.125" IsExpanded="true" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Payment_Order" ManuallyRouted="false" />
@@ -44,6 +43,7 @@
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK__Account__Supplie__73852659" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Account_CommercialInvoice" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Account_Order" />
+        <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.SupplierCartoon" Width="1.5" PointX="0.75" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

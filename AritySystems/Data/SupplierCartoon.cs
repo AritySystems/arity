@@ -22,11 +22,17 @@ namespace AritySystems.Data
         public decimal TotalNetWeight { get; set; }
         public decimal GrossWeight { get; set; }
         public decimal TotalGrossWeight { get; set; }
-        public decimal CartoonSize { get; set; }
         public decimal CartoonBM { get; set; }
         public string CartoonNumber { get; set; }
         public int Status { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public Nullable<decimal> TotalPcs { get; set; }
+        public Nullable<decimal> CartoonLength { get; set; }
+        public Nullable<decimal> CartoonBreadth { get; set; }
+        public Nullable<decimal> CartoonHeight { get; set; }
+        public string CartoonPrefix { get; set; }
+        public Nullable<int> CartoonMax { get; set; }
+        public Nullable<decimal> CartoonSize { get; set; }
     }
 }

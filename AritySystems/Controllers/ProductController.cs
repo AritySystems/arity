@@ -97,6 +97,7 @@ namespace AritySystems.Controllers
                 product.ModifiedDate = DateTime.Now;
                 product.CreatedDate = DateTime.Now;
                 product.IsActive = true;
+                var data = ConvertDTOtoModel(product);
                 dataContext.Products.Add(ConvertDTOtoModel(product));
             }
             dataContext.SaveChanges();

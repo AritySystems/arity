@@ -17,7 +17,7 @@ namespace AritySystems.Models
         public decimal TotalNetWeight { get; set; }
         public decimal GrossWeight { get; set; }
         public decimal TotalGrossWeight { get; set; }
-        public decimal CartoonSize { get; set; }
+        public decimal? CartoonSize { get; set; }
         public decimal CartoonBM { get; set; }
         public string CartoonNumber { get; set; }
         public int Status { get; set; }

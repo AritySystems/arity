@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using AritySystems.Data;
 
+
 namespace AritySystems.Models
 {
     public class OrderDetailModel

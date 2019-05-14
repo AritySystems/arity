@@ -1,5 +1,5 @@
 ﻿@using AritySystems.Data;
-@model AritySystems.Data.SupplierCartoon
+@model AritySystems.Models.SupplierCartoonModel
 @{
     ViewBag.Title = "Add Supplier Carton Detail";
 }
@@ -47,42 +47,45 @@
                         </thead>
                     </table>
                 </div>
-                   <div class="col-md-8" style="margin-bottom:20px;">
+                <div class="col-md-8" style="margin-bottom:20px;">
                     @Html.TextBox("OrderId", 0, new { @type = "hidden", @class = "form-control" })
                     <div class="form-group">
                         <label class="">Order Line Items</label>
-                        @Html.DropDownList("SupplierOrderMapId", ViewBag.OrderLineItems as SelectList, "-- Select OrderLineItems--", new { id="supplierorderdd", @class = "form-control" })
+                        @Html.DropDownList("SupplierOrderMapId", ViewBag.OrderLineItems as SelectList, "-- Select OrderLineItems--", new { id = "supplierorderdd", @class = "form-control" })
                     </div>
 
                     <div class="form-group">
                         <label class="">Pieces Per Carton</label>
-                        @Html.TextBox("PcsPerCartoon", 0, new { id ="pcspercarton", @type = "number", @class = "form-control" })
+                        @Html.TextBoxFor(x => x.PcsPerCartoon, new { id = "pcspercarton", @type = "number", @class = "form-control" })
 
                     </div>
                     <div class="form-group">
                         <label class="">Total Cartons</label>
-                        @Html.TextBox("TotalCartoons", 0, new { @type = "number", @class = "form-control" })
+                        @Html.TextBoxFor(x => x.TotalCartoons, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
                         <label class="">Net Weight</label>
-                        @Html.TextBox("NetWeight", 0, new { @type = "number", @class = "form-control" })
+                        @Html.TextBoxFor(x => x.NetWeight, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
-                        <label class="">Total Net Weight</label>
-                        @Html.TextBox("TotalNetWeight", 0, new { @type = "number", @class = "form-control" })
+                        <label class="">Gross Weight</label>
+                        @Html.TextBoxFor(x => x.GrossWeight, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
                         <label class="">Carton Size</label>
-                        @Html.TextBox("CartoonSize", 0, new { @type = "number", @class = "form-control" })
+                        @Html.TextBoxFor(x => x.CartoonSize, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
                         <label class="">Carton BM</label>
-                        @Html.TextBox("CartoonBM", 0, new { @type = "number", @class = "form-control" })
+                        @Html.TextBoxFor(x => x.CartoonBM, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
-                        <label class="">Carton Number</label>
-                        @Html.TextBox("CartoonNumber", 0, new { @type = "text", @class = "form-control" })
+                        @Html.HiddenFor(x => x.CartoonNumber)
                     </div>
+                    @*<div class="form-group">
+            <label class="">Carton Number</label>
+            @Html.TextBox("CartoonNumber", 0, new { @type = "text", @class = "form-control" })
+        </div>*@
 
                     <div class="col-md-2 col-md-offset-5">
                         <button type="submit" class="btn btn-success" id="btnSubmit"><i class="fa fa-shopping-bag"></i> Submit</button>
@@ -98,9 +101,9 @@
 @section Scripts {
     <script>
 
-        $("#btnSubmit").click(function () {
-            $("#btnSubmit").prop('disabled', true);
-        });
+        //$("#btnSubmit").click(function () {
+        //    $("#btnSubmit").prop('disabled', true);
+        //});
 
         $(document).ready(function () {           
             $("#btnSubmit").prop('disabled', false);
@@ -127,7 +130,6 @@
                 "supplierCartonDetail": [[1, 'asc']]
             });
             $('#supplierorderdd').on('change', function () {
-                debugger
                 var myValue = $(this).val();
                // var myText = $.trim($("#supplierorderdd :selected").val()); // Trim spaces and convert to lowercase for comparison
 

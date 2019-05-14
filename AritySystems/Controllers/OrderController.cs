@@ -250,9 +250,9 @@ namespace AritySystems.Controllers
 
                             OrderLineItem_Supplier_Mapping dataModeldata = new OrderLineItem_Supplier_Mapping();
                             dataModeldata = db.OrderLineItem_Supplier_Mapping.Where(x => x.OrderId == orderId && x.SupplierId == supplierid).FirstOrDefault();
+                            OrderLineItem_Supplier_Mapping dataModel = new OrderLineItem_Supplier_Mapping();
                             if (dataModeldata == null)
                             {
-                                OrderLineItem_Supplier_Mapping dataModel = new OrderLineItem_Supplier_Mapping();
                                 dataModel.CreatedDate = DateTime.Now;
                                 dataModel.ModifiedDate = DateTime.Now;
                                 dataModel.OrderId = Convert.ToInt32(item.OrderId);
@@ -268,9 +268,9 @@ namespace AritySystems.Controllers
                                 dataModeldata.Quantity = db.OrderLineItems.Where(x => x.OrderId == orderId).Select(x => x.Quantity).Sum();
                             }
                             db.SaveChanges();
-
+                            
                             //var id = dataModeldata.Id;
-                            model.OrderSupplierMapId = id;
+                            model.OrderSupplierMapId = dataModeldata != null ? dataModeldata.Id : dataModel.Id;
                             model.OrderLineItem = Convert.ToInt32(item.OrderLineItemId);
                             model.Quantity = quantity;
                             model.Status = 1;
@@ -329,30 +329,34 @@ namespace AritySystems.Controllers
 
 
         [HttpPost]
-        public ActionResult AddSupplierCartonDetail(FormCollection fc)
+        public ActionResult AddSupplierCartonDetail(SupplierCartoonModel data)
         {
             ArityEntities objDb = new ArityEntities();
             List<KeyValuePair<int, int>> lineItem = new List<KeyValuePair<int, int>>();
-            ViewBag.OrderId = Convert.ToInt32(fc["OrderId"]);
-            if (fc != null)
+            ViewBag.OrderId = Convert.ToInt32(data.OrderId);
+           // if (data != null)
             {
 
                 SupplierCartoon model = new SupplierCartoon();
                 try
                 {
-                    if (Convert.ToInt32(fc["SupplierOrderMapId"]) != 0)
+                    if (Convert.ToInt32(data.SupplierOrderMapId) != 0)
                     {
-                        model.SupplierAssignedMapId = Convert.ToInt32(fc["SupplierOrderMapId"]);
-                        model.PcsPerCartoon = Convert.ToInt32(fc["PcsPerCartoon"]);
-                        model.CartoonBM = Convert.ToInt32(fc["CartoonBM"]);
-                        model.CartoonNumber = fc["CartoonNumber"].ToString();
-                        model.CartoonSize = Convert.ToInt32(fc["CartoonSize"]);
+                        model.SupplierAssignedMapId = Convert.ToInt32(data.SupplierOrderMapId);
+                        model.PcsPerCartoon = Convert.ToDecimal(data.PcsPerCartoon);
+                        model.CartoonBM = Convert.ToDecimal(data.CartoonBM);
+                        //model.CartoonNumber = fc["CartoonNumber"].ToString();
+                        model.CartoonSize = Convert.ToDecimal(data.CartoonSize);
                         model.CreatedDate = DateTime.Now;
-                        model.NetWeight = Convert.ToInt32(fc["NetWeight"]);
+                        model.ModifiedDate = DateTime.Now;
+                        model.GrossWeight = Convert.ToDecimal(data.GrossWeight);
                         model.Status = 1;
-                        model.TotalCartoons = Convert.ToInt32(fc["TotalCartoons"]);
-                        model.TotalGrossWeight = Convert.ToInt32(fc["TotalGrossWeight"]);
-                        model.TotalNetWeight = Convert.ToInt32(fc["TotalNetWeight"]);
+                        model.TotalCartoons = Convert.ToInt32(data.TotalCartoons);
+                        //model.TotalGrossWeight = Convert.ToInt32(fc["TotalGrossWeight"]);
+                        //model.TotalNetWeight = Convert.ToInt32(fc["TotalNetWeight"]);
+                        model.TotalGrossWeight = model.TotalCartoons * model.GrossWeight;
+                        model.TotalNetWeight = model.TotalCartoons * model.NetWeight;
+                        model.CartoonNumber = model.CartoonNumber;
                         objDb.SupplierCartoons.Add(model);
                         objDb.SaveChanges();
                     }
@@ -958,10 +962,10 @@ namespace AritySystems.Controllers
                 using (var db = new ArityEntities())
                 {
                     var model = (from a in db.SupplierCartoons
-                                 join b in db.OrderLineItem_Supplier_Mapping on a.SupplierAssignedMapId equals b.OrderId
-                                 join c in db.OrderLineItems on b.OrderId equals c.OrderId
-                                 join d in db.Orders on b.OrderId equals d.Id
-                                 where d.Id == OrderId
+                                 join supplier in db.Supplier_Assigned_OrderLineItem on a.SupplierAssignedMapId equals supplier.Id 
+                                 //join b in db.OrderLineItem_Supplier_Mapping on supplier.SupplierId equals b.SupplierId
+                                 join c in db.OrderLineItems on supplier.OrderLineItem equals c.Id
+                                 where c.OrderId == OrderId
                                  select new SupplierCartonDetailModel
                                  {
                                      Id = a.Id,
@@ -990,7 +994,7 @@ namespace AritySystems.Controllers
 
         public ActionResult AddSupplierCartonDetail(int orderId)
         {
-            SupplierCartoon carton = new SupplierCartoon();
+            SupplierCartoonModel carton = new SupplierCartoonModel();
             ArityEntities dbContext = new ArityEntities();
             ViewBag.OrderId = orderId;
             ViewBag.OrderName = dbContext.Orders.Where(x => x.Id == orderId).Select(x => x.Prefix).FirstOrDefault();
@@ -1013,6 +1017,10 @@ namespace AritySystems.Controllers
                                     join c in dbContext.Supplier_Assigned_OrderLineItem on b.Id equals c.OrderSupplierMapId
                                     where b.OrderId == orderId && b.OrderId != null
                                     select c.Quantity).FirstOrDefault();
+            carton.CartoonNumber = (from u in dbContext.Users
+                                    join o in dbContext.Orders on u.Id equals o.CustomerId
+                                    where o.Id == orderId
+                                    select u.Prefix).FirstOrDefault();
             return View(carton);
         }
 

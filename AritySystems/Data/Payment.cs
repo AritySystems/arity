@@ -22,7 +22,7 @@ namespace AritySystems.Data
         public decimal RMBAmount { get; set; }
         public int Id { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public System.DateTime ModifiedDate { get; set; }
     
         public virtual Order Order { get; set; }
         public virtual User User { get; set; }
