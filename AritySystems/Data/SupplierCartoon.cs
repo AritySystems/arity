@@ -34,5 +34,8 @@ namespace AritySystems.Data
         public string CartoonPrefix { get; set; }
         public Nullable<int> CartoonMax { get; set; }
         public Nullable<decimal> CartoonSize { get; set; }
+        public Nullable<int> OrderId { get; set; }
+    
+        public virtual Order Order { get; set; }
     }
 }

@@ -48,5 +48,14 @@ namespace AritySystems.Models
 
         public int SupplierOrderMapId { get; set; }
 
+        public decimal CartoonBreadth { get; set; }
+
+        public decimal CartoonHeight { get; set; }
+
+        public string CartoonPrefix { get; set; }
+
+
+        public decimal CartoonLength { get; set; }
+
     }
 }

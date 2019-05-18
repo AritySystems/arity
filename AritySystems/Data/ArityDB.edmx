@@ -188,6 +188,7 @@
           <Property Name="CartoonPrefix" Type="nvarchar" MaxLength="50" />
           <Property Name="CartoonMax" Type="int" />
           <Property Name="CartoonSize" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="OrderId" Type="int" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -498,6 +499,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SupplierCartoon_Order">
+          <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
+          <End Role="SupplierCartoon" Type="Self.SupplierCartoon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SupplierCartoon">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_UserType_User">
           <End Role="User" Type="Self.User" Multiplicity="0..1" />
           <End Role="UserType" Type="Self.UserType" Multiplicity="*" />
@@ -618,6 +631,10 @@
             <End Role="User" EntitySet="User" />
             <End Role="Supplier_Assigned_OrderLineItem" EntitySet="Supplier_Assigned_OrderLineItem" />
           </AssociationSet>
+          <AssociationSet Name="FK_SupplierCartoon_Order" Association="Self.FK_SupplierCartoon_Order">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="SupplierCartoon" EntitySet="SupplierCartoon" />
+          </AssociationSet>
           <AssociationSet Name="FK_UserType_User" Association="Self.FK_UserType_User">
             <End Role="User" EntitySet="User" />
             <End Role="UserType" EntitySet="UserType" />
@@ -651,6 +668,7 @@
           <NavigationProperty Name="OrderLineItems" Relationship="DB_A3E8AF_luceousModel.FK_OrderLineItem_Order" FromRole="Order" ToRole="OrderLineItem" />
           <NavigationProperty Name="OrderLineItem_Supplier_Mapping" Relationship="DB_A3E8AF_luceousModel.FK_OrderId_Supplier_Mapping" FromRole="Order" ToRole="OrderLineItem_Supplier_Mapping" />
           <NavigationProperty Name="Accounts" Relationship="DB_A3E8AF_luceousModel.FK_Account_Order" FromRole="Order" ToRole="Account" />
+          <NavigationProperty Name="SupplierCartoons" Relationship="DB_A3E8AF_luceousModel.FK_SupplierCartoon_Order" FromRole="Order" ToRole="SupplierCartoon" />
         </EntityType>
         <EntityType Name="Payment">
           <Key>
@@ -884,6 +902,10 @@
             <End Role="Account" EntitySet="Accounts" />
           </AssociationSet>
           <EntitySet Name="SupplierCartoons" EntityType="DB_A3E8AF_luceousModel.SupplierCartoon" />
+          <AssociationSet Name="FK_SupplierCartoon_Order" Association="DB_A3E8AF_luceousModel.FK_SupplierCartoon_Order">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="SupplierCartoon" EntitySet="SupplierCartoons" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PerfomaInvoice">
           <Key>
@@ -1292,7 +1314,21 @@
           <Property Name="CartoonPrefix" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CartoonMax" Type="Int32" />
           <Property Name="CartoonSize" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="OrderId" Type="Int32" />
+          <NavigationProperty Name="Order" Relationship="DB_A3E8AF_luceousModel.FK_SupplierCartoon_Order" FromRole="SupplierCartoon" ToRole="Order" />
         </EntityType>
+        <Association Name="FK_SupplierCartoon_Order">
+          <End Type="DB_A3E8AF_luceousModel.Order" Role="Order" Multiplicity="0..1" />
+          <End Type="DB_A3E8AF_luceousModel.SupplierCartoon" Role="SupplierCartoon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SupplierCartoon">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1508,6 +1544,7 @@
           <EntitySetMapping Name="SupplierCartoons">
             <EntityTypeMapping TypeName="DB_A3E8AF_luceousModel.SupplierCartoon">
               <MappingFragment StoreEntitySet="SupplierCartoon">
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
                 <ScalarProperty Name="CartoonSize" ColumnName="CartoonSize" />
                 <ScalarProperty Name="CartoonMax" ColumnName="CartoonMax" />
                 <ScalarProperty Name="CartoonPrefix" ColumnName="CartoonPrefix" />
