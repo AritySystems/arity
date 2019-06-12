@@ -23,6 +23,7 @@ namespace AritySystems.Data
             this.OrderLineItems = new HashSet<OrderLineItem>();
             this.OrderLineItem_Supplier_Mapping = new HashSet<OrderLineItem_Supplier_Mapping>();
             this.Accounts = new HashSet<Account>();
+            this.SupplierCartoons = new HashSet<SupplierCartoon>();
         }
     
         public int Id { get; set; }
@@ -52,5 +53,7 @@ namespace AritySystems.Data
         public virtual ICollection<OrderLineItem_Supplier_Mapping> OrderLineItem_Supplier_Mapping { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Account> Accounts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SupplierCartoon> SupplierCartoons { get; set; }
     }
 }

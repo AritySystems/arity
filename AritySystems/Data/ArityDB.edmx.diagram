@@ -44,6 +44,7 @@
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Account_CommercialInvoice" />
         <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_Account_Order" />
         <EntityTypeShape EntityType="DB_A3E8AF_luceousModel.SupplierCartoon" Width="1.5" PointX="0.75" PointY="0.75" />
+        <AssociationConnector Association="DB_A3E8AF_luceousModel.FK_SupplierCartoon_Order" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

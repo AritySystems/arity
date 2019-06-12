@@ -72,8 +72,16 @@
                         @Html.TextBoxFor(x => x.GrossWeight, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
-                        <label class="">Carton Size</label>
-                        @Html.TextBoxFor(x => x.CartoonSize, new { @class = "form-control" })
+                        <label class="">Carton Length</label>
+                        @Html.TextBoxFor(x => x.CartoonLength, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        <label class="">Carton Breadth</label>
+                        @Html.TextBoxFor(x => x.CartoonBreadth, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        <label class="">Carton Height</label>
+                        @Html.TextBoxFor(x => x.CartoonHeight, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
                         <label class="">Carton BM</label>
@@ -81,6 +89,12 @@
                     </div>
                     <div class="form-group">
                         @Html.HiddenFor(x => x.CartoonNumber)
+                    </div>
+                    <div>
+                        @Html.HiddenFor(x => x.CartoonPrefix)
+                    </div>
+                    <div>
+                        @Html.HiddenFor(x => x.OrderId)
                     </div>
                     @*<div class="form-group">
             <label class="">Carton Number</label>

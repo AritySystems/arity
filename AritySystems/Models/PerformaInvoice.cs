@@ -27,6 +27,48 @@ namespace AritySystems.Models
 
         public List<PerfomaProductList> ProductList { get; set; }
 
+        public List<CartoonDetails> CartoonList { get; set; }
+
+    }
+
+    public class CartoonDetails
+    {
+        public string SRNO { get; set; }
+
+        public string Partiular { get; set; }
+
+        public decimal Quantity_PCS { get; set; }
+
+        public decimal PCSPERCartoon { get; set; }
+
+        public int TotalCartoon { get; set; }
+
+        public decimal NetWeight { get; set; }
+
+        public decimal TotalNetWeight { get; set; }
+
+        public decimal GrossWeight { get; set; }
+
+        public decimal TotalGrossWeight { get; set; }
+
+        public decimal? CartoonLength { get; set; }
+
+        public decimal? CartoonBreadth { get; set; }
+
+        public decimal? CartoonHeight { get; set; }
+
+        public decimal CartoonCBM { get; set; }
+
+        public string CartoonNumber { get; set; }
+
+        public int CartoonsTotal { get; set; }
+
+        public decimal CartoonsTotalGrossWeight { get; set; }
+
+        public decimal CartoonsTotalNetWeight { get; set; }
+
+        public decimal CartoonsTotalCBM { get; set; }
+
     }
 
 
