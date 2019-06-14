@@ -17,5 +17,7 @@ namespace AritySystems.Models
         public decimal Quantity { get; set; }
         public string ModifiedDate { get; set; }
         public string CreatedDate { get; set; }
+
+        public int OrderId { get; set; }
     }
 }

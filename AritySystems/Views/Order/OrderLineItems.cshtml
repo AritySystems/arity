@@ -130,7 +130,7 @@
                     quantity = $tds.eq(2).text(),
                     newquantity = $tds.find('input#txtQuantity').val(),
                     supplierid = $tds.find('#jsonSupplierList option:selected').attr('id'),
-                    orderLineItem = $(this).find("span.purchase-rmb-price").attr("data-item-id");
+                    orderLineItem = $(this).find("span.purchase-rmb-prices").attr("data-item-id");
                 var items = {}
                 items["OldQuantity"] = quantity,
                 items["NewQuantity"] = newquantity,

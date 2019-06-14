@@ -12,19 +12,16 @@ namespace AritySystems.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class Supplier_Assigned_OrderLineItem
+    public partial class SupplierCartoonDetail
     {
         public int Id { get; set; }
-        public Nullable<int> SupplierId { get; set; }
-        public Nullable<int> OrderSupplierMapId { get; set; }
-        public int Status { get; set; }
-        public decimal Quantity { get; set; }
+        public int SupplierCartoonId { get; set; }
+        public string CartoonNumber { get; set; }
+        public Nullable<int> CartoonStatus { get; set; }
+        public string ExtraInfo { get; set; }
+        public Nullable<System.DateTime> CreatedDate { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public System.DateTime CreatedDate { get; set; }
-        public Nullable<int> OrderLineItem { get; set; }
-        public Nullable<System.DateTime> ExpectedTimeDelivery { get; set; }
     
-        public virtual OrderLineItem OrderLineItem1 { get; set; }
-        public virtual User User { get; set; }
+        public virtual SupplierCartoon SupplierCartoon { get; set; }
     }
 }

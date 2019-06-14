@@ -17,11 +17,11 @@ namespace AritySystems.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Product()
         {
-            this.PerfomaInvoiceItems = new HashSet<PerfomaInvoiceItem>();
-            this.CommercialInvoiceItems = new HashSet<CommercialInvoiceItem>();
-            this.OrderLineItems = new HashSet<OrderLineItem>();
             this.BOM_Mapper = new HashSet<BOM_Mapper>();
             this.BOM_Mapper1 = new HashSet<BOM_Mapper>();
+            this.CommercialInvoiceItems = new HashSet<CommercialInvoiceItem>();
+            this.OrderLineItems = new HashSet<OrderLineItem>();
+            this.PerfomaInvoiceItems = new HashSet<PerfomaInvoiceItem>();
         }
     
         public int Id { get; set; }
@@ -44,14 +44,14 @@ namespace AritySystems.Data
         public Nullable<decimal> Weight { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PerfomaInvoiceItem> PerfomaInvoiceItems { get; set; }
+        public virtual ICollection<BOM_Mapper> BOM_Mapper { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOM_Mapper> BOM_Mapper1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommercialInvoiceItem> CommercialInvoiceItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderLineItem> OrderLineItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOM_Mapper> BOM_Mapper { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOM_Mapper> BOM_Mapper1 { get; set; }
+        public virtual ICollection<PerfomaInvoiceItem> PerfomaInvoiceItems { get; set; }
     }
 }

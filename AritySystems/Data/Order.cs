@@ -17,12 +17,11 @@ namespace AritySystems.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Order()
         {
-            this.Payments = new HashSet<Payment>();
-            this.PerfomaInvoices = new HashSet<PerfomaInvoice>();
+            this.Accounts = new HashSet<Account>();
             this.CommercialInvoices = new HashSet<CommercialInvoice>();
             this.OrderLineItems = new HashSet<OrderLineItem>();
-            this.OrderLineItem_Supplier_Mapping = new HashSet<OrderLineItem_Supplier_Mapping>();
-            this.Accounts = new HashSet<Account>();
+            this.Payments = new HashSet<Payment>();
+            this.PerfomaInvoices = new HashSet<PerfomaInvoice>();
             this.SupplierCartoons = new HashSet<SupplierCartoon>();
         }
     
@@ -37,22 +36,21 @@ namespace AritySystems.Data
         public Nullable<int> Sales_Person_Id { get; set; }
         public Nullable<decimal> Commission { get; set; }
         public string TermsandCondition { get; set; }
+        public Nullable<System.DateTime> ExpectedTimeDelivery { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Payment> Payments { get; set; }
+        public virtual ICollection<Account> Accounts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CommercialInvoice> CommercialInvoices { get; set; }
         public virtual Order Order1 { get; set; }
         public virtual Order Order2 { get; set; }
         public virtual User User { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PerfomaInvoice> PerfomaInvoices { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommercialInvoice> CommercialInvoices { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderLineItem> OrderLineItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrderLineItem_Supplier_Mapping> OrderLineItem_Supplier_Mapping { get; set; }
+        public virtual ICollection<Payment> Payments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Account> Accounts { get; set; }
+        public virtual ICollection<PerfomaInvoice> PerfomaInvoices { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SupplierCartoon> SupplierCartoons { get; set; }
     }

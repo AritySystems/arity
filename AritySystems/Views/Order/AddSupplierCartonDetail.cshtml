@@ -24,9 +24,9 @@
                         <div class="col-md-12">
                             <h4>  @ViewBag.OrderName</h4>
                         </div>
-                        <div class="col-md-12">
+                        @*<div class="col-md-12">
                             <h4> Status<span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @ViewBag.Status</span></h4>
-                        </div>
+                        </div>*@
                     </div>                   
                         </div>
                 <div class="col-md-12">
@@ -41,7 +41,7 @@
                                 <th>Net Weight</th>
                                 <th>Total Net Weight</th>
                                 <th>Carton Size</th>
-                                <th>Carton BM</th>
+                                
                                 <th>Carton Number</th>
                             </tr>
                         </thead>
@@ -64,27 +64,29 @@
                         @Html.TextBoxFor(x => x.TotalCartoons, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
-                        <label class="">Net Weight</label>
+                        <label class="">Net Weight (KG)</label>
                         @Html.TextBoxFor(x => x.NetWeight, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
-                        <label class="">Gross Weight</label>
+                        <label class="">Gross Weight (KG)</label>
                         @Html.TextBoxFor(x => x.GrossWeight, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
-                        <label class="">Carton Length</label>
+                        <label class="">Carton Size (L) (CM)</label>
                         @Html.TextBoxFor(x => x.CartoonLength, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
-                        <label class="">Carton Breadth</label>
+                        <label class="">Carton Size (b) (CM)</label>
                         @Html.TextBoxFor(x => x.CartoonBreadth, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
-                        <label class="">Carton Height</label>
+                        <label class="">
+                            Carton Size (H) (CM)
+                        </label>
                         @Html.TextBoxFor(x => x.CartoonHeight, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
-                        <label class="">Carton BM</label>
+                        <label class="">Carton BM (CM)</label>
                         @Html.TextBoxFor(x => x.CartoonBM, new { @class = "form-control" })
                     </div>
                     <div class="form-group">
@@ -132,13 +134,12 @@
                             return '<input type="hidden" id="txtId" value="' + data + '"/>'
                         }
                     },
-                   {"data":"Product_English_Name"},
+                    { "data":"Product_Chinese_Name"},
                       {"data":"PcsPerCartoon"},
                       {"data":"TotalCartoons"},
                       {"data":"NetWeight"},
                       {"data":"TotalNetWeight"},
                       {"data":"CartoonSize"},
-                         {"data":"CartoonBM"},
                             {"data":"CartoonNumber"},
                 ],
                 "supplierCartonDetail": [[1, 'asc']]

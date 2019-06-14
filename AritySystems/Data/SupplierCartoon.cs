@@ -14,6 +14,12 @@ namespace AritySystems.Data
     
     public partial class SupplierCartoon
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public SupplierCartoon()
+        {
+            this.SupplierCartoonDetails = new HashSet<SupplierCartoonDetail>();
+        }
+    
         public int Id { get; set; }
         public int SupplierAssignedMapId { get; set; }
         public decimal PcsPerCartoon { get; set; }
@@ -37,5 +43,7 @@ namespace AritySystems.Data
         public Nullable<int> OrderId { get; set; }
     
         public virtual Order Order { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SupplierCartoonDetail> SupplierCartoonDetails { get; set; }
     }
 }

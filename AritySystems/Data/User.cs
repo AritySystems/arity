@@ -17,12 +17,11 @@ namespace AritySystems.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public User()
         {
-            this.Payments = new HashSet<Payment>();
-            this.UserTypes = new HashSet<UserType>();
-            this.Orders = new HashSet<Order>();
-            this.OrderLineItem_Supplier_Mapping = new HashSet<OrderLineItem_Supplier_Mapping>();
-            this.Supplier_Assigned_OrderLineItem = new HashSet<Supplier_Assigned_OrderLineItem>();
             this.Accounts = new HashSet<Account>();
+            this.Orders = new HashSet<Order>();
+            this.Payments = new HashSet<Payment>();
+            this.Supplier_Assigned_OrderLineItem = new HashSet<Supplier_Assigned_OrderLineItem>();
+            this.UserTypes = new HashSet<UserType>();
         }
     
         public int Id { get; set; }
@@ -45,16 +44,14 @@ namespace AritySystems.Data
         public string CountryCode { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Payment> Payments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserType> UserTypes { get; set; }
+        public virtual ICollection<Account> Accounts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Orders { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrderLineItem_Supplier_Mapping> OrderLineItem_Supplier_Mapping { get; set; }
+        public virtual ICollection<Payment> Payments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Supplier_Assigned_OrderLineItem> Supplier_Assigned_OrderLineItem { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Account> Accounts { get; set; }
+        public virtual ICollection<UserType> UserTypes { get; set; }
     }
 }

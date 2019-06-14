@@ -17,8 +17,8 @@ namespace AritySystems.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CommercialInvoice()
         {
-            this.CommercialInvoiceItems = new HashSet<CommercialInvoiceItem>();
             this.Accounts = new HashSet<Account>();
+            this.CommercialInvoiceItems = new HashSet<CommercialInvoiceItem>();
         }
     
         public int Id { get; set; }
@@ -27,10 +27,10 @@ namespace AritySystems.Data
         public Nullable<System.DateTime> ModifiedDate { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Account> Accounts { get; set; }
         public virtual Order Order { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommercialInvoiceItem> CommercialInvoiceItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Account> Accounts { get; set; }
     }
 }

@@ -240,64 +240,64 @@
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Data\Account.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
-    <Compile Include="Data\ArityDB.Context.cs">
+    <Compile Include="Data\ArityEntities.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ArityDB.Context.tt</DependentUpon>
+      <DependentUpon>ArityEntities.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Data\ArityDB.cs">
+    <Compile Include="Data\ArityEntities.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
-    <Compile Include="Data\ArityDB.Designer.cs">
+    <Compile Include="Data\ArityEntities.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ArityDB.edmx</DependentUpon>
+      <DependentUpon>ArityEntities.edmx</DependentUpon>
     </Compile>
     <Compile Include="Data\BOM_Mapper.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\CommercialInvoice.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\CommercialInvoiceItem.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\Order.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\OrderLineItem.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\OrderLineItem_Supplier_Mapping.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\Payment.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\PerfomaInvoice.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\PerfomaInvoiceItem.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\Product.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\SupplierCartoon.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\SupplierCartoonDetail.cs">
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\Supplier_Assigned_OrderLineItem.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\User.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\UserType.cs">
-      <DependentUpon>ArityDB.tt</DependentUpon>
+      <DependentUpon>ArityEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -327,15 +327,15 @@
     <Content Include="Content\chosen.min.css" />
     <Content Include="Content\LoginCss.css" />
     <Content Include="Content\Shipping_img.jpg" />
-    <Content Include="Data\ArityDB.Context.tt">
+    <Content Include="Data\ArityEntities.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>ArityDB.edmx</DependentUpon>
-      <LastGenOutput>ArityDB.Context.cs</LastGenOutput>
+      <DependentUpon>ArityEntities.edmx</DependentUpon>
+      <LastGenOutput>ArityEntities.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Data\ArityDB.tt">
+    <Content Include="Data\ArityEntities.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>ArityDB.edmx</DependentUpon>
-      <LastGenOutput>ArityDB.cs</LastGenOutput>
+      <DependentUpon>ArityEntities.edmx</DependentUpon>
+      <LastGenOutput>ArityEntities.cs</LastGenOutput>
     </Content>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -343,12 +343,12 @@
     <Content Include="Scripts\bootstrap-multiselect.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <EntityDeploy Include="Data\ArityDB.edmx">
+    <EntityDeploy Include="Data\ArityEntities.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>ArityDB.Designer.cs</LastGenOutput>
+      <LastGenOutput>ArityEntities.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Data\ArityDB.edmx.diagram">
-      <DependentUpon>ArityDB.edmx</DependentUpon>
+    <Content Include="Data\ArityEntities.edmx.diagram">
+      <DependentUpon>ArityEntities.edmx</DependentUpon>
     </Content>
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />

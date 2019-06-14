@@ -11,11 +11,11 @@ namespace AritySystems.Models
         public int SupplierAssignedMapId { get; set; }
 
         [Required]
-       // [RegularExpression(@"^[0-9](\.[0-9]+)?$", ErrorMessage = "Valid Decimal number with maximum 2 decimal places.")]
+        [RegularExpression(@"^[0-9](\.[0-9]+)?$", ErrorMessage = "Valid Decimal number with maximum 2 decimal places.")]
         public decimal PcsPerCartoon { get; set; }
 
         [Required]
-        //[RegularExpression(@"^[0-9](\.[0-9]+)?$", ErrorMessage = "Valid Decimal number with maximum 2 decimal places.")]
+        [RegularExpression(@"^[0-9](\.[0-9]+)?$", ErrorMessage = "Valid Decimal number with maximum 2 decimal places.")]
         public int TotalCartoons { get; set; }
 
         [Required]
