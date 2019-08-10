@@ -47,6 +47,12 @@ namespace AritySystems.Common
             Approved = 4,
             Rejected = 5
         }
+
+        public enum CartoonStatus
+        {
+            ReadyForQC = 1,
+            Dispatch = 2
+        }
     }
 
 }

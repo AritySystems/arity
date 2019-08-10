@@ -19,5 +19,8 @@ namespace AritySystems.Models
         public string CreatedDate { get; set; }
 
         public int OrderId { get; set; }
+        public decimal RMBSalesPrice { get; set; }
+        public string ExpectedDeliveryDate { get; set; }
     }
+
 }

@@ -10,6 +10,7 @@
     <link href="~/Content/chosen.min.css" rel="stylesheet" />
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome-animation/0.2.1/font-awesome-animation.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-datepicker.min.css" rel="stylesheet" />
     <style>
         .navbar-inverse .navbar-nav > li > a {
             color: #fff;
@@ -23,6 +24,9 @@
 
 </head>
 <body>
+    <div id="loading">
+        <img id="loading-image" src="~/Content/Image/loading.svg" alt="Loading...">
+    </div>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -55,6 +59,7 @@
     <script src="//cdn.datatables.net/plug-ins/1.10.11/sorting/date-eu.js" type="text/javascript"></script>
     <script src="https://gist.githubusercontent.com/mark47/10427687/raw/e13012a166d7433ae354f6b7a24ce780eeb482ec/datatables.datetime-flex.js" type="text/javascript"></script>
     <script src="~/Scripts/chosen.jquery.min.js"></script>
+    <script src="~/Scripts/bootstrap-datepicker.min.js"></script>
 
     @RenderSection("scripts", required: false)
     <script>

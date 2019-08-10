@@ -303,6 +303,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ExpectedDeliveryDateModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -320,11 +321,13 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\bootstrap-datepicker.min.css" />
     <Content Include="Content\bootstrap-multiselect.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\chosen-sprite.png" />
     <Content Include="Content\chosen.min.css" />
+    <Content Include="Content\Image\loading.svg" />
     <Content Include="Content\LoginCss.css" />
     <Content Include="Content\Shipping_img.jpg" />
     <Content Include="Data\ArityEntities.Context.tt">
@@ -340,6 +343,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\bootstrap-multiselect.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -410,6 +414,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Order\Account.cshtml" />
     <Content Include="Views\Order\AddPayments.cshtml" />
+    <Content Include="Views\Order\OrderDispatch.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

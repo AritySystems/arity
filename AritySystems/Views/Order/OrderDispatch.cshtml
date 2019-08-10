@@ -1,0 +1,130 @@
+﻿@using AritySystems.Data
+@model Order
+@{
+    ViewBag.Title = "Order Dispatch";
+    if (Request.Cookies["UserType"] == null)
+    {
+        Response.Redirect("/user/login");
+    }
+    var userType = Convert.ToInt32(Request.Cookies["UserType"].Value);
+    var exporter = Model.ExporterId != null ? Model.ExporterId : 0;
+}
+<style>
+    .borderless td, .borderless th {
+        border: none !important;
+    }
+</style>
+<div class="container">
+    <div class="page-header">
+        <h1>Order Dispatch</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="col-md-12">
+                Status <span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @(((AritySystems.Common.EnumHelpers.OrderStatus)Model.Status).ToString())</span>
+            </div>
+            <div class="col-md-12">
+                Internal Order Status <span class="label label-success" style="padding:4px;color:#fff;"> <i class="fa fa-check-square-o"></i> @(((AritySystems.Common.EnumHelpers.InternalOrderStatus)Model.Internal_status).ToString())</span>
+            </div>
+            <div class="col-md-12">@Model.CreatedDate.ToString("dd/MM/yyyy") </div>
+            <div class="col-md-12">
+                @Model.Prefix
+            </div>
+            <div class="col-md-12">
+                Order Total <b><i class="fa fa-jpy"></i>@Math.Round(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice)), 2)</b>
+            </div>
+            <div class="col-md-12" style="margin:25px 0px 10px 0;">
+                <h4>Order Line Items</h4>
+            </div>
+        </div>
+        <div class="col-md-8 text-right">
+            @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
+            {
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PL</button></div>
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate CI</button></div>
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate Shipping Mark</button></div>
+                <div style="display:inline-block;"><button class="btn btn-primary" id="btnMarkAsDispatch"><i class="fa fa-check-square-o"></i> Mark as dispatch</button></div>
+
+            }
+            <div style="display:inline-block;"><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
+        </div>
+        <hr class="col-md-12" style="margin-bottom:25px;" />
+        <div class="row text-center">
+            <div>
+
+            </div>
+        </div>
+        <div class="col-md-12" style="margin-bottom:50px;">
+            <table class="display" id="tblOrderItemList">
+                <thead>
+                    <tr>
+                        <th>Supplier</th>
+                        <th>Carton Number</th>
+                        <th># Items</th>
+                        <th>Expected Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $("#btnMarkAsDispatch").click(function () {
+            var isAnyChecked = false;
+            var dispatchedIds =[];
+            $(".chk-status").each(function () {
+                if ($(this).is(':checked')) {
+                    isAnyChecked = true;
+                    dispatchedIds.push($(this).attr("data-cartoon-id"));
+                }
+            });
+            if (!isAnyChecked) {
+                alert('Please select at least single cartoon to mark it as dispatch.');
+                return false;
+            }
+            $("#loading").show();
+            var addData = JSON.stringify(dispatchedIds);
+            $.ajax({
+                url: "@Url.Action("MarkCartoonDispatch", "Order")",
+                method: "POST",
+                data: addData,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+            }).done(function (response)
+            {
+                location.reload();
+                }).fail(function (jqXHR, textStatus) {
+                    alert('Internal error occure, Please try again');
+                    $("#loading").hide();
+            });
+        });
+
+        $(document).ready(function () {
+            var userType = @userType;
+            var orderInternalStatus = @Model.Internal_status;
+            var tableItmes = $('#tblOrderItemList').DataTable({
+                "ajax": "/Order/DispatchOrderItems/" + @Model.Id,
+                "columns": [
+                    { "data": "SupplierName" },
+                    { "data": "CartoonNumber" },
+                    { "data": "TotalCartoons" },
+                    { "data": "ExpectedDate" },
+                    {
+                        "data": null,
+                        "render": function (data, type, row) {
+                            if (data.Status === 1) {
+                                return "<input type='checkbox' class='chk-status' data-cartoon-id='" + data.CartoonId+"' /> ";
+                            }
+                            return '<label class="label label-success"><i class="fa fa-check-square-o"></i> Dispatch</label>';
+                        }
+                    }
+                ]
+                //"orderLineItems": [[1, 'asc']]
+            });
+        });
+    </script>
+}
+
+

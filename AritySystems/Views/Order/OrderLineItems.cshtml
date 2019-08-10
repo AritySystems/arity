@@ -31,7 +31,7 @@
                 @Model.Prefix
             </div>
             <div class="col-md-12">
-                Order Total <b><i class="fa fa-jpy"></i>@Math.Round(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice)),2)</b>
+                Order Total <b><i class="fa fa-jpy"></i>@Math.Round(Model.OrderLineItems.Sum(_ => (_.Quantity * _.RMBPurchasePrice)), 2)</b>
             </div>
             <div class="col-md-12" style="margin:25px 0px 10px 0;">
                 <h4>Order Line Items</h4>
@@ -41,10 +41,7 @@
             @if (Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved)
             {
                 <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PI</button></div>
-                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate PL</button></div>
-                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate CI</button></div>
-                <div style="display:inline-block;"><button class="btn btn-success" onclick="if(@exporter == 0){alert('Please ask Admin to assign exporter for this order to generate PI');}else{location.href='@Url.Action("GeneratePerfomaInvoice", "order")/@Model.Id';}"><i class="fa fa-print"></i> Genrate Shipping Mark</button></div>
-
+                <div style="display:inline-block;"><button class="btn btn-success" onclick="location.href='@Url.Action("orderdispatch", "order")/@Model.Id';"><i class="fa fa-check-square-o"></i> Dispatch Order</button></div>
             }
             <div style="display:inline-block;"><button class="btn btn-primary" onclick="location.href='@Url.Action("orderlist","order")';"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Back</button></div>
         </div>
@@ -83,7 +80,7 @@
                 }
                 else if (Model != null && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved && userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase)
                 {
-                    <button class="btn btn-success" id="btnSubmit">Submit</button>
+                    <button class="btn btn-success" id="btnSubmit">Assign</button>
                 }
                 @if (Model != null && userType == (int)AritySystems.Common.EnumHelpers.UserType.Admin)
                 {
@@ -97,7 +94,7 @@
         @if (Model != null && Model.Internal_status == (int)AritySystems.Common.EnumHelpers.InternalOrderStatus.Approved && userType == (int)AritySystems.Common.EnumHelpers.UserType.Purchase)
         {
             <div class="row">
-                <h3>Supplier Order Items :</h3>
+                <h3>Supplier's Orders :</h3>
             </div>
             <div class="row">
                 <table class="display" id="tblSupplierOrderItemList">
@@ -106,19 +103,45 @@
                             <th>Supplier Name</th>
                             <th>Order Prefix </th>
                             <th>Quantity</th>
+                            <th>Total Amount (<i class="fa fa-jpy"></i>)</th>
+                            <th>Expected Delivery</th>
                             <th>Status</th>
                         </tr>
                     </thead>
                 </table>
             </div>
-
+            <div class="row text-center">
+                <button class="btn btn-primary" id="btnUpdateExpectedDate">Update All Expected dates</button>
+            </div>
         }
     </div>
 </div>
 @section Scripts {
     <script>
-        $("#btnSave").click(function () {
-            alert("Order Line Item information saved successfully");
+        $("#btnUpdateExpectedDate").click(function () {
+            var expectedDates = [];
+            $('.input-date').each(function () {
+                expectedDates.push({
+                    ExpectedDeliveryDate: $(this).val() != '' ? $(this).val() : null ,
+                    SupplierId: $(this).attr("data-supplier-id"),
+                    OrderId: $(this).attr("data-order-id")
+                });
+            });
+
+            var postData = JSON.stringify(expectedDates);
+            $.ajax({
+                url: "@Url.Action("SetExpectedDeliveryDate", "Order")",
+                method: "POST",
+                data: postData,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+            }).done(function (response)
+            {
+                $("#btnSubmit").prop('disabled', false);
+                location.reload();
+            }).fail(function (jqXHR, textStatus) {
+                console.log("Request failed: " + textStatus);
+            });
         });
         $("#btnSubmit").click(function () {
             $("#btnSubmit").prop('disabled', true);
@@ -156,6 +179,12 @@
         });
 
         $(document).ready(function () {
+            setTimeout(function () {
+                $('.input-date').datepicker({
+                    startDate: '0d',
+                    autoclose: true
+                });
+            }, 2000);
             $('#lineitemid').hide();
             var userType = @userType;
             var orderInternalStatus = @Model.Internal_status;
@@ -208,7 +237,9 @@
                         "render": function (data, type, row) {
                             ddl = '<select id="jsonSupplierList">';
                             $.each(data, function (i, item) {
-                                ddl += '<option id="' + item.Text + '">' + item.Value + '<option>';
+                                if (item !== null && item !== "") {
+                                    ddl += '<option id="' + item.Text + '">' + item.Value + '</option>';
+                                }
                             });
                             ddl += '</select>';
 
@@ -295,6 +326,15 @@
                     { "data": "SupplierName" },
                     { "data": "Order_Prefix" },
                     { "data": "Quantity" },
+                    { "data": "TotalRMBSalesPrice" },
+                    {
+                        "className": 'order-status',
+                        "orderable": false,
+                        "data": null,
+                        'render': function (data, type, full, meta) {
+                            return "<input type='text' readonly value='" + (data.ExpectedDeliveryDate != '' ? data.ExpectedDeliveryDate : '') + "' class='input-date' data-supplier-id='" + data.SupplierId + "' data-order-id='" + data.OrderId+"' />";
+                        }
+                    },
                     {
                         "className": 'order-status',
                         "orderable": false,

@@ -27,6 +27,7 @@
                 <tr>
                     <th style="width:10%"></th>
                     <th style="width:10%"></th>
+                    <th style="width:10%"></th>
                     <th style="width:10%">Shipping Mark</th>
                     <th style="width:15%">Date</th>
                     <th style="width:12%">Total items</th>
@@ -65,6 +66,40 @@
             return html;
         }
 
+
+        function OrderLineItems(items) {
+            var html = '<div class="child-heading">Orderline Items </div><table cellpadding="5" cellspacing="0" border="0" style="margin-left:5%;width:90%;    border: 1px solid #eee;margin-bottom: 2%;"><tr><th>Name</th><th>Quntity</th></tr>';
+             $.ajax({
+                 url: "@Url.Action("SupplierOrderLineItems", "Order")",
+                 method: "POST",
+                 data: { id: items.SupplierOrderId },
+                 async:false,
+                 dataType: "json"
+                 }).done(function (response) {
+                        if (response.data != null) {
+                            if (response.data.length <= 0) {
+                                html += '<tr>' +
+                                    '<td colspan="4" align="center">No records found</td>' +
+                                    '</tr>';
+                            }
+                            else {
+                                $(response.data).each(function (i, data) {
+                                    html += '<tr>' +
+                                        '<td>' + data.ProductName + '</td>' +
+                                        '<td>' + data.Quantity + '</td>' +
+                                        '</tr>';
+                                });
+                            }
+
+                        }
+                    }).fail(function (jqXHR, textStatus) {
+                        console.log("Request failed: " + textStatus);
+                });
+            html += '</table>';
+            return html;
+        }
+
+
         $(document).ready(function () {
             var table = $('#example').DataTable({
                 "ajax": "@Url.Action("GetSupplierOrderList","Order")",
@@ -75,6 +110,14 @@
                         "data": null,
                         'render': function (data, type, full, meta) {
                             return '<a href="/Order/AddSupplierCartonDetail/' + data.SupplierOrderId + '"><button class="btn btn-primary"><i class="fa fa-edit"></i> Details</button></a>';
+                        }
+                    },
+                    {
+                        "className": 'item-list',
+                        "orderable": false,
+                        "data": null,
+                        'render': function (data, type, full, meta) {
+                            return '<button class="btn btn-success"><i class="fa fa-plus-circle"></i> Items</button>';
                         }
                     },
                     {
@@ -112,7 +155,7 @@
                 columnDefs: [
                     { type: 'date-eu', targets: 3 }
                 ],
-                "order": [[3, 'desc']]
+                "order": [[4, 'desc']]
             });
 
             // Add event listener for opening and closing details
@@ -133,6 +176,25 @@
                     tr.addClass('shown');
                 }
             });
+
+
+            $('#example tbody').on('click', 'td.item-list', function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    tr.removeClass('shown');
+                    row.child.hide();
+                    tr.find(".item-list").find(".btn").html("<i class='fa fa-plus-circle'></i> Items");
+                }
+                else {
+                    // Open this row
+                    row.child(OrderLineItems(row.data())).show();
+                    tr.find(".item-list").find(".btn").html("<i class='fa fa-minus-circle'></i> Items");
+                    tr.fadeIn(500);
+                }
+        });
         });
     </script>
 }

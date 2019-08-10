@@ -49,15 +49,19 @@
                 </div>
                 <div class="col-md-8" style="margin-bottom:20px;">
                     @Html.TextBox("OrderId", 0, new { @type = "hidden", @class = "form-control" })
-                    <div class="form-group">
-                        <label class="">Order Line Items</label>
-                        @Html.DropDownList("SupplierOrderMapId", ViewBag.OrderLineItems as SelectList, "-- Select OrderLineItems--", new { id = "supplierorderdd", @class = "form-control" })
-                    </div>
+                    <div id="divMultipleItems">
+                        <div class="main-items" style="width:38%;display:inline-block;border: 1px solid #ccc;margin: 10px 30px 0 0;padding: 15px;">
+                            <div class="form-group">
+                                <label class="">Order Line Items</label>
+                                @Html.DropDownList("SupplierOrderMapId", ViewBag.OrderLineItems as SelectList, "-- Select OrderLineItems--", new { id = "supplierorderdd", @class = "form-control" })
+                            </div>
 
-                    <div class="form-group">
-                        <label class="">Pieces Per Carton</label>
-                        @Html.TextBoxFor(x => x.PcsPerCartoon, new { id = "pcspercarton", @type = "number", @class = "form-control" })
-
+                            <div class="form-group">
+                                <label class="">Pieces Per Carton</label>
+                                @Html.TextBoxFor(x => x.PcsPerCartoon, new { id = "pcspercarton", @type = "number", @class = "form-control" })
+                            </div>
+                        </div>
+                        <a href="javascript:void(0)" id="aAddMore" style="margin-right:20px;"><i class="fa fa-plus"></i> Add more</a>
                     </div>
                     <div class="form-group">
                         <label class="">Total Cartons</label>
@@ -104,7 +108,7 @@
         </div>*@
 
                     <div class="col-md-2 col-md-offset-5">
-                        <button type="submit" class="btn btn-success" id="btnSubmit"><i class="fa fa-shopping-bag"></i> Submit</button>
+                        <button type="button" class="btn btn-success" id="btnSubmit"><i class="fa fa-shopping-bag"></i> Submit</button>
                     </div>
                 </div>
             }
@@ -113,16 +117,26 @@
        
     </div>
 </div>
+<div class="div-item-options" style="display:none;">
+    @foreach (var item in ViewBag.OrderLineItems as SelectList)
+    {
+        <option value="@item.Value">@item.Text</option>
+    }
+</div>
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
 @section Scripts {
     <script>
+        var counter = 1;
 
-        //$("#btnSubmit").click(function () {
-        //    $("#btnSubmit").prop('disabled', true);
-        //});
+        $(document).ready(function () {
+            $("#btnSubmit").click(function () {
 
-        $(document).ready(function () {           
-            $("#btnSubmit").prop('disabled', false);
+                var Items = [];
+                Items.push({
+                    ItemId: $("#SupplierOrderMapId").val(),
+                    PcsPerCartoon: $("#pcspercarton").val()
+                });
+            });
             var orderid = $('#OrderId').val();
             var table = $('#tblSupplierCartonDetail').DataTable({
                 "ajax": "/Order/SupplierCartonList?OrderId=" + orderid,
@@ -144,11 +158,15 @@
                 ],
                 "supplierCartonDetail": [[1, 'asc']]
             });
-            $('#supplierorderdd').on('change', function () {
-                var myValue = $(this).val();
-               // var myText = $.trim($("#supplierorderdd :selected").val()); // Trim spaces and convert to lowercase for comparison
-
-                $("#pcspercarton").text();
+            $('#aAddMore').on('click', function () {
+                var $block = '<div class="main-items" style="width:38%;display:inline-block;border: 1px solid #ccc;margin: 10px 30px 0 0px;padding: 15px;"> <div class="form-group"><label class="">Order Line Item ' + (counter + 1) + '</label>' +
+                            '<select id="SupplierOrderMapId' + counter + '" class="form-control valid livesearch">' + $('.div-item-options').html()+'</select>'+
+                            '</div>'+
+                            '<div class="form-group"><label class="">Pieces Per Carton</label>'+
+                    '<input type="number" class = "form-control" id="PcsPerCartoon' + counter+'" />'+
+                    '</div></div>';
+                $("#divMultipleItems").append($block);
+                counter = counter + 1;
             });
         });
     </script>
