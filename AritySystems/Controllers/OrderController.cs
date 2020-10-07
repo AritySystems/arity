@@ -342,7 +342,6 @@ namespace AritySystems.Controllers
             }
         }
 
-
         [HttpPost]
         public ActionResult AddSupplierCartonDetail(SupplierCartoonModel data)
         {
@@ -413,7 +412,6 @@ namespace AritySystems.Controllers
             //TempData["Success"] = "Supplier Carton Details added successfully. Thank you";
             return RedirectToAction("AddSupplierCartonDetail", "Order", new { orderId = data.OrderId });
         }
-
 
         public List<SelectListItem> SupplierDD()
         {
@@ -604,30 +602,6 @@ namespace AritySystems.Controllers
                 return Json(null, JsonRequestBehavior.AllowGet);
             }
         }
-
-
-        //public SupplierHelper SupplierAssigneddataforSupplierOrders(int orderlineitemid, int loggeduser)
-        //{
-        //    var objDb = new ArityEntities();
-        //    var data = (from supplierorder in objDb.OrderLineItem_Supplier_Mapping.ToList()
-        //                join supplieritem in objDb.Supplier_Assigned_OrderLineItem.ToList() on supplierorder.Id equals supplieritem.OrderSupplierMapId
-        //                where supplierorder.OrderLineItemId == orderlineitemid && supplieritem.SupplierId == loggeduser
-        //                select new SupplierHelper
-        //                {
-        //                    CreatedOn = supplieritem.CreatedDate.ToString("MM/dd/yyyy h:m tt"),
-        //                    Quantity = supplieritem.Quantity,
-        //                    Status = supplieritem.Status
-        //                }).FirstOrDefault();
-        //    return data;
-        //}
-        //public class SupplierHelper
-        //{
-        //    public decimal Quantity { get; set; }
-        //    public string CreatedOn { get; set; }
-        //    public int Status { get; set; }
-        //}
-
-
         public ActionResult GeneratePL(int id)
         {
             ArityEntities dbContext = new ArityEntities();
@@ -878,7 +852,6 @@ namespace AritySystems.Controllers
             }
             return View();
         }
-
 
         public ActionResult GeneratePerfomaInvoice(int? id)
         {
@@ -1808,6 +1781,17 @@ namespace AritySystems.Controllers
                 //Save the workbook to disk in xlsx format.
                 workbook.SaveAs(@"/Content/CommercialInvoice/" + id + ".xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
             }
+
+            CommercialInvoice commercialInvoice = new CommercialInvoice
+            {
+                OrderId = id,
+                CommercialInvoiceReferece = commercial.PINo,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now
+            };
+
+            dbContext.CommercialInvoices.Add(commercialInvoice);
+            dbContext.SaveChanges();
 
             return View();
         }
