@@ -631,7 +631,6 @@ namespace AritySystems.Controllers
         public ActionResult GeneratePL(int id)
         {
             ArityEntities dbContext = new ArityEntities();
-            List<CartoonDetails> cartoonList = new List<CartoonDetails>();
             var perfoma = (from order in dbContext.Orders
                            join user in dbContext.Users on order.CustomerId equals user.Id
                            join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
@@ -652,35 +651,35 @@ namespace AritySystems.Controllers
                                CustomerPhone = user.PhoneNumber
                            }).FirstOrDefault();
 
-            DateTime? lastCommercialDt = dbContext.CommercialInvoices.Where(x => x.OrderId == id).OrderByDescending(x => x.ModifiedDate).FirstOrDefault().ModifiedDate;
+            DateTime? lastCommercialDt = dbContext.CommercialInvoices.Where(x => x.OrderId == id).OrderByDescending(x => x.ModifiedDate).FirstOrDefault()?.ModifiedDate;
+            lastCommercialDt = lastCommercialDt ?? DateTime.MinValue;
+            var cartoonList = (from cartoon in dbContext.SupplierCartoons
+                               join supplierAsigned in dbContext.Supplier_Assigned_OrderLineItem on cartoon.SupplierAssignedMapId equals supplierAsigned.Id
+                               join lineItem in dbContext.OrderLineItems on supplierAsigned.OrderLineItem equals lineItem.Id
+                               join product in dbContext.Products on lineItem.ProductId equals product.Id
+                               where cartoon.OrderId == id && cartoon.Status == 2 && cartoon.ModifiedDate > lastCommercialDt
+                               select new
+                               {
+                                   c = cartoon,
+                                   p = product
+                               }).AsEnumerable().Select(x => new CartoonDetails()
+                               {
+                                   Partiular = x.p.English_Name,
+                                   Quantity_PCS = x.c.PcsPerCartoon * x.c.TotalCartoons,
+                                   PCSPERCartoon = x.c.PcsPerCartoon,
+                                   TotalCartoon = x.c.TotalCartoons,
+                                   NetWeight = x.c.NetWeight,
+                                   TotalNetWeight = x.c.TotalNetWeight,
+                                   GrossWeight = x.c.GrossWeight,
+                                   TotalGrossWeight = x.c.TotalGrossWeight,
+                                   CartoonLength = x.c.CartoonLength,
+                                   CartoonBreadth = x.c.CartoonBreadth,
+                                   CartoonHeight = x.c.CartoonHeight,
+                                   CartoonCBM = x.c.CartoonSize ?? 0,
+                                   CartoonNumber = x.c.CartoonNumber
+                               }).ToList();
 
-            cartoonList = (from cartoon in dbContext.SupplierCartoons
-                           join supplierAsigned in dbContext.Supplier_Assigned_OrderLineItem on cartoon.SupplierAssignedMapId equals supplierAsigned.Id
-                           join lineItem in dbContext.OrderLineItems on supplierAsigned.OrderLineItem equals lineItem.Id
-                           join product in dbContext.Products on lineItem.ProductId equals product.Id
-                           where cartoon.OrderId == id && cartoon.Status == 2 && cartoon.ModifiedDate > lastCommercialDt
-                           select new
-                           {
-                               c = cartoon,
-                               p = product
-                           }).AsEnumerable().Select(x => new CartoonDetails()
-                           {
-                               Partiular = x.p.English_Name,
-                               Quantity_PCS = x.c.PcsPerCartoon * x.c.TotalCartoons,
-                               PCSPERCartoon = x.c.PcsPerCartoon,
-                               TotalCartoon = x.c.TotalCartoons,
-                               NetWeight = x.c.NetWeight,
-                               TotalNetWeight = x.c.TotalNetWeight,
-                               GrossWeight = x.c.GrossWeight,
-                               TotalGrossWeight = x.c.TotalGrossWeight,
-                               CartoonLength = x.c.CartoonLength,
-                               CartoonBreadth = x.c.CartoonBreadth,
-                               CartoonHeight = x.c.CartoonHeight,
-                               CartoonCBM = x.c.CartoonSize ?? 0,
-                               CartoonNumber = x.c.CartoonNumber
-                           }).ToList();
-
-            perfoma.CartoonList = cartoonList;
+            perfoma.CartoonList = cartoonList ?? new List<CartoonDetails>();
             using (ExcelEngine excelEngine = new ExcelEngine())
             {
                 //Set the default application version as Excel 2016.
@@ -835,18 +834,18 @@ namespace AritySystems.Controllers
                 {
                     worksheet.Range["A" + rownum + ""].Text = i.ToString();
                     worksheet.Range["B" + rownum + ""].Text = item.Partiular;
-                    worksheet.Range["C" + rownum + ""].Text = item.Quantity_PCS.ToString();
-                    worksheet.Range["D" + rownum + ""].Text = item.PCSPERCartoon.ToString();
+                    worksheet.Range["C" + rownum + ""].Text = string.Format("{0:0}", item.Quantity_PCS);
+                    worksheet.Range["D" + rownum + ""].Text = string.Format("{0:0}", item.PCSPERCartoon);
                     worksheet.Range["E" + rownum + ""].Text = item.TotalCartoon.ToString();
-                    worksheet.Range["F" + rownum + ""].Text = item.NetWeight.ToString();
-                    worksheet.Range["G" + rownum + ""].Text = item.TotalNetWeight.ToString();
-                    worksheet.Range["H" + rownum + ""].Text = item.GrossWeight.ToString();
+                    worksheet.Range["F" + rownum + ""].Text = string.Format("{0:0.0000}", item.NetWeight);
+                    worksheet.Range["G" + rownum + ""].Text = string.Format("{0:0.00}", item.TotalNetWeight);
+                    worksheet.Range["H" + rownum + ""].Text = string.Format("{0:0.0000}", item.GrossWeight);
 
-                    worksheet.Range["I" + rownum + ""].Text = item.TotalGrossWeight.ToString();
-                    worksheet.Range["J" + rownum + ""].Text = item.CartoonLength.ToString();
-                    worksheet.Range["K" + rownum + ""].Text = item.CartoonBreadth.ToString();
-                    worksheet.Range["L" + rownum + ""].Text = item.CartoonHeight.ToString();
-                    worksheet.Range["M" + rownum + ""].Text = item.CartoonCBM.ToString();
+                    worksheet.Range["I" + rownum + ""].Text = string.Format("{0:0.00}", item.TotalGrossWeight);
+                    worksheet.Range["J" + rownum + ""].Text = string.Format("{0:0.0000}", item.CartoonLength);
+                    worksheet.Range["K" + rownum + ""].Text = string.Format("{0:0.0000}", item.CartoonBreadth);
+                    worksheet.Range["L" + rownum + ""].Text = string.Format("{0:0.0000}", item.CartoonHeight);
+                    worksheet.Range["M" + rownum + ""].Text = string.Format("{0:0.0000}", item.CartoonCBM);
                     worksheet.Range["N" + rownum + ""].Text = item.CartoonNumber;
                     i++;
                     rownum++;
@@ -869,24 +868,21 @@ namespace AritySystems.Controllers
 
                 worksheet.Range["A" + rownum + ""].Text = "Total";
 
-                worksheet.Range["E" + rownum + ""].Text = "$" + totalCartoons.ToString();
-                worksheet.Range["G" + rownum + ""].Text = "¥" + totalNetWeight.ToString();
-                worksheet.Range["I" + rownum + ""].Text = "$" + totalGrossWeight.ToString();
-                worksheet.Range["M" + rownum + ""].Text = "¥" + totalCBM.ToString();
+                worksheet.Range["E" + rownum + ""].Text = string.Format("${0:0.00}", totalCartoons);
+                worksheet.Range["G" + rownum + ""].Text = string.Format("¥{0:0.00}", totalNetWeight);
+                worksheet.Range["I" + rownum + ""].Text = string.Format("${0:0.00}", totalGrossWeight);
+                worksheet.Range["M" + rownum + ""].Text = string.Format("¥{0:0.00}", totalCBM);
 
                 //Save the workbook to disk in xlsx format.
                 workbook.SaveAs(@"/Content/PackingList/" + "PL" + ".xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
             }
-
             return View();
-
         }
 
 
         public ActionResult GeneratePerfomaInvoice(int? id)
         {
             ArityEntities dbContext = new ArityEntities();
-            List<PerfomaProductList> productList = new List<PerfomaProductList>();
             int asIntegers = 0;
             List<string> PerfomaList = dbContext.PerfomaInvoices.Where(x => x.OrderId == id).Select(x => x.PerfomaInvoiceReferece).ToList();
             if (PerfomaList != null && PerfomaList.Count > 0)
@@ -915,29 +911,29 @@ namespace AritySystems.Controllers
                                CustomerPhone = user.PhoneNumber
                            }).FirstOrDefault();
 
-            productList = (from order in dbContext.Orders
-                           join user in dbContext.Users on order.CustomerId equals user.Id
-                           join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
-                           join product in dbContext.Products on lineItem.ProductId equals product.Id
-                           where order.Id == id
-                           select new
-                           {
-                               l = lineItem,
-                               p = product
-                           }).AsEnumerable().Select(x => new PerfomaProductList()
-                           {
-                               Partiular = x.p.English_Name,
-                               Quantity = x.l.Quantity,
-                               Unit = getEnumValue(Convert.ToInt32(x.p.Unit)),
-                               UnitPrice = x.l.DollarSalesPrice,
-                               TotalUSD = x.l.Quantity * x.l.DollarSalesPrice,
-                               ProductId = x.p.Id,
-                               RMBUnitPrice = x.l.RMBSalesPrice,
-                               TotalRMB = x.l.Quantity * x.l.RMBSalesPrice
+            var productList = (from order in dbContext.Orders
+                               join user in dbContext.Users on order.CustomerId equals user.Id
+                               join lineItem in dbContext.OrderLineItems on order.Id equals lineItem.OrderId
+                               join product in dbContext.Products on lineItem.ProductId equals product.Id
+                               where order.Id == id
+                               select new
+                               {
+                                   l = lineItem,
+                                   p = product
+                               }).AsEnumerable().Select(x => new PerfomaProductList()
+                               {
+                                   Partiular = x.p.English_Name,
+                                   Quantity = x.l.Quantity,
+                                   Unit = getEnumValue(Convert.ToInt32(x.p.Unit)),
+                                   UnitPrice = x.l.DollarSalesPrice,
+                                   TotalUSD = x.l.Quantity * x.l.DollarSalesPrice,
+                                   ProductId = x.p.Id,
+                                   RMBUnitPrice = x.l.RMBSalesPrice,
+                                   TotalRMB = x.l.Quantity * x.l.RMBSalesPrice
 
-                           }).ToList();
+                               }).ToList();
 
-            perfoma.ProductList = productList;
+            perfoma.ProductList = productList ?? new List<PerfomaProductList>();
 
 
             //Create an instance of ExcelEngine.
@@ -1076,22 +1072,22 @@ namespace AritySystems.Controllers
                 {
                     worksheet.Range["A" + rownum + ""].Text = i.ToString();
                     worksheet.Range["B" + rownum + ""].Text = item.Partiular;
-                    worksheet.Range["C" + rownum + ""].Text = item.UnitPrice.ToString();
-                    worksheet.Range["D" + rownum + ""].Text = item.Unit.ToString();
-                    worksheet.Range["E" + rownum + ""].Text = item.Quantity.ToString();
-                    worksheet.Range["F" + rownum + ""].Text = (item.UnitPrice * item.Quantity).ToString();
-                    worksheet.Range["G" + rownum + ""].Text = item.TotalRMB.ToString();
-                    worksheet.Range["H" + rownum + ""].Text = item.RMBUnitPrice.ToString();
+                    worksheet.Range["C" + rownum + ""].Text = string.Format("{0:0.0000}", item.UnitPrice);
+                    worksheet.Range["D" + rownum + ""].Text = item.Unit;
+                    worksheet.Range["E" + rownum + ""].Text = string.Format("{0:0}", item.Quantity);
+                    worksheet.Range["F" + rownum + ""].Text = string.Format("{0:0.00}", item.UnitPrice * item.Quantity);
+                    worksheet.Range["G" + rownum + ""].Text = string.Format("{0:0.00}", item.TotalRMB);
+                    worksheet.Range["H" + rownum + ""].Text = string.Format("{0:0.0000}", item.RMBUnitPrice);
                     i++;
                     rownum++;
                 }
 
-                decimal totalItems = 0;
+                decimal totalUSD = 0;
                 decimal totalRMB = 0;
 
                 foreach (var item in productList)
                 {
-                    totalItems += item.TotalUSD;
+                    totalUSD += item.TotalUSD;
                     totalRMB += item.TotalRMB;
                 }
 
@@ -1100,8 +1096,8 @@ namespace AritySystems.Controllers
                 worksheet.Range["A" + rownum + ""].Text = "Total";
                 worksheet.Range["$A$" + rownum + ":$E$" + rownum].Merge();
 
-                worksheet.Range["F" + rownum + ""].Text = "$" + totalItems.ToString();
-                worksheet.Range["G" + rownum + ""].Text = "¥" + totalRMB.ToString();
+                worksheet.Range["F" + rownum + ""].Text = string.Format("${0:0.00}", totalUSD);
+                worksheet.Range["G" + rownum + ""].Text = string.Format("¥{0:0.00}", totalRMB);
 
                 headingStyle.Font.Size = 17;
                 worksheet.Range["F" + rownum + ""].CellStyle = headingStyle;
