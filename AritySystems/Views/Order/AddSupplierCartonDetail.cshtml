@@ -25,10 +25,10 @@
                             <h4>  @ViewBag.OrderName</h4>
                         </div>
                         @*<div class="col-md-12">
-                            <h4> Status<span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @ViewBag.Status</span></h4>
-                        </div>*@
-                    </div>                   
-                        </div>
+                                <h4> Status<span style="background-color:cadetblue;padding:4px;color:#fff;"> <i class="fa fa-refresh"></i> @ViewBag.Status</span></h4>
+                            </div>*@
+                    </div>
+                </div>
                 <div class="col-md-12">
                     <table class="table borderless" id="tblSupplierCartonDetail">
                         <thead>
@@ -41,7 +41,7 @@
                                 <th>Net Weight</th>
                                 <th>Total Net Weight</th>
                                 <th>Carton Size</th>
-                                
+
                                 <th>Carton Number</th>
                             </tr>
                         </thead>
@@ -49,16 +49,18 @@
                 </div>
                 <div class="col-md-8" style="margin-bottom:20px;">
                     @Html.TextBox("OrderId", 0, new { @type = "hidden", @class = "form-control" })
-                    <div id="divMultipleItems">
-                        <div class="main-items" style="width:38%;display:inline-block;border: 1px solid #ccc;margin: 10px 30px 0 0;padding: 15px;">
-                            <div class="form-group">
-                                <label class="">Order Line Items</label>
-                                @Html.DropDownList("SupplierOrderMapId", ViewBag.OrderLineItems as SelectList, "-- Select OrderLineItems--", new { id = "supplierorderdd", @class = "form-control" })
-                            </div>
+                    <div style="padding-bottom:10px;">
+                        <div id="divMultipleItems" style="padding-bottom:20px;">
+                            <div class="main-items" style="width:38%;display:inline-block;border: 1px solid #ccc;margin: 10px 30px 0 0;padding: 15px;">
+                                <div class="form-group">
+                                    <label class="">Order Line Items</label>
+                                    @Html.DropDownList("SupplierOrderMapId", ViewBag.OrderLineItems as SelectList, "-- Select OrderLineItems--", new { id = "supplierorderdd", @class = "form-control supplier-order-map" })
+                                </div>
 
-                            <div class="form-group">
-                                <label class="">Pieces Per Carton</label>
-                                @Html.TextBoxFor(x => x.PcsPerCartoon, new { id = "pcspercarton", @type = "number", @class = "form-control" })
+                                <div class="form-group">
+                                    <label class="">Pieces Per Carton</label>
+                                    @Html.TextBox("PcsPerCartoon", 0, new { id = "pcspercarton", @type = "number", @class = "form-control pcs-per-cartoon" })
+                                </div>
                             </div>
                         </div>
                         <a href="javascript:void(0)" id="aAddMore" style="margin-right:20px;"><i class="fa fa-plus"></i> Add more</a>
@@ -102,19 +104,14 @@
                     <div>
                         @Html.HiddenFor(x => x.OrderId)
                     </div>
-                    @*<div class="form-group">
-            <label class="">Carton Number</label>
-            @Html.TextBox("CartoonNumber", 0, new { @type = "text", @class = "form-control" })
-        </div>*@
-
                     <div class="col-md-2 col-md-offset-5">
                         <button type="button" class="btn btn-success" id="btnSubmit"><i class="fa fa-shopping-bag"></i> Submit</button>
                     </div>
                 </div>
             }
-           
+
         </div>
-       
+
     </div>
 </div>
 <div class="div-item-options" style="display:none;">
@@ -129,17 +126,43 @@
         var counter = 1;
 
         $(document).ready(function () {
-            $("#btnSubmit").click(function () {
-
+            $("body").on("click", "#btnSubmit", function (e) {
+                e.preventDefault();
                 var Items = [];
-                Items.push({
-                    ItemId: $("#SupplierOrderMapId").val(),
-                    PcsPerCartoon: $("#pcspercarton").val()
+                $(".main-items").each(function () {
+                    Items.push({
+                        SupplierAssignedMapId: $(this).find(".supplier-order-map").val(),
+                        PcsPerCartoon: $(this).find(".pcs-per-cartoon").val()
+                    });
+                });
+                 $.ajax({
+                    url: "@Url.Action("AddSupplierCartonDetail","Order")",
+                    method: "POST",
+                     data: JSON.stringify({"data":{
+                        TotalCartoons: $("#TotalCartoons").val(),
+                        NetWeight: $("#NetWeight").val(),
+                        GrossWeight: $("#GrossWeight").val(),
+                        CartoonLength: $("#CartoonLength").val(),
+                        CartoonBreadth: $("#CartoonBreadth").val(),
+                        CartoonHeight: $("#CartoonHeight").val(),
+                        CartoonBM: $("#CartoonBM").val(),
+                        CartoonNumber: $("#CartoonNumber").val(),
+                        CartoonPrefix: $("#CartoonPrefix").val(),
+                        OrderId: $("#OrderId").val(),
+                        ProductItems:Items
+                    }}),
+                     dataType: "json",
+                    contentType: 'application/json; charset=utf-8'
+                 }).done(function (response) {
+                     alert(response);
+                     table.ajax.reload();
+                }).fail(function (jqXHR, textStatus) {
+                    console.log("Request failed: " + textStatus);
                 });
             });
-            var orderid = $('#OrderId').val();
+
             var table = $('#tblSupplierCartonDetail').DataTable({
-                "ajax": "/Order/SupplierCartonList?OrderId=" + orderid,
+                "ajax": "/Order/SupplierCartonList?OrderId=" + $('#OrderId').val(),
                 "columns": [
                     {
                         "data": "Id",
@@ -148,27 +171,33 @@
                             return '<input type="hidden" id="txtId" value="' + data + '"/>'
                         }
                     },
-                    { "data":"Product_Chinese_Name"},
-                      {"data":"PcsPerCartoon"},
-                      {"data":"TotalCartoons"},
-                      {"data":"NetWeight"},
-                      {"data":"TotalNetWeight"},
-                      {"data":"CartoonSize"},
-                            {"data":"CartoonNumber"},
+                    { "data": "Product_Chinese_Name" },
+                    { "data": "PcsPerCartoon" },
+                    { "data": "TotalCartoons" },
+                    { "data": "NetWeight" },
+                    { "data": "TotalNetWeight" },
+                    { "data": "CartoonSize" },
+                    { "data": "CartoonNumber" },
                 ],
                 "supplierCartonDetail": [[1, 'asc']]
             });
+
             $('#aAddMore').on('click', function () {
-                var $block = '<div class="main-items" style="width:38%;display:inline-block;border: 1px solid #ccc;margin: 10px 30px 0 0px;padding: 15px;"> <div class="form-group"><label class="">Order Line Item ' + (counter + 1) + '</label>' +
-                            '<select id="SupplierOrderMapId' + counter + '" class="form-control valid livesearch">' + $('.div-item-options').html()+'</select>'+
-                            '</div>'+
-                            '<div class="form-group"><label class="">Pieces Per Carton</label>'+
-                    '<input type="number" class = "form-control" id="PcsPerCartoon' + counter+'" />'+
+                var $block = '<div class="main-items block'+counter+'" style="width:38%;display:inline-block;border: 1px solid #ccc;margin: 10px 30px 0 0px;padding: 15px;"><span style="padding-left:95%;cursor:pointer;color: red;font-weight: 600;font-size: 20px;" onclick="removeBlock('+counter+');">x</span> <div class="form-group"><label class="">Order Line Item ' + (counter + 1) + '</label>' +
+                    '<select id="SupplierOrderMapId' + counter + '" class="form-control valid livesearch supplier-order-map">' + $('.div-item-options').html() + '</select>' +
+                    '</div>' +
+                    '<div class="form-group"><label class="">Pieces Per Carton</label>' +
+                    '<input type="number" class = "form-control pcs-per-cartoon" id="PcsPerCartoon' + counter + '" />' +
                     '</div></div>';
                 $("#divMultipleItems").append($block);
                 counter = counter + 1;
             });
         });
+
+        function removeBlock(id) {
+            $(".block" + id).fadeOut(500);
+            setTimeout(function () { $(".block"+id).remove();}, 5000);
+        }
     </script>
 
 }

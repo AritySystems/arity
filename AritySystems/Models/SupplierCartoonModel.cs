@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace AritySystems.Models
@@ -6,13 +7,6 @@ namespace AritySystems.Models
     public class SupplierCartoonModel
     {
         public int Id { get; set; }
-
-
-        public int SupplierAssignedMapId { get; set; }
-
-        [Required]
-        [RegularExpression(@"^[0-9](\.[0-9]+)?$", ErrorMessage = "Valid Decimal number with maximum 2 decimal places.")]
-        public decimal PcsPerCartoon { get; set; }
 
         [Required]
         [RegularExpression(@"^[0-9](\.[0-9]+)?$", ErrorMessage = "Valid Decimal number with maximum 2 decimal places.")]
@@ -57,5 +51,17 @@ namespace AritySystems.Models
 
         public decimal CartoonLength { get; set; }
 
+        public List<ProductItem> ProductItems { get; set; }
+        public int PcsPerCartoon { get; internal set; }
+    }
+
+    public class ProductItem
+    {
+        [Required]
+        public int SupplierAssignedMapId { get; set; }
+
+        [Required]
+        [RegularExpression(@"^[0-9](\.[0-9]+)?$", ErrorMessage = "Valid Decimal number with maximum 2 decimal places.")]
+        public decimal PcsPerCartoon { get; set; }
     }
 }

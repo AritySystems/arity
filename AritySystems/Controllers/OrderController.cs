@@ -4,6 +4,8 @@ using Syncfusion.XlsIO;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using OfficeOpenXml;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -310,28 +312,33 @@ namespace AritySystems.Controllers
         /// </summary>
         /// <param name="supplierCarton"></param>
         /// <returns></returns>
-        public JsonResult AddSupplierCartonDetails(SupplierCartoon supplierCartoon)
+        //public JsonResult AddSupplierCartonDetails(SupplierCartoon supplierCartoon)
+        public JsonResult AddSupplierCartonDetails(SupplierCartoonModel supplierCartoon)
         {
             SupplierCartoon data = new SupplierCartoon();
             try
             {
                 using (var db = new ArityEntities())
                 {
-
-                    data.CartoonBM = supplierCartoon.CartoonBM;
-                    data.CartoonNumber = supplierCartoon.CartoonNumber;
-                    data.CartoonSize = supplierCartoon.CartoonSize;
-                    data.CreatedDate = DateTime.UtcNow;
-                    data.GrossWeight = supplierCartoon.GrossWeight;
-                    data.ModifiedDate = DateTime.UtcNow;
-                    data.NetWeight = supplierCartoon.NetWeight;
-                    data.PcsPerCartoon = supplierCartoon.PcsPerCartoon;
-                    data.Status = supplierCartoon.Status;
-                    data.SupplierAssignedMapId = supplierCartoon.SupplierAssignedMapId;
-                    data.TotalCartoons = supplierCartoon.TotalCartoons;
-                    data.TotalGrossWeight = supplierCartoon.TotalGrossWeight;
-                    data.TotalNetWeight = supplierCartoon.TotalNetWeight;
-                    db.SupplierCartoons.Add(data);
+                    foreach (var item in supplierCartoon.ProductItems)
+                    {
+                        db.SupplierCartoons.Add(new SupplierCartoon
+                        {
+                            PcsPerCartoon = item.PcsPerCartoon,
+                            SupplierAssignedMapId = item.SupplierAssignedMapId,
+                            CartoonBM = supplierCartoon.CartoonBM,
+                            CartoonNumber = supplierCartoon.CartoonNumber,
+                            CartoonSize = supplierCartoon.CartoonSize,
+                            CreatedDate = DateTime.UtcNow,
+                            GrossWeight = supplierCartoon.GrossWeight,
+                            ModifiedDate = DateTime.UtcNow,
+                            NetWeight = supplierCartoon.NetWeight,
+                            Status = supplierCartoon.Status,
+                            TotalCartoons = supplierCartoon.TotalCartoons,
+                            TotalGrossWeight = supplierCartoon.TotalGrossWeight,
+                            TotalNetWeight = supplierCartoon.TotalNetWeight
+                        });
+                    }
                     db.SaveChanges();
                 }
                 return Json(new { data = data }, JsonRequestBehavior.AllowGet);
@@ -347,70 +354,67 @@ namespace AritySystems.Controllers
         {
             ArityEntities objDb = new ArityEntities();
             List<KeyValuePair<int, int>> lineItem = new List<KeyValuePair<int, int>>();
-            //ViewBag.OrderId = Convert.ToInt32(data.OrderId);
-            // if (data != null)
+            List<SupplierCartoon> model = new List<SupplierCartoon>();
+            try
             {
-
-                SupplierCartoon model = new SupplierCartoon();
-                try
+                if (data.ProductItems.Count >= 1 && data.TotalCartoons > 0)
                 {
-                    if (Convert.ToInt32(data.SupplierOrderMapId) != 0 && data.TotalCartoons > 0)
+                    int maxOrderId = objDb.SupplierCartoons.Where(x => x.OrderId == data.OrderId).Select(x => x.CartoonMax).Max() ?? 0;
+
+                    foreach (var item in data.ProductItems)
                     {
-                        int maxOrderId = objDb.SupplierCartoons.Where(x => x.OrderId == data.OrderId).Select(x => x.CartoonMax).Max() ?? 0;
-
-                        model.SupplierAssignedMapId = Convert.ToInt32(data.SupplierOrderMapId);
-                        model.PcsPerCartoon = Convert.ToDecimal(data.PcsPerCartoon);
-                        model.CreatedDate = DateTime.Now;
-                        model.ModifiedDate = DateTime.Now;
-                        model.GrossWeight = Convert.ToDecimal(data.GrossWeight);
-                        model.NetWeight = Convert.ToDecimal(data.NetWeight);
-                        model.Status = 1;
-                        model.TotalCartoons = Convert.ToInt32(data.TotalCartoons);
-                        model.CartoonBreadth = data.CartoonBreadth;
-                        model.CartoonLength = data.CartoonLength;
-                        model.CartoonHeight = data.CartoonHeight;
-                        model.CartoonMax = maxOrderId + data.TotalCartoons;
-                        model.CartoonPrefix = data.CartoonPrefix;
-                        model.TotalGrossWeight = model.TotalCartoons * model.GrossWeight;
-                        model.TotalNetWeight = model.TotalCartoons * model.NetWeight;
-                        model.CartoonSize = model.CartoonLength * model.CartoonHeight * model.CartoonBreadth;
-                        model.CartoonNumber = model.CartoonPrefix + (maxOrderId + 1) + "-" + model.CartoonPrefix + model.CartoonMax + "";
-                        model.OrderId = data.OrderId;
-                        objDb.SupplierCartoons.Add(model);
-                        objDb.SaveChanges();
-
-                        if (model.Id > 0)
+                        model.Add(new SupplierCartoon
                         {
-                            string cartoonNumber = model.CartoonPrefix + "_" + model.OrderId + "_" + DateTime.Now.Date.Year + "_" + (maxOrderId + 1);
-                            for (int i = 0; i < model.TotalCartoons; i++)
-                            {
-
-                                SupplierCartoonDetail cartoondetail = new SupplierCartoonDetail()
-                                {
-                                    SupplierCartoonId = model.Id,
-                                    CartoonNumber = cartoonNumber,
-                                    CartoonStatus = 1,
-                                    CreatedDate = DateTime.Now,
-                                    ModifiedDate = DateTime.Now
-                                };
-                                maxOrderId += 1;
-                                objDb.SupplierCartoonDetails.Add(cartoondetail);
-
-                            }
-                            objDb.SaveChanges();
-                        }
-
+                            SupplierAssignedMapId = Convert.ToInt32(item.SupplierAssignedMapId),
+                            PcsPerCartoon = Convert.ToDecimal(item.PcsPerCartoon),
+                            CreatedDate = DateTime.Now,
+                            ModifiedDate = DateTime.Now,
+                            GrossWeight = Convert.ToDecimal(data.GrossWeight),
+                            NetWeight = Convert.ToDecimal(data.NetWeight),
+                            Status = 1,
+                            TotalCartoons = Convert.ToInt32(data.TotalCartoons),
+                            CartoonBreadth = data.CartoonBreadth,
+                            CartoonLength = data.CartoonLength,
+                            CartoonHeight = data.CartoonHeight,
+                            CartoonMax = maxOrderId + data.TotalCartoons,
+                            CartoonPrefix = data.CartoonPrefix,
+                            TotalGrossWeight = data.TotalCartoons * data.GrossWeight,
+                            TotalNetWeight = data.TotalCartoons * data.NetWeight,
+                            CartoonSize = data.CartoonLength * data.CartoonHeight * data.CartoonBreadth,
+                            CartoonNumber = data.CartoonPrefix + (maxOrderId + 1) + "-" + data.CartoonPrefix + (maxOrderId + data.TotalCartoons) + "",
+                            OrderId = data.OrderId
+                        });
                     }
+                    objDb.SupplierCartoons.AddRange(model);
+                    objDb.SaveChanges();
 
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = "Error occured while place your order. Please try again.";
-                    return View();
+                    if (model.FirstOrDefault().Id > 0)
+                    {
+                        string cartoonNumber = model.FirstOrDefault().CartoonPrefix + "_" + model.FirstOrDefault().OrderId + "_" + DateTime.Now.Date.Year + "_" + (maxOrderId + 1);
+                        for (int i = 0; i < model.FirstOrDefault().TotalCartoons; i++)
+                        {
+
+                            SupplierCartoonDetail cartoondetail = new SupplierCartoonDetail()
+                            {
+                                SupplierCartoonId = model.FirstOrDefault().Id,
+                                CartoonNumber = cartoonNumber,
+                                CartoonStatus = 1,
+                                CreatedDate = DateTime.Now,
+                                ModifiedDate = DateTime.Now
+                            };
+                            maxOrderId += 1;
+                            objDb.SupplierCartoonDetails.Add(cartoondetail);
+
+                        }
+                        objDb.SaveChanges();
+                    }
                 }
             }
-            //TempData["Success"] = "Supplier Carton Details added successfully. Thank you";
-            return RedirectToAction("AddSupplierCartonDetail", "Order", new { orderId = data.OrderId });
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return Json("Supplier Carton Details added successfully. Thank you");
         }
 
         public List<SelectListItem> SupplierDD()
@@ -656,6 +660,38 @@ namespace AritySystems.Controllers
             perfoma.CartoonList = cartoonList ?? new List<CartoonDetails>();
             using (ExcelEngine excelEngine = new ExcelEngine())
             {
+                ExcelPackage Ep = new ExcelPackage();
+                ExcelWorksheet Sheet = Ep.Workbook.Worksheets.Add("PI");
+                int currentCell = 1;
+
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Value = perfoma.ExporterName;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Size = 16;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                currentCell++;
+
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Value = perfoma.ExporterAddress;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Size = 16;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                currentCell++;
+
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Value = perfoma.ExporterPhone;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Size = 16;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                currentCell++;
+
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Value = string.Empty;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Size = 16;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                currentCell++;
+
                 //Set the default application version as Excel 2016.
                 excelEngine.Excel.DefaultVersion = ExcelVersion.Excel2016;
 
@@ -906,198 +942,437 @@ namespace AritySystems.Controllers
 
                                }).ToList();
 
-            perfoma.ProductList = productList ?? new List<PerfomaProductList>();
-
-
-            //Create an instance of ExcelEngine.
-            using (ExcelEngine excelEngine = new ExcelEngine())
+            perfoma.ProductList = productList;
+            using (ExcelPackage Ep = new ExcelPackage())
             {
-                //Set the default application version as Excel 2016.
-                excelEngine.Excel.DefaultVersion = ExcelVersion.Excel2016;
+                ExcelWorksheet Sheet = Ep.Workbook.Worksheets.Add("PI");
+                int currentCell = 1;
 
-                //Create a workbook with a worksheet.
-                IWorkbook workbook = excelEngine.Excel.Workbooks.Create(1);
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Value = perfoma.ExporterName;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.Font.Size = 16;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                currentCell++;
 
-                //Access first worksheet from the workbook instance.
-                IWorksheet worksheet = workbook.Worksheets[0];
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Value = perfoma.ExporterAddress;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                currentCell++;
 
-                //Insert sample text into cell “A1”.
-                worksheet.Range["A1"].Text = perfoma.ExporterName;
-                worksheet.Range["$A$1:$F$1"].Merge();
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Value = perfoma.ExporterPhone;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                currentCell++;
 
-                IStyle headingStyle = workbook.Styles.Add("HeadingStyle");
-                headingStyle.Font.Bold = true;
-                headingStyle.Font.Size = 20;
-                headingStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
-                worksheet.Range["$A$1:$F$1"].CellStyle = headingStyle;
-
-                worksheet.Range["A2"].Text = perfoma.ExporterAddress;
-                worksheet.Range["$A$2:$F$2"].Merge();
-
-                IStyle exporterAdress = workbook.Styles.Add("exporterAdress");
-                exporterAdress.Font.Size = 15;
-                exporterAdress.Font.Bold = true;
-                exporterAdress.HorizontalAlignment = ExcelHAlign.HAlignCenter;
-                worksheet.Range["$A$2:$F$2"].CellStyle = exporterAdress;
-
-                worksheet.Range["A3"].Text = perfoma.ExporterPhone;
-                worksheet.Range["$A$3:$F$3"].Merge();
-
-                worksheet.Range["$A$3:$F$3"].CellStyle = exporterAdress;
-
-                worksheet.Range["A4"].Text = string.Empty;
-                worksheet.Range["$A$4:$F$4"].Merge();
-
-                worksheet.Range["A5"].Text = "PERFORMA INVOICE";
-                worksheet.Range["$A$5:$F$5"].Merge();
-
-                IStyle CustomTextStyle = workbook.Styles.Add("CustomTextStyle");
-                CustomTextStyle.Font.Size = 25;
-                CustomTextStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
-                CustomTextStyle.Font.Bold = true;
-                worksheet.Range["$A$5:$F$5"].CellStyle = CustomTextStyle;
-
-                worksheet.Range["A6"].Text = perfoma.CustomerCompanyName;
-                worksheet.Range["$A$6:$B$6"].Merge();
-
-                IStyle CustomTextCustomerStyle = workbook.Styles.Add("CustomTextCustomerStyle");
-                CustomTextCustomerStyle.Font.Size = 15;
-                CustomTextCustomerStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
-                worksheet.Range["$A$6:$B$6"].CellStyle = CustomTextCustomerStyle;
-
-                worksheet.Range["C6"].Text = "Pi No.";
-
-                worksheet.Range["D6"].Text = perfoma.PINo;
-                worksheet.Range["$D$6:$F$6"].Merge();
-
-                worksheet.Range["A7"].Text = perfoma.CustomerAddress;
-                worksheet.Range["$A$7:$B$7"].Merge();
-
-                worksheet.Range["C7"].Text = "Date";
-
-                worksheet.Range["D7"].Text = perfoma.OrderDate.ToString("dd/MM/yyyy");
-                worksheet.Range["$D$7:$F$7"].Merge();
-
-                worksheet.Range["A8"].Text = perfoma.CustomerGST;
-                worksheet.Range["$A$8:$B$8"].Merge();
-
-                worksheet.Range["C8"].Text = "IEC code";
-
-                worksheet.Range["D8"].Text = perfoma.IECCode;
-                worksheet.Range["$D$8:$F$8"].Merge();
-
-                worksheet.Range["A9"].Text = string.Empty;
-                worksheet.Range["$A$9:$B$9"].Merge();
-
-                worksheet.Range["C9"].Text = "Name";
-
-                worksheet.Range["D9"].Text = perfoma.CustomerName;
-                worksheet.Range["$D$9:$F$9"].Merge();
-
-                worksheet.Range["A9"].Text = string.Empty;
-                worksheet.Range["$A$9:$B$9"].Merge();
-
-                worksheet.Range["C10"].Text = "Contact No.";
-
-                worksheet.Range["D10"].Text = perfoma.CustomerPhone;
-                worksheet.Range["$D$9:$F$9"].Merge();
-
-                IStyle headingLineItemStyle = workbook.Styles.Add("headingLineItemStyle");
-                headingLineItemStyle.Font.Size = 15;
-                headingLineItemStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
-
-                headingLineItemStyle.Font.Bold = true;
-
-                worksheet.AutofitRow(11);
-
-                worksheet.AutofitColumn(1);
-                worksheet.AutofitColumn(2);
-                worksheet.AutofitColumn(3);
-                worksheet.AutofitColumn(4);
-                worksheet.AutofitColumn(5);
-                worksheet.AutofitColumn(6);
-                worksheet.AutofitColumn(7);
-                worksheet.AutofitColumn(8);
-
-                worksheet.Range["A11"].Text = "Sr.No.";
-                worksheet.Range["B11"].Text = "Perticulates";
-                worksheet.Range["C11"].Text = "UP USD";
-                worksheet.Range["D11"].Text = "Unit";
-                worksheet.Range["E11"].Text = "Qty";
-                worksheet.Range["F11"].Text = "Total USD";
-                worksheet.Range["G11"].Text = "Total RMB";
-                worksheet.Range["H11"].Text = "RMB";
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Value = "PERFORMA INVOICE";
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.Font.Size = 18;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.Font.UnderLine = true;
+                Sheet.Cells[string.Format("A{0}:F{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                currentCell++;
 
 
-                worksheet.Range["A11"].CellStyle = headingLineItemStyle;
-                worksheet.Range["B11"].CellStyle = headingLineItemStyle;
-                worksheet.Range["C11"].CellStyle = headingLineItemStyle;
-                worksheet.Range["D11"].CellStyle = headingLineItemStyle;
-                worksheet.Range["E11"].CellStyle = headingLineItemStyle;
-                worksheet.Range["F11"].CellStyle = headingLineItemStyle;
-                worksheet.Range["G11"].CellStyle = headingLineItemStyle;
-                worksheet.Range["H11"].CellStyle = headingLineItemStyle;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Value = perfoma.CustomerCompanyName;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
 
+                Sheet.Cells[string.Format("C{0}", currentCell)].Value = "Pi No.";
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
 
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Value = perfoma.PINo;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell++;
+
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Value = perfoma.CustomerAddress;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("C{0}", currentCell)].Value = "Date";
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Value = perfoma.OrderDate.ToString("dd/MM/yyyy");
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell++;
+
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Value = perfoma.CustomerGST;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("C{0}", currentCell)].Value = "IEC code";
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Value = perfoma.IECCode;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell++;
+
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Value = string.Empty;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("C{0}", currentCell)].Value = "Name";
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Value = perfoma.CustomerName;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell++;
+
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Value = string.Empty;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:B{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("C{0}", currentCell)].Value = "Contact No.";
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Value = perfoma.CustomerPhone;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("D{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell++;
+
+                Sheet.Cells[string.Format("A{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("A{0}", currentCell)].Value = "Sr.No.";
+                Sheet.Cells[string.Format("A{0}", currentCell)].Style.Font.Size = 16;
+                Sheet.Cells[string.Format("A{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("B{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("B{0}", currentCell)].Value = "Perticulates";
+                Sheet.Cells[string.Format("B{0}", currentCell)].Style.Font.Size = 14;
+                Sheet.Cells[string.Format("B{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("C{0}", currentCell)].Value = "UP USD";
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.Font.Size = 14;
+                Sheet.Cells[string.Format("C{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("D{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("D{0}", currentCell)].Value = "Unit";
+                Sheet.Cells[string.Format("D{0}", currentCell)].Style.Font.Size = 14;
+                Sheet.Cells[string.Format("D{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("E{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("E{0}", currentCell)].Value = "Qty";
+                Sheet.Cells[string.Format("E{0}", currentCell)].Style.Font.Size = 14;
+                Sheet.Cells[string.Format("E{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("F{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("F{0}", currentCell)].Value = "Total USD";
+                Sheet.Cells[string.Format("F{0}", currentCell)].Style.Font.Size = 14;
+                Sheet.Cells[string.Format("F{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("G{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("G{0}", currentCell)].Value = "Total RMB";
+                Sheet.Cells[string.Format("G{0}", currentCell)].Style.Font.Size = 14;
+                Sheet.Cells[string.Format("G{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                Sheet.Cells[string.Format("H{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("H{0}", currentCell)].Value = "RMB";
+                Sheet.Cells[string.Format("H{0}", currentCell)].Style.Font.Size = 14;
+                Sheet.Cells[string.Format("H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell++;
                 int i = 1;
-                int rownum = 12;
                 foreach (var item in perfoma.ProductList)
                 {
-                    worksheet.Range["A" + rownum + ""].Text = i.ToString();
-                    worksheet.Range["B" + rownum + ""].Text = item.Partiular;
-                    worksheet.Range["C" + rownum + ""].Text = string.Format("{0:0.0000}", item.UnitPrice);
-                    worksheet.Range["D" + rownum + ""].Text = item.Unit;
-                    worksheet.Range["E" + rownum + ""].Text = string.Format("{0:0}", item.Quantity);
-                    worksheet.Range["F" + rownum + ""].Text = string.Format("{0:0.00}", item.UnitPrice * item.Quantity);
-                    worksheet.Range["G" + rownum + ""].Text = string.Format("{0:0.00}", item.TotalRMB);
-                    worksheet.Range["H" + rownum + ""].Text = string.Format("{0:0.0000}", item.RMBUnitPrice);
+                    Sheet.Cells[string.Format("A{0}", currentCell)].Value = i;
+                    Sheet.Cells[string.Format("A{0}", currentCell)].Style.Font.Size = 12;
+                    Sheet.Cells[string.Format("A{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    Sheet.Cells[string.Format("B{0}", currentCell)].Value = item.Partiular;
+                    Sheet.Cells[string.Format("B{0}", currentCell)].Style.Font.Size = 12;
+                    Sheet.Cells[string.Format("B{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                    Sheet.Cells[string.Format("C{0}", currentCell)].Value = Math.Round(item.UnitPrice, 2);
+                    Sheet.Cells[string.Format("C{0}", currentCell)].Style.Font.Size = 12;
+                    Sheet.Cells[string.Format("C{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                    Sheet.Cells[string.Format("D{0}", currentCell)].Value = item.Unit;
+                    Sheet.Cells[string.Format("D{0}", currentCell)].Style.Font.Size = 12;
+                    Sheet.Cells[string.Format("D{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                    Sheet.Cells[string.Format("E{0}", currentCell)].Value = Math.Round(item.Quantity, 0);
+                    Sheet.Cells[string.Format("E{0}", currentCell)].Style.Font.Size = 12;
+                    Sheet.Cells[string.Format("E{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                    Sheet.Cells[string.Format("F{0}", currentCell)].Value = Math.Round((item.UnitPrice * item.Quantity), 2);
+                    Sheet.Cells[string.Format("F{0}", currentCell)].Style.Font.Size = 12;
+                    Sheet.Cells[string.Format("F{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                    Sheet.Cells[string.Format("G{0}", currentCell)].Value = Math.Round(item.TotalRMB, 4);
+                    Sheet.Cells[string.Format("G{0}", currentCell)].Style.Font.Size = 12;
+                    Sheet.Cells[string.Format("G{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+
+                    Sheet.Cells[string.Format("H{0}", currentCell)].Value = Math.Round(item.RMBUnitPrice, 4);
+                    Sheet.Cells[string.Format("H{0}", currentCell)].Style.Font.Size = 12;
+                    Sheet.Cells[string.Format("H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                    currentCell++;
                     i++;
-                    rownum++;
                 }
+                currentCell += 5;
 
-                decimal totalUSD = 0;
-                decimal totalRMB = 0;
+                Sheet.Cells[string.Format("A{0}:E{0}", currentCell)].Value = "Total";
+                Sheet.Cells[string.Format("A{0}:E{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:E{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:E{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
 
-                foreach (var item in productList)
-                {
-                    totalUSD += item.TotalUSD;
-                    totalRMB += item.TotalRMB;
-                }
+                Sheet.Cells[string.Format("F{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("F{0}", currentCell)].Value = "$" + Math.Round(productList.Sum(_ => _.TotalUSD), 2);
+                Sheet.Cells[string.Format("F{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("F{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
 
-                rownum += 10;
+                Sheet.Cells[string.Format("G{0}", currentCell)].Style.Font.Bold = true;
+                Sheet.Cells[string.Format("G{0}", currentCell)].Value = "¥" + Math.Round(productList.Sum(_ => _.TotalRMB), 4);
+                Sheet.Cells[string.Format("G{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("G{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell += 3;
 
-                worksheet.Range["A" + rownum + ""].Text = "Total";
-                worksheet.Range["$A$" + rownum + ":$E$" + rownum].Merge();
 
-                worksheet.Range["F" + rownum + ""].Text = string.Format("${0:0.00}", totalUSD);
-                worksheet.Range["G" + rownum + ""].Text = string.Format("¥{0:0.00}", totalRMB);
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Value = "Terms And Conditions:";
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell++;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Value = "(1)  Based On , FOB, X work, CNF, CIF";
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell++;
 
-                headingStyle.Font.Size = 17;
-                worksheet.Range["F" + rownum + ""].CellStyle = headingStyle;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Value = "(2)  Payment terms - advance.. Balance.. LC TT ";
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell++;
 
-                headingStyle.Font.Size = 17;
-                worksheet.Range["G" + rownum + ""].CellStyle = headingStyle;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Value = "(3)  Delivery period- … days after receipt/confirmation of ...";
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell++;
 
-                rownum += 2;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Value = "(4)  Bank Details for remittance:  TT and LC both always show according to selection of exporter";
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Merge = true;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.Font.Size = 12;
+                Sheet.Cells[string.Format("A{0}:H{0}", currentCell)].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                currentCell++;
 
-                worksheet.Range["A" + rownum + ""].Text = "Terms And Conditions:";
-                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+                Sheet.Column(2).Width = 60;
+                Sheet.Column(3).Width = 12.30;
+                Sheet.Column(4).Width = 12.30;
+                Sheet.Column(5).Width = 12.30;
+                Sheet.Column(6).Width = 18;
+                Sheet.Column(7).Width = 18;
+                Sheet.Column(8).Width = 12.30;
+                #region OLD
+                ////Set the default application version as Excel 2016.
+                //excelEngine.Excel.DefaultVersion = ExcelVersion.Excel2016;
 
-                rownum += 1;
-                worksheet.Range["A" + rownum + ""].Text = "(1)  Based On , FOB, X work, CNF, CIF";
-                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+                ////Create a workbook with a worksheet.
+                //IWorkbook workbook = excelEngine.Excel.Workbooks.Create(1);
 
-                rownum += 1;
-                worksheet.Range["A" + rownum + ""].Text = "(2)  Payment terms - advance.. Balance.. LC TT ";
-                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+                ////Access first worksheet from the workbook instance.
+                //IWorksheet worksheet = workbook.Worksheets[0];
 
-                rownum += 1;
-                worksheet.Range["A" + rownum + ""].Text = "(3)  Delivery period- … days after receipt/confirmation of ...";
-                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+                ////Insert sample text into cell “A1”.
+                //worksheet.Range["A1"].Text = perfoma.ExporterName;
+                //worksheet.Range["$A$1:$F$1"].Merge();
 
-                rownum += 1;
-                worksheet.Range["A" + rownum + ""].Text = "(4)  Bank Details for remittance:  TT and LC both always show according to selection of exporter";
-                worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+                //IStyle headingStyle = workbook.Styles.Add("HeadingStyle");
+                //headingStyle.Font.Bold = true;
+                //headingStyle.Font.Size = 20;
+                //headingStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                //worksheet.Range["$A$1:$F$1"].CellStyle = headingStyle;
+
+                //worksheet.Range["A2"].Text = perfoma.ExporterAddress;
+                //worksheet.Range["$A$2:$F$2"].Merge();
+
+                //IStyle exporterAdress = workbook.Styles.Add("exporterAdress");
+                //exporterAdress.Font.Size = 15;
+                //exporterAdress.Font.Bold = true;
+                //exporterAdress.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                //worksheet.Range["$A$2:$F$2"].CellStyle = exporterAdress;
+
+                //worksheet.Range["A3"].Text = perfoma.ExporterPhone;
+                //worksheet.Range["$A$3:$F$3"].Merge();
+
+                //worksheet.Range["$A$3:$F$3"].CellStyle = exporterAdress;
+
+                //worksheet.Range["A4"].Text = string.Empty;
+                //worksheet.Range["$A$4:$F$4"].Merge();
+
+                //worksheet.Range["A5"].Text = "PERFORMA INVOICE";
+                //worksheet.Range["$A$5:$F$5"].Merge();
+
+                //IStyle CustomTextStyle = workbook.Styles.Add("CustomTextStyle");
+                //CustomTextStyle.Font.Size = 25;
+                //CustomTextStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+                //CustomTextStyle.Font.Bold = true;
+                //worksheet.Range["$A$5:$F$5"].CellStyle = CustomTextStyle;
+
+                //worksheet.Range["A6"].Text = perfoma.CustomerCompanyName;
+                //worksheet.Range["$A$6:$B$6"].Merge();
+
+                //IStyle CustomTextCustomerStyle = workbook.Styles.Add("CustomTextCustomerStyle");
+                //CustomTextCustomerStyle.Font.Size = 15;
+                //CustomTextCustomerStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
+                //worksheet.Range["$A$6:$B$6"].CellStyle = CustomTextCustomerStyle;
+
+                //worksheet.Range["C6"].Text = "Pi No.";
+
+                //worksheet.Range["D6"].Text = perfoma.PINo;
+                //worksheet.Range["$D$6:$F$6"].Merge();
+
+                //worksheet.Range["A7"].Text = perfoma.CustomerAddress;
+                //worksheet.Range["$A$7:$B$7"].Merge();
+
+                //worksheet.Range["C7"].Text = "Date";
+
+                //worksheet.Range["D7"].Text = perfoma.OrderDate.ToString("dd/MM/yyyy");
+                //worksheet.Range["$D$7:$F$7"].Merge();
+
+                //worksheet.Range["A8"].Text = perfoma.CustomerGST;
+                //worksheet.Range["$A$8:$B$8"].Merge();
+
+                //worksheet.Range["C8"].Text = "IEC code";
+
+                //worksheet.Range["D8"].Text = perfoma.IECCode;
+                //worksheet.Range["$D$8:$F$8"].Merge();
+
+                //worksheet.Range["A9"].Text = string.Empty;
+                //worksheet.Range["$A$9:$B$9"].Merge();
+
+                //worksheet.Range["C9"].Text = "Name";
+
+                //worksheet.Range["D9"].Text = perfoma.CustomerName;
+                //worksheet.Range["$D$9:$F$9"].Merge();
+
+                //worksheet.Range["A9"].Text = string.Empty;
+                //worksheet.Range["$A$9:$B$9"].Merge();
+
+                //worksheet.Range["C10"].Text = "Contact No.";
+
+                //worksheet.Range["D10"].Text = perfoma.CustomerPhone;
+                //worksheet.Range["$D$9:$F$9"].Merge();
+
+                //IStyle headingLineItemStyle = workbook.Styles.Add("headingLineItemStyle");
+                //headingLineItemStyle.Font.Size = 15;
+                //headingLineItemStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
+
+                //headingLineItemStyle.Font.Bold = true;
+
+                //worksheet.AutofitRow(11);
+
+                //worksheet.AutofitColumn(1);
+                //worksheet.AutofitColumn(2);
+                //worksheet.AutofitColumn(3);
+                //worksheet.AutofitColumn(4);
+                //worksheet.AutofitColumn(5);
+                //worksheet.AutofitColumn(6);
+                //worksheet.AutofitColumn(7);
+                //worksheet.AutofitColumn(8);
+
+                //worksheet.Range["A11"].Text = "Sr.No.";
+                //worksheet.Range["B11"].Text = "Perticulates";
+                //worksheet.Range["C11"].Text = "UP USD";
+                //worksheet.Range["D11"].Text = "Unit";
+                //worksheet.Range["E11"].Text = "Qty";
+                //worksheet.Range["F11"].Text = "Total USD";
+                //worksheet.Range["G11"].Text = "Total RMB";
+                //worksheet.Range["H11"].Text = "RMB";
+
+
+                //worksheet.Range["A11"].CellStyle = headingLineItemStyle;
+                //worksheet.Range["B11"].CellStyle = headingLineItemStyle;
+                //worksheet.Range["C11"].CellStyle = headingLineItemStyle;
+                //worksheet.Range["D11"].CellStyle = headingLineItemStyle;
+                //worksheet.Range["E11"].CellStyle = headingLineItemStyle;
+                //worksheet.Range["F11"].CellStyle = headingLineItemStyle;
+                //worksheet.Range["G11"].CellStyle = headingLineItemStyle;
+                //worksheet.Range["H11"].CellStyle = headingLineItemStyle;
+
+
+                //int rownum = 12;
+                //foreach (var item in perfoma.ProductList)
+                //{
+                //    worksheet.Range["A" + rownum + ""].Text = i.ToString();
+                //    worksheet.Range["B" + rownum + ""].Text = item.Partiular;
+                //    worksheet.Range["C" + rownum + ""].Text = item.UnitPrice.ToString();
+                //    worksheet.Range["D" + rownum + ""].Text = item.Unit.ToString();
+                //    worksheet.Range["E" + rownum + ""].Text = item.Quantity.ToString();
+                //    worksheet.Range["F" + rownum + ""].Text = (item.UnitPrice * item.Quantity).ToString();
+                //    worksheet.Range["G" + rownum + ""].Text = item.TotalRMB.ToString();
+                //    worksheet.Range["H" + rownum + ""].Text = item.RMBUnitPrice.ToString();
+                //    i++;
+                //    rownum++;
+                //}
+
+                //decimal totalItems = 0;
+                //decimal totalRMB = 0;
+
+                //foreach (var item in productList)
+                //{
+                //    totalItems += item.TotalUSD;
+                //    totalRMB += item.TotalRMB;
+                //}
+
+                //rownum += 10;
+
+                //worksheet.Range["A" + rownum + ""].Text = "Total";
+                //worksheet.Range["$A$" + rownum + ":$E$" + rownum].Merge();
+
+                //worksheet.Range["F" + rownum + ""].Text = "$" + totalItems.ToString();
+                //worksheet.Range["G" + rownum + ""].Text = "¥" + totalRMB.ToString();
+
+                //headingStyle.Font.Size = 17;
+                //worksheet.Range["F" + rownum + ""].CellStyle = headingStyle;
+
+                //headingStyle.Font.Size = 17;
+                //worksheet.Range["G" + rownum + ""].CellStyle = headingStyle;
+
+                //rownum += 2;
+
+                //worksheet.Range["A" + rownum + ""].Text = "Terms And Conditions:";
+                //worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+
+                //rownum += 1;
+                //worksheet.Range["A" + rownum + ""].Text = "(1)  Based On , FOB, X work, CNF, CIF";
+                //worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+
+                //rownum += 1;
+                //worksheet.Range["A" + rownum + ""].Text = "(2)  Payment terms - advance.. Balance.. LC TT ";
+                //worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+
+                //rownum += 1;
+                //worksheet.Range["A" + rownum + ""].Text = "(3)  Delivery period- … days after receipt/confirmation of ...";
+                //worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge();
+
+                //rownum += 1;
+                //worksheet.Range["A" + rownum + ""].Text = "(4)  Bank Details for remittance:  TT and LC both always show according to selection of exporter";
+                //worksheet.Range["$A$" + rownum + ":$F$" + rownum].Merge(); 
+                #endregion
 
                 PerfomaInvoice perfomaInvoice = new PerfomaInvoice()
                 {
@@ -1129,8 +1404,18 @@ namespace AritySystems.Controllers
 
                 dbContext.SaveChanges();
 
+                using (var memoryStream = new MemoryStream())
+                {
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.AddHeader("content-disposition", "attachment;  filename=PI_" + perfoma.PINo + ".xlsx");
+                    Ep.SaveAs(memoryStream);
+                    memoryStream.WriteTo(Response.OutputStream);
+                    Response.Flush();
+                    Response.End();
+                }
+
                 //Save the workbook to disk in xlsx format.
-                workbook.SaveAs(@"/Content/PerfomaInvoice/" + perfomaInvoice.OrderId + perfoma.PINo + ".xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
+                // workbook.SaveAs(@"/Content/PerfomaInvoice/" + perfomaInvoice.OrderId + perfoma.PINo + ".xlsx", HttpContext.ApplicationInstance.Response, ExcelDownloadType.Open);
             }
 
             return View();
