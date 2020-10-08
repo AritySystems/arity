@@ -1576,13 +1576,18 @@ namespace AritySystems.Controllers
                                   CustomerPhone = user.PhoneNumber
                               }).FirstOrDefault();
 
-            DateTime? lastCommercialDt = dbContext.CommercialInvoices.Where(x => x.OrderId == id).OrderByDescending(x => x.ModifiedDate).FirstOrDefault().ModifiedDate;
+            if (commercial == null)
+            {
+                return Content("No Such Order Found");
+            }
+
+            DateTime? lastCommercialDt = dbContext.CommercialInvoices.Where(x => x.OrderId == id).OrderByDescending(x => x.ModifiedDate).FirstOrDefault()?.ModifiedDate;
+            lastCommercialDt = lastCommercialDt ?? DateTime.MinValue;
 
             productList = (from cartoon in dbContext.SupplierCartoons
                            join supplierAsigned in dbContext.Supplier_Assigned_OrderLineItem on cartoon.SupplierAssignedMapId equals supplierAsigned.Id
                            join lineItem in dbContext.OrderLineItems on supplierAsigned.OrderLineItem equals lineItem.Id
                            join product in dbContext.Products on lineItem.ProductId equals product.Id
-                           join perfoma in dbContext.PerfomaInvoiceItems on product.Id equals perfoma.ProductId
                            where cartoon.OrderId == id && cartoon.Status == 2 && cartoon.ModifiedDate > lastCommercialDt
                            select new
                            {
@@ -1601,7 +1606,7 @@ namespace AritySystems.Controllers
                                TotalRMB = (x.c.PcsPerCartoon * x.c.TotalCartoons) * x.oli.RMBSalesPrice
                            }).ToList();
 
-            commercial.ProductList = productList;
+            commercial.ProductList = productList ?? new List<PerfomaProductList>();
 
 
             //Create an instance of ExcelEngine.
